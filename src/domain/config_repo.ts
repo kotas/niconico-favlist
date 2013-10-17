@@ -8,10 +8,10 @@ class ConfigRepository {
 
     get(): Config {
         return new Config(
-            this.storage.getInteger('checkInterval',   30 * 60),
-            this.storage.getInteger('maxNewVideos',    10),
-            this.storage.getBoolean('hideCheckedList', false),
-            this.storage.getBoolean('orderDescendant', false)
+            this.storage.getInteger('checkInterval'),
+            this.storage.getInteger('maxNewVideos'),
+            this.storage.getBoolean('hideCheckedList'),
+            this.storage.getBoolean('orderDescendant')
         );
     }
 
