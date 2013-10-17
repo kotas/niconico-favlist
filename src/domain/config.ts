@@ -1,12 +1,5 @@
 class Config {
 
-    static Default = {
-        checkInterval:    30 * 60,
-        maxNewVideos:     10,
-        hideCheckedList:  false,
-        orderDescendant:  false
-    };
-
     constructor(
         private checkInterval: number,
         private maxNewVideos: number,

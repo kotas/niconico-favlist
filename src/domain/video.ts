@@ -1,16 +1,5 @@
 class Video {
 
-    static createFromFeedEntry(entry: MylistFeedEntry) {
-        return new Video(
-            entry.getVideoId(),
-            entry.getTitle(),
-            entry.getURL(),
-            entry.getThumbnail(),
-            entry.getMemo(),
-            entry.getTimestamp()
-        )
-    }
-
     constructor(
         private videoId: string,
         private title: string,

@@ -51,14 +51,9 @@ module serialization {
             return new Mylist(
                 this.reader.getString(MylistColumn.MylistId),
                 this.reader.getString(MylistColumn.Title),
-                this.getVideoIds(MylistColumn.CheckedVideoIds),
-                this.getVideos(MylistColumn.NewVideos)
+                this.getVideos(MylistColumn.NewVideos),
+                this.getVideoIds(MylistColumn.CheckedVideoIds)
             );
-        }
-
-        private getVideoIds(index: MylistColumn): string[] {
-            var str =  this.reader.get(index);
-            return str ? str.split(/:/) : [];
         }
 
         private getVideos(index: MylistColumn): Video[] {
@@ -70,6 +65,11 @@ module serialization {
             } else {
                 return [];
             }
+        }
+
+        private getVideoIds(index: MylistColumn): string[] {
+            var str =  this.reader.get(index);
+            return str ? str.split(/:/) : [];
         }
 
     }

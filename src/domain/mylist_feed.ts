@@ -39,7 +39,21 @@ class MylistFeedEntry {
 
 class MylistFeed {
 
-    constructor(private xml: string) {
+    constructor(
+        private url: string,
+        private xml: string
+    ) {
+    }
+
+    getMylistId(): string {
+        var matches: string[];
+        if (matches = this.url.match(/\/mylist\/(?:\d+\/)?(\d+)/)) {
+            return 'mylist/' + matches[1];
+        } else if (matches = this.url.match(/\/user\/(\d+)/)) {
+            return 'myvideo/' + matches[1];
+        } else {
+            throw new Error('unknown URL format');
+        }
     }
 
     getTitle(): string {

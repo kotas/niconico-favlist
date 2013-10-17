@@ -1,4 +1,4 @@
-/// <reference path="./video.ts" />
+/// <reference path="./video_factory.ts" />
 /// <reference path="./mylist_feed.ts" />
 
 class Mylist {
@@ -6,8 +6,8 @@ class Mylist {
     constructor(
         private mylistId: string,
         private title: string = '',
-        private checkedVideoIds: string[] = [],
-        private newVideos: Video[] = []
+        private newVideos: Video[] = [],
+        private checkedVideoIds: string[] = []
     ) {
     }
 
@@ -19,12 +19,12 @@ class Mylist {
         return this.title;
     }
 
-    getCheckedVideoIds(): string[] {
-        return this.checkedVideoIds;
-    }
-
     getNewVideos(): Video[] {
         return this.newVideos;
+    }
+
+    getCheckedVideoIds(): string[] {
+        return this.checkedVideoIds;
     }
 
     getPath(): string {
@@ -51,7 +51,7 @@ class Mylist {
             if (prevCheckedVideoIdMap.hasOwnProperty(videoId)) {
                 this.checkedVideoIds.push(videoId);
             } else {
-                this.newVideos.push(Video.createFromFeedEntry(entry));
+                this.newVideos.push(VideoFactory.createFromFeedEntry(entry));
             }
         });
     }
