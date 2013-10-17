@@ -1,0 +1,4 @@
+(function (window) {
+
+    var APP_NAME    = '<%= pkg.name %>';
+    var APP_VERSION = '<%= pkg.version %>';
