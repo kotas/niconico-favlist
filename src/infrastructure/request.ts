@@ -1,8 +1,8 @@
 /// <reference path="../../typings/greasemonkey.d.ts" />
 
-module util {
+module Request {
 
-    export function request(options: GMXMLHttpRequestOptions): any {
+    export function send(options: GMXMLHttpRequestOptions): any {
         if (typeof GM_xmlhttpRequest !== 'undefined') {
             return GM_xmlhttpRequest(options);
         }

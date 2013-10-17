@@ -1,10 +1,10 @@
-/// <reference path="./serialization.ts" />
-/// <reference path="../entity/mylist_collection.ts" />
-/// <reference path="../util/storage.ts" />
+/// <reference path="./serialization/mylist_collection.ts" />
+/// <reference path="./mylist_collection.ts" />
+/// <reference path="../infrastructure/data_storage.ts" />
 
 class MylistCollectionRepository {
 
-    constructor(private storage: util.Storage) {
+    constructor(private storage: DataStorage) {
     }
 
     get(): MylistCollection {

@@ -1,4 +1,3 @@
-/// <reference path="../util/request.ts" />
 
 class MylistFeedEntry {
 

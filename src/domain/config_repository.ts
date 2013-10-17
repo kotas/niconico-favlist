@@ -1,9 +1,9 @@
-/// <reference path="../entity/config.ts" />
-/// <reference path="../util/storage.ts" />
+/// <reference path="./config.ts" />
+/// <reference path="../infrastructure/data_storage.ts" />
 
 class ConfigRepository {
 
-    constructor(private storage: util.Storage) {
+    constructor(private storage: DataStorage) {
     }
 
     get(): Config {
