@@ -28,6 +28,7 @@ module util {
     export class KVSWriter extends Writer<string> {
 
         constructor(private storage: KeyValueStorage) {
+            super();
         }
 
         write(key: string, value: string): void {
@@ -41,6 +42,7 @@ module util {
         private data: string[] = [];
 
         constructor(private delimiter: string) {
+            super();
         }
 
         write(key: number, value: string): void {

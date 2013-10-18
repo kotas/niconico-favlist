@@ -10,25 +10,21 @@ class MylistFeedRepository implements RemoteMylistRepository {
     }
 
     resolve(mylistId: MylistId): monapt.Future<monapt.Option<Mylist>> {
-        return monapt.Future<monapt.Option<MylistFeed>>((promise) => {
-            var url = MylistFeedRepository.NICOVIDEO_URL + this.getFeedPath(mylistId);
-            this.fetcher.fetch({ method: 'GET', url: url })
-                .onSuccess((response: util.UrlFetchResponse) => {
-                    if (response.status === 200) {
-                        this.tryParseFeed(response.responseText).match({
-                            Success: mylist => promise.success(new monapt.Some(mylist)),
-                            Failure: e      => promise.failure(e)
-                        });
-                    } else if (response.status === 404 || response.status === 410) {
-                        promise.success(new monapt.None<Mylist>());
-                    } else {
-                        promise.failure(new Error('Failed to fetch feed: ' + response.statusText));
-                    }
-                })
-                .onFailure((e: Error) => {
-                    promise.failure(e);
-                });
-        })
+        var url = MylistFeedRepository.NICOVIDEO_URL + this.getFeedPath(mylistId);
+        return this.fetcher.fetch({ method: 'GET', url: url }).map(
+            (response: util.UrlFetchResponse, promise: monapt.IFuturePromiseLike<monapt.Option<Mylist>>) => {
+                if (response.status === 200) {
+                    this.tryParseFeed(response.responseText).match({
+                        Success: (mylist) => { promise.success(new monapt.Some(mylist)); },
+                        Failure: (e)      => { promise.failure(e); }
+                    });
+                } else if (response.status === 404 || response.status === 410) {
+                    promise.success(new monapt.None<Mylist>());
+                } else {
+                    promise.failure(new Error('Failed to fetch feed: ' + response.statusText));
+                }
+            }
+        );
     }
 
     private tryParseFeed(xml: string): monapt.Try<Mylist> {

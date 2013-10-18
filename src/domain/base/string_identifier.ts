@@ -1,6 +1,6 @@
 /// <reference path="./identifier.ts" />
 
-class StringIdentifier<T extends StringIdentifier> implements Identifier<T> {
+class StringIdentifier<ID extends Identifier<ID>> implements Identifier<ID> {
 
     constructor(private id: string) {
     }
@@ -13,8 +13,11 @@ class StringIdentifier<T extends StringIdentifier> implements Identifier<T> {
         return this.id;
     }
 
-    isSameAs(other: T): boolean {
-        return (this.id === other.id);
+    isSameAs(other: ID): boolean {
+        if (other instanceof StringIdentifier) {
+            return (this.id === other.toString());
+        }
+        return false;
     }
 
 }

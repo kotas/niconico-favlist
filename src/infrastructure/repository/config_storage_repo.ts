@@ -10,7 +10,7 @@ class ConfigStorageRepository implements ConfigRepository {
     }
 
     get(): monapt.Future<Config> {
-        return monapt.Future<Config>(promise => {
+        return monapt.future<Config>(promise => {
             var defaults = Config.getDefault();
             var reader = new util.KVSReader(this.storage);
             promise.success(new Config(

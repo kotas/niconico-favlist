@@ -1,7 +1,7 @@
 /// <reference path="../../../../typings/greasemonkey.d.ts" />
 /// <reference path="./key_value_storage.ts" />
 
-class GresemonkeyStorage implements KeyValueStorage<any> {
+class GresemonkeyStorage implements KeyValueStorage {
 
     static isAvailable(): boolean {
         return (typeof GM_getValue !== 'undefined');

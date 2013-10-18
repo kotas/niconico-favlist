@@ -2,7 +2,7 @@
 /// <reference path="../video/video.ts" />
 /// <reference path="../../base/entity.ts" />
 
-class Mylist implements Entity<MylistId> {
+class Mylist implements Entity<Mylist, MylistId> {
 
     constructor(
         private id: MylistId,

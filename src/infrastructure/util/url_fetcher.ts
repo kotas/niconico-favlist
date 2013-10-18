@@ -24,7 +24,7 @@ module util {
     export class UrlFetcherGM implements UrlFetcher {
 
         fetch(option: UrlFetchOption): monapt.Future<UrlFetchResponse> {
-            return monapt.Future<UrlFetchResponse>(promise => {
+            return monapt.future<UrlFetchResponse>(promise => {
                 GM_xmlhttpRequest({
                     url: option.url,
                     method: option.method,
@@ -48,7 +48,7 @@ module util {
     export class UrlFetcherXHR implements UrlFetcher {
 
         fetch(option: UrlFetchOption): monapt.Future<UrlFetchResponse> {
-            return monapt.Future<UrlFetchResponse>(promise => {
+            return monapt.future<UrlFetchResponse>(promise => {
                 var req = new XMLHttpRequest();
                 req.open(option.method, option.url, true);
 

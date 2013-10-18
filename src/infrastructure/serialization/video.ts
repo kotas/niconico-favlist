@@ -1,7 +1,6 @@
 /// <reference path="../../domain/model/video/video.ts" />
 /// <reference path="../util/writer.ts" />
 /// <reference path="../util/reader.ts" />
-/// <reference path="./video.ts" />
 
 module serialization {
 

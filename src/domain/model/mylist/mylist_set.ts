@@ -2,10 +2,10 @@
 /// <reference path="../../base/entity.ts" />
 /// <reference path="./mylist.ts" />
 
-class MylistSetId extends StringIdentifier {
+class MylistSetId extends StringIdentifier<MylistSetId> {
 }
 
-class MylistSet implements Entity<MylistSetId> {
+class MylistSet implements Entity<MylistSet, MylistSetId> {
 
     private mylistSet: { [id: string]: Mylist };
 

@@ -27,7 +27,8 @@ module util {
 
     export class KVSReader extends Reader<string, any> {
 
-        constructor(private storage: KeyValueStorage<any>) {
+        constructor(private storage: KeyValueStorage) {
+            super();
         }
 
         read(key: string): monapt.Option<any> {
@@ -41,6 +42,7 @@ module util {
         private data: string[];
 
         constructor(serialized: string, delimiter: string) {
+            super();
             this.data = serialized ? serialized.split(delimiter) : [];
         }
 

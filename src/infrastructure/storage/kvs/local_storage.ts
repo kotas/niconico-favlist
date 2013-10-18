@@ -1,6 +1,6 @@
 /// <reference path="./key_value_storage.ts" />
 
-class LocalStorage implements KeyValueStorage<any> {
+class LocalStorage implements KeyValueStorage {
 
     get(key: string): monapt.Option<any> {
         var value = window.localStorage[key];

@@ -4,11 +4,11 @@
 
 class MylistSetStorageRepository implements MylistSetRepository {
 
-    constructor(private storage: KeyValueStorage<string>) {
+    constructor(private storage: KeyValueStorage) {
     }
 
     resolve(mylistSetId: MylistSetId): monapt.Future<monapt.Option<MylistSet>> {
-        return monapt.Future<monapt.Option<MylistSet>>((promise) => {
+        return monapt.future<monapt.Option<MylistSet>>((promise) => {
             this.storage.get(mylistSetId.toString()).match({
                 Some: (serialized: string) => {
                     tryUnserialize(serialized).match({
