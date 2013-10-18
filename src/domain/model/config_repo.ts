@@ -1,5 +1,5 @@
 /// <reference path="./config.ts" />
-/// <reference path="../infrastructure/data_storage.ts" />
+/// <reference path="../../infrastructure/data_storage.ts" />
 
 class ConfigRepository {
 

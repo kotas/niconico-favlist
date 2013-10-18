@@ -1,7 +1,7 @@
 /// <reference path="./video_factory.ts" />
 /// <reference path="./mylist_feed.ts" />
 /// <reference path="./mylist_id.ts" />
-/// <reference path="../infrastructure/entity.ts" />
+/// <reference path="../../infrastructure/entity.ts" />
 
 class Mylist implements Entity<MylistId> {
 

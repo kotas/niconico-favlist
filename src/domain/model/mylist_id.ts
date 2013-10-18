@@ -1,4 +1,4 @@
-/// <reference path="../infrastructure/identifier.ts" />
+/// <reference path="../../infrastructure/identifier.ts" />
 
 enum MylistIdType {
     Mylist,

@@ -1,7 +1,7 @@
 /// <reference path="./serialization/mylist.ts" />
 /// <reference path="./mylist.ts" />
-/// <reference path="../infrastructure/repository.ts" />
-/// <reference path="../infrastructure/data_storage.ts" />
+/// <reference path="../../infrastructure/repository.ts" />
+/// <reference path="../../infrastructure/data_storage.ts" />
 
 class MylistRepository implements Repository<MylistId, Mylist> {
 

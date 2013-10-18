@@ -1,5 +1,5 @@
 /// <reference path="../video.ts" />
-/// <reference path="../../infrastructure/serialization.ts" />
+/// <reference path="../../../infrastructure/serialization.ts" />
 
 module serialization {
 
