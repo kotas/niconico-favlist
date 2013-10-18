@@ -1,3 +1,4 @@
+/// <reference path="./mylist_id.ts" />
 
 class MylistFeedEntry {
 
@@ -45,15 +46,8 @@ class MylistFeed {
     ) {
     }
 
-    getMylistId(): string {
-        var matches: string[];
-        if (matches = this.url.match(/\/mylist\/(?:\d+\/)?(\d+)/)) {
-            return 'mylist/' + matches[1];
-        } else if (matches = this.url.match(/\/user\/(\d+)/)) {
-            return 'myvideo/' + matches[1];
-        } else {
-            throw new Error('unknown URL format');
-        }
+    getMylistId(): MylistId {
+        return MylistId.createFromURL(this.url);
     }
 
     getTitle(): string {

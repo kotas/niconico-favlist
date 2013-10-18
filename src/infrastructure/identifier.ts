@@ -1,0 +1,3 @@
+interface Identifier {
+    toString(): string;
+}

@@ -1,18 +1,20 @@
 /// <reference path="./video_factory.ts" />
 /// <reference path="./mylist_feed.ts" />
+/// <reference path="./mylist_id.ts" />
+/// <reference path="../infrastructure/entity.ts" />
 
-class Mylist {
+class Mylist implements Entity<MylistId> {
 
     constructor(
-        private mylistId: string,
+        private id: MylistId,
         private title: string = '',
         private newVideos: Video[] = [],
         private checkedVideoIds: string[] = []
     ) {
     }
 
-    getMylistId(): string {
-        return this.mylistId;
+    getId(): MylistId {
+        return this.id;
     }
 
     getTitle(): string {
@@ -28,11 +30,9 @@ class Mylist {
     }
 
     getPath(): string {
-        var matches = this.mylistId.match(/^myvideo\/(\d+)$/);
-        if (matches) {
-            return "/user/" + matches[1] + "/video";
-        } else {
-            return "/" + this.mylistId;
+        switch (this.id.getIdType()) {
+            case MylistIdType.User: return '/user/' + this.id.getIdValue() + '/video';
+            default: return '/' + this.id.toString();
         }
     }
 
