@@ -10,28 +10,9 @@ class MylistFeedRepository implements RemoteMylistRepository {
     }
 
     resolve(mylistId: MylistId): monapt.Future<monapt.Option<Mylist>> {
-        var url = MylistFeedRepository.NICOVIDEO_URL + this.getFeedPath(mylistId);
-        return this.fetcher.fetch({ method: 'GET', url: url }).map(
-            (response: util.UrlFetchResponse, promise: monapt.IFuturePromiseLike<monapt.Option<Mylist>>) => {
-                if (response.status === 200) {
-                    this.tryParseFeed(response.responseText).match({
-                        Success: mylist => promise.success(new monapt.Some(mylist)),
-                        Failure: e      => promise.failure(e)
-                    });
-                } else if (response.status === 404 || response.status === 410) {
-                    promise.success(new monapt.None<Mylist>());
-                } else {
-                    promise.failure(new Error('Failed to fetch feed: ' + response.statusText));
-                }
-            }
-        );
-
-
-        return monapt.Future<monapt.Option<MylistFeed>>((promise: monapt.Promise) => {
+        return monapt.Future<monapt.Option<MylistFeed>>((promise) => {
             var url = MylistFeedRepository.NICOVIDEO_URL + this.getFeedPath(mylistId);
-            var feed = this.fetcher.fetch({ method: 'GET', url: url });
-
-
+            this.fetcher.fetch({ method: 'GET', url: url })
                 .onSuccess((response: util.UrlFetchResponse) => {
                     if (response.status === 200) {
                         this.tryParseFeed(response.responseText).match({

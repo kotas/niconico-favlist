@@ -25,9 +25,16 @@ module serialization {
             this.values = serialized ? serialized.split(/#/) : [];
         }
 
-        toMylists(): Mylist[] {
-            return this.values.map(function (serializedMylist) {
-                return (new serialization.MylistUnserializer(serializedMylist)).toMylist();
+        toMylists(): monapt.Try<Mylist[]> {
+            return monapt.Try<Mylist[]>(() => {
+                var mylists: Mylist[] = [];
+                this.values.map((serialized: string) => {
+                    (new serialization.MylistUnserializer(serialized)).toMylist().match({
+                        Success: (mylist) => { mylists.push(mylist); },
+                        Failure: (e)      => { throw e; }
+                    });
+                });
+                return mylists;
             });
         }
 

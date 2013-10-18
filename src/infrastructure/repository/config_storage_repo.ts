@@ -19,7 +19,7 @@ class ConfigStorageRepository implements ConfigRepository {
                 reader.readBoolean('hideCheckedList').getOrElse(() => defaults.isCheckedListHidden()),
                 reader.readBoolean('orderDescendant').getOrElse(() => defaults.isOrderDescendant())
             ));
-        })
+        });
     }
 
     store(config: Config): void {

@@ -37,41 +37,39 @@ module serialization {
         constructor(private serialized: string) {
         }
 
-        toVideo(): Video {
-            var reader = new util.UnserializationReader(this.serialized, '&');
-            return new Video(
-                reader.readString(VideoColumn.VideoId),
-                reader.readString(VideoColumn.Title),
-                reader.readString(VideoColumn.URL),
-                reader.readString(VideoColumn.Thumbnail),
-                reader.readString(VideoColumn.Memo),
-                this.unserializeTimestamp(reader.read(VideoColumn.Timestamp))
-            );
-        }
+        toVideo(): monapt.Try<Video> {
+            return monapt.Try<Video>(() => {
+                var reader = new util.UnserializationReader(this.serialized, '&');
+                return new Video(
+                    reader.readString(VideoColumn.VideoId).get(),
+                    reader.readString(VideoColumn.Title).getOrElse(() => ''),
+                    reader.readString(VideoColumn.URL).get(),
+                    reader.readString(VideoColumn.Thumbnail).get(),
+                    reader.readString(VideoColumn.Memo).getOrElse(() => ''),
+                    reader.read(VideoColumn.Timestamp).map(parseTimestamp).get()
+                );
+            });
 
-        private unserializeTimestamp(serialized: string): number {
-            if (!serialized) {
-                return null;
-            }
-            if (/^\d+$/.test(serialized)) {
-                return parseInt(serialized, 10);
-            }
+            function parseTimestamp(serialized: string): number {
+                if (!serialized) {
+                    return null;
+                }
+                if (/^\d+$/.test(serialized)) {
+                    return parseInt(serialized, 10);
+                }
 
-            // Convert from old format
-            var m = serialized.split(/\D+/);
-            if (m.length !== 6) {
-                return null;
-            }
+                // Convert from old format
+                var m = serialized.split(/\D+/);
+                if (m.length !== 6) {
+                    return null;
+                }
 
-            var dt = new Date(
-                parseInt(m[0], 10),
-                parseInt(m[1], 10) - 1,
-                parseInt(m[2], 10),
-                parseInt(m[3], 10),
-                parseInt(m[4], 10),
-                parseInt(m[5], 10)
-            );
-            return dt.getTime();
+                var dt = new Date(
+                    parseInt(m[0], 10), parseInt(m[1], 10) - 1, parseInt(m[2], 10),
+                    parseInt(m[3], 10), parseInt(m[4], 10),     parseInt(m[5], 10)
+                );
+                return dt.getTime();
+            }
         }
 
     }

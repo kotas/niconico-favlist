@@ -45,28 +45,35 @@ module serialization {
         constructor(private serialized: string) {
         }
 
-        toMylist(): Mylist {
-            var reader = new util.UnserializationReader(this.serialized, ':');
-            return new Mylist(
-                MylistId.fromIdString(reader.readString(MylistColumn.MylistId)),
-                reader.readString(MylistColumn.Title),
-                this.unserializeVideos(reader.read(MylistColumn.NewVideos)),
-                this.unserializeVideoIds(reader.read(MylistColumn.CheckedVideoIds))
-            );
-        }
+        toMylist(): monapt.Try<Mylist> {
+            return monapt.Try<Mylist>(() => {
+                var reader = new util.UnserializationReader(this.serialized, ':');
+                return new Mylist(
+                    reader.readString(MylistColumn.MylistId).map(MylistId.fromIdString).get(),
+                    reader.readString(MylistColumn.Title).getOrElse(() => ''),
+                    reader.read(MylistColumn.NewVideos).map(unserializeVideos).getOrElse(() => []),
+                    reader.read(MylistColumn.CheckedVideoIds).map(unserializeVideoIds).getOrElse(() => [])
+                );
 
-        private unserializeVideos(serialized: string): Video[] {
-            if (serialized) {
-                return serialized.split(':').map(function (serializedVideo) {
-                    return (new serialization.VideoUnserializer(serializedVideo)).toVideo();
-                });
-            } else {
-                return [];
-            }
-        }
+                function unserializeVideos(serialized: string): Video[] {
+                    if (!serialized) {
+                        return [];
+                    }
 
-        private unserializeVideoIds(serialized: string): string[] {
-            return serialized ? serialized.split(':') : [];
+                    var videos: Video[] = [];
+                    serialized.split(':').forEach((serializedVideo: string) => {
+                        (new serialization.VideoUnserializer(serializedVideo)).toVideo().match({
+                            Success: (video: Video) => { videos.push(video); },
+                            Failure: (e: Error)     => { throw e; }
+                        });
+                    });
+                    return videos;
+                }
+
+                function unserializeVideoIds(serialized: string): string[] {
+                    return serialized ? serialized.split(':') : [];
+                }
+            });
         }
 
     }
