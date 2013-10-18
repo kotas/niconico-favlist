@@ -1,7 +1,7 @@
-/// <reference path="./video_factory.ts" />
+/// <reference path="./../video/video_factory.ts" />
 /// <reference path="./mylist_feed.ts" />
 /// <reference path="./mylist_id.ts" />
-/// <reference path="../../infrastructure/entity.ts" />
+/// <reference path="../../base/entity.ts" />
 
 class Mylist implements Entity<MylistId> {
 
@@ -15,6 +15,10 @@ class Mylist implements Entity<MylistId> {
 
     getId(): MylistId {
         return this.id;
+    }
+
+    isSameAs(entity: Mylist): boolean {
+        return entity.getId().isSameAs(entity.getId());
     }
 
     getTitle(): string {
@@ -36,6 +40,7 @@ class Mylist implements Entity<MylistId> {
         }
     }
 
+    /*
     updateWithFeed(feed: MylistFeed) {
         this.title = feed.getTitle() || this.title;
 
@@ -55,5 +60,6 @@ class Mylist implements Entity<MylistId> {
             }
         });
     }
+    */
 
 }

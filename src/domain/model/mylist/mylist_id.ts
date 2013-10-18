@@ -1,13 +1,13 @@
-/// <reference path="../../infrastructure/identifier.ts" />
+/// <reference path="../../base/identifier.ts" />
 
 enum MylistIdType {
     Mylist,
     User,
 }
 
-class MylistId implements Identifier {
+class MylistId implements Identifier<MylistId> {
 
-    static createFromURL(url: string): MylistId {
+    static fromURL(url: string): MylistId {
         var matches: string[];
         if (matches = url.match(/\/mylist\/(?:\d+\/)?(\d+)/)) {
             return new MylistId(MylistIdType.Mylist, matches[1]);
@@ -18,7 +18,7 @@ class MylistId implements Identifier {
         }
     }
 
-    static createFromString(idString: string): MylistId {
+    static fromIdString(idString: string): MylistId {
         var matches: string[];
         if (matches = idString.match(/^mylist\/(?:\d+\/)?(\d+)|^(\d+)$/)) {
             return new MylistId(MylistIdType.Mylist, matches[1] || matches[2]);
@@ -32,7 +32,7 @@ class MylistId implements Identifier {
     constructor(
         private idType: MylistIdType,
         private idValue: string
-    ) {
+        ) {
     }
 
     getIdType(): MylistIdType {
@@ -49,6 +49,18 @@ class MylistId implements Identifier {
             case MylistIdType.User:   return 'myvideo/' + this.idValue;
         }
         throw new Error('Unknown ID type');
+    }
+
+    valueOf(): any {
+        return this.toString();
+    }
+
+    isSameAs(id: MylistId): boolean {
+        if (id instanceof MylistId) {
+            return (this.toString() === id.toString());
+        } else {
+            return false;
+        }
     }
 
 }

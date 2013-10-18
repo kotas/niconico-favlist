@@ -1,0 +1,3 @@
+[submodule "vendor/monapt"]
+	path = vendor/monapt
+	url = git://github.com/yaakaito/monapt.git

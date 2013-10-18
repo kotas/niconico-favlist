@@ -1,3 +1,0 @@
-interface Identifier {
-    toString(): string;
-}

@@ -1,10 +1,19 @@
 class Config {
 
+    static getDefault(): Config {
+        return new Config(
+            30 * 60,
+            10,
+            false,
+            false
+        );
+    }
+
     constructor(
-        private checkInterval: number     = 30 * 60,
-        private maxNewVideos: number      = 10,
-        private hideCheckedList: boolean  = false,
-        private orderDescendant: boolean  = false
+        private checkInterval: number,
+        private maxNewVideos: number,
+        private hideCheckedList: boolean,
+        private orderDescendant: boolean
     ) {
     }
 

@@ -1,4 +1,4 @@
-/// <reference path="./mylist_feed.ts" />
+/// <reference path="./../mylist/mylist_feed.ts" />
 /// <reference path="./video.ts" />
 
 class VideoFactory {
