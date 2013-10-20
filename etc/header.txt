@@ -8,7 +8,7 @@
 // @include        http://www.nicovideo.jp/
 // @include        http://www.nicovideo.jp/?*
 // @include        http://www.nicovideo.jp/mylist/*
-// @include        http://www.nicovideo.jp/user/*/video
+// @include        http://www.nicovideo.jp/user/*
 // @include        http://www.nicovideo.jp/video_top*
 // ==/UserScript==
 

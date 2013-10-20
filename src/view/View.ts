@@ -10,7 +10,7 @@ class View extends util.EventEmitter {
     }
 
     show() {
-        if (this.$el.parent().length === 0) {
+        if (this.$el.parents('html').length === 0) {
             this.$el.appendTo(this.$parent);
         }
         this.$el.show();

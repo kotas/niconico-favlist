@@ -1,6 +1,7 @@
 /// <reference path="./MylistId.ts" />
 /// <reference path="./Video.ts" />
 /// <reference path="./MylistFeed.ts" />
+/// <reference path="./Nicovideo.ts" />
 /// <reference path="../util/EventEmitter.ts" />
 
 class Mylist extends util.EventEmitter {
@@ -37,6 +38,10 @@ class Mylist extends util.EventEmitter {
 
     getCheckedVideoIds(): string[] {
         return this.checkedVideoIds;
+    }
+
+    getURL(): string {
+        return Nicovideo.getMylistURL(this.mylistId);
     }
 
     setTitle(title: string): void {

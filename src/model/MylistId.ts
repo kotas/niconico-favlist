@@ -11,7 +11,7 @@ class MylistId {
         if (matches = url.match(/\/mylist\/(?:\d+\/)?(\d+)/)) {
             return new MylistId(MylistIdType.Mylist, matches[1]);
         } else if (matches = url.match(/\/user\/(\d+)/)) {
-            return new MylistId(MylistIdType.User, matches[2]);
+            return new MylistId(MylistIdType.User, matches[1]);
         } else {
             throw new Error('Unknown URL format');
         }
@@ -21,7 +21,7 @@ class MylistId {
         var matches: string[];
         if (matches = idString.match(/^mylist\/(?:\d+\/)?(\d+)|^(\d+)$/)) {
             return new MylistId(MylistIdType.Mylist, matches[1] || matches[2]);
-        } else if (matches = idString.match(/^myvideo\/(\d+)/)) {
+        } else if (matches = idString.match(/^(?:myvideo|user)\/(\d+)/)) {
             return new MylistId(MylistIdType.User, matches[1]);
         } else {
             throw new Error('Unknown ID format');

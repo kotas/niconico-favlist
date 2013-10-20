@@ -20,7 +20,6 @@ class FavlistMylistsMylistView extends View {
     ) {
         super($parent, Template.load(Templates.mylist));
         this.$videos = this.$el.find('.favlistMylistVideos');
-
         this.update();
         this.setEventHandlers();
     }
@@ -30,19 +29,27 @@ class FavlistMylistsMylistView extends View {
             clearTimeout(this.dismissStatusTimer);
             this.dismissStatusTimer = null;
         }
+
         this.$el.find('.favlistMylistStatus span').hide();
         this.$el.find('.favlistMylistStatus span.' + status).show();
+        this.$el.addClass('hasStatus');
         if (dismiss) {
             this.dismissStatusTimer = setTimeout(() => {
                 this.dismissStatusTimer = null;
-                this.$el.find('.favlistMylistStatus span.' + status).hide();
+                this.hideStatus();
             }, 3000);
         }
     }
 
+    hideStatus() {
+        this.$el.removeClass('hasClass');
+        this.$el.find('.favlistMylistStatus span').hide();
+    }
+
     update() {
         this.$el.toggleClass('hasNewVideo', this.mylist.getNewCount() > 0);
-        this.$el.find('.favlistMylistTitle').text(this.mylist.getDisplayTitle());
+        this.$el.find('.favlistMylistTitle').text(this.mylist.getDisplayTitle() || this.mylist.getTitle());
+        this.$el.find('.favlistMylistLink').attr('href', this.mylist.getURL());
         this.$el.find('.favlistMylistNewCount').text(this.mylist.getNewCount().toString());
 
         this.videoViews = [];

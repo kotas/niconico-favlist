@@ -12,11 +12,11 @@ class FavlistApp {
     }
 
     private route() {
-        if (/rss=/.test(location.search)) {
+        if (/rss=/.test(window.location.search)) {
             return;
         }
 
-        var path = location.pathname;
+        var path = window.location.pathname;
         if (/^\/mylist|^\/user/.test(path)) {
             (new RegisterController()).start();
         } else if (/^\/$|^\/video_top/.test(path)) {

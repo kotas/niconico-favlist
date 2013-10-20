@@ -1,0 +1,28 @@
+.favlistMylist {
+}
+
+.favlistMylist.hasStatus .favlistMylistButtons {
+    display: none;
+}
+
+.favlistMylistStatus {
+    display: none;
+}
+.favlistMylist.hasStatus .favlistMylistStatus {
+    display: table-cell;
+}
+.favlistMylistStatus span {
+    display: inline-block;
+    padding: 2px 4px;
+    border-radius: 5px;
+    background: black;
+    font-size: 10px;
+    color: white;
+}
+.favlistMylistStatus span.updating {
+    background: #333;
+}
+.favlistMylistStatus span.private,
+.favlistMylistStatus span.failed {
+    background: #900;
+}

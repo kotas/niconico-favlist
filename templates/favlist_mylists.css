@@ -1,0 +1,19 @@
+.favlistNoMylist {
+    display: none;
+}
+.noMylist .favlistNoMylist {
+    display: block;
+}
+
+.favlistNoMylistTitle {
+    padding: 30px;
+    text-align: center;
+    color: #cccccc;
+}
+
+.noMylist .favlistMylists {
+    display: none;
+}
+.noMylist .favlistButtons {
+    display: none;
+}

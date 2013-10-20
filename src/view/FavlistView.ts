@@ -19,7 +19,7 @@ class FavlistView extends View {
     private settingsView: FavlistSettingsView;
 
     constructor() {
-        super(this.findParentContainer(), Template.load(Templates.favlist));
+        super(FavlistView.createContainer(), Template.load(Templates.favlist));
         this.$pages = this.$el.find('.favlistPages');
         this.setEventHandlers();
     }
@@ -27,11 +27,13 @@ class FavlistView extends View {
     showMylistPage(mylistCollection: MylistCollection) {
         this.$pages.children().hide();
         this.getMylistCollectionView(mylistCollection).show();
+        this.$el.removeClass('inSettingView');
     }
 
     showSettingPage(mylistCollection: MylistCollection, config: Config) {
         this.$pages.children().hide();
         this.getSettingView(mylistCollection, config).show();
+        this.$el.addClass('inSettingView');
     }
 
     getMylistCollectionView(mylistCollection: MylistCollection): FavlistMylistsView {
@@ -64,12 +66,15 @@ class FavlistView extends View {
         });
     }
 
-    private findParentContainer(): JQuery {
-        var $container: JQuery = $('#favlistRescueContainer, #sideContents, .column.sub').eq(0);
-        return ($container.length > 0) ? $container : this.createRescueContainer();
+    private static createContainer(): JQuery {
+        var $parent: JQuery = $('#favlistRescueContainer, #sideContents, .column.sub').eq(0);
+        if ($parent.length === 0) {
+            $parent = FavlistView.createRescueContainer();
+        }
+        return $('<div />').prependTo($parent);
     }
 
-    private createRescueContainer(): JQuery {
+    private static createRescueContainer(): JQuery {
         var $outer = Template.load(Templates.rescue_container);
         var $container = $outer.find('#favlistRescueContainer');
 

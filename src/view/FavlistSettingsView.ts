@@ -10,6 +10,7 @@ class FavlistSettingsView extends View {
         private config: Config
     ) {
         super($parent, Template.load(Templates.favlist_settings));
+        this.update();
     }
 
     setMylistCollection(mylistCollection: MylistCollection) {

@@ -1,0 +1,31 @@
+.favlistVideo {
+    margin: 8px 4px 0;
+}
+
+.favlistVideoHeader {
+    display: table;
+    width: 100%;
+}
+
+.favlistVideoThumbnail {
+    display: table-cell;
+}
+.favlistVideoThumbnail a img {
+    border: none;
+    width: 46px;
+    height: 34px;
+}
+
+.favlistVideoTitleInfo {
+    display: table-cell;
+}
+.favlistVideoTimestampLabel {
+    font-size: 10px;
+}
+
+.favlistVideoMemo {
+    margin-top: 4px;
+    padding: 4px;
+    border-radius: 2px;
+    box-shadow: 1px 1px 1px #ccc;
+}

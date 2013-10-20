@@ -12,7 +12,6 @@ class FavlistMylistsVideoView extends View {
         private video: Video
     ) {
         super($parent, Template.load(Templates.video));
-
         this.update();
         this.setEventHandlers();
     }

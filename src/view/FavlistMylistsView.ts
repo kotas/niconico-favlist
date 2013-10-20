@@ -20,6 +20,7 @@ class FavlistMylistsView extends View {
     ) {
         super($parent, Template.load(Templates.favlist_mylists));
         this.$mylists = this.$el.find('.favlistMylists');
+        this.update();
         this.setEventHandlers();
     }
 
@@ -31,6 +32,7 @@ class FavlistMylistsView extends View {
     }
 
     update() {
+        this.$el.toggleClass('noMylist', this.mylistCollection.isEmpty());
         this.updateMylistViews();
     }
 

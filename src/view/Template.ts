@@ -8,6 +8,7 @@ enum Templates {
     mylist,
     video,
     rescue_container,
+    register,
 }
 
 module Template {

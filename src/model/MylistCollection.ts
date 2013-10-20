@@ -15,9 +15,18 @@ class MylistCollection extends util.EventEmitter {
         return this.mylists;
     }
 
+    isEmpty(): boolean {
+        return this.mylists.length === 0;
+    }
+
     get(mylistId: MylistId): Mylist {
         var index = this.indexOfId(mylistId);
         return index >= 0 ? this.mylists[index] : null;
+    }
+
+    contains(mylistId: MylistId): boolean {
+        var index = this.indexOfId(mylistId);
+        return (index >= 0);
     }
 
     add(mylist: Mylist): void {

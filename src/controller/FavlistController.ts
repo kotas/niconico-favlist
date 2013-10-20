@@ -21,11 +21,18 @@ class FavlistController {
         this.mylistCollectionStorage = new MylistCollectionStorage(this.storage);
         this.mylistCollection = this.mylistCollectionStorage.get();
         this.favlistView = new FavlistView();
+        this.setEventHandlers();
     }
 
     start() {
         this.favlistView.show();
         this.favlistView.showMylistPage(this.mylistCollection);
+    }
+
+    private setEventHandlers() {
+        this.favlistView.addListener('settingPageRequest', () => {
+            this.favlistView.showSettingPage(this.mylistCollection, this.config);
+        });
     }
 
 }
