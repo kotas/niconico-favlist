@@ -1,0 +1,23 @@
+/// <reference path="../../typings/jquery.d.ts" />
+/// <reference path="../util/EventEmitter.ts" />
+/// <reference path="./Template.ts" />
+/// <reference path="./ViewHelper.ts" />
+
+class View extends util.EventEmitter {
+
+    constructor(public $parent: JQuery, public $el: JQuery) {
+        super();
+    }
+
+    show() {
+        if (this.$el.parent().length === 0) {
+            this.$el.appendTo(this.$parent);
+        }
+        this.$el.show();
+    }
+
+    hide() {
+        this.$el.hide();
+    }
+
+}

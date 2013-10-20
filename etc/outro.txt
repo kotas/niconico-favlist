@@ -1,2 +1,2 @@
 
-})(this.unsafeWindow || window);
+})(this.unsafeWindow || window, (this.unsafeWindow || window).jQuery);

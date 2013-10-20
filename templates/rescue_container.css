@@ -1,0 +1,23 @@
+.favlistRescueOuter {
+    position: fixed;
+    width: 360px;
+    height: 360px;
+    right: 10px;
+    bottom: 10px;
+    overflow: auto;
+    background-color: white;
+    border: 1px solid #cccccc;
+}
+
+.favlistRescueCaption {
+    font-size: 12px;
+    color: #cc0000;
+}
+
+.favlistRescueOpen,
+.favlistRescueOuter.closed .favlistRescueClose {
+    display: none;
+}
+.favlistRescueOuter.closed .favlistRescueOpen {
+    display: inline;
+}

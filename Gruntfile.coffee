@@ -1,5 +1,10 @@
 module.exports = (grunt) ->
 
+  grunt.loadNpmTasks 'grunt-typescript'
+  grunt.loadNpmTasks 'grunt-contrib-concat'
+  grunt.loadNpmTasks 'grunt-contrib-clean'
+  grunt.loadNpmTasks 'grunt-contrib-watch'
+
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
 
@@ -10,17 +15,35 @@ module.exports = (grunt) ->
         options:
           target: 'es3'
       release:
-        src:  ['src/**/*.ts']
-        dest: 'compiled/favlist.js'
+        src:  ['compiled/templates.ts', 'src/**/*.ts']
+        dest: 'compiled/compiled.js'
         options:
           target: 'es3'
 
     concat:
-      options:
-        banner: grunt.file.read 'etc/header.txt'
+      templates:
+        files:
+          'compiled/templates.js': ['templates/*.html', 'templates/*.css']
+        options:
+          banner: "var Template = { html: {}, css: {} };\n"
+          process: (content, path) =>
+            name    = path.replace(/^.+\/|\..+$/g, '')
+            content = JSON.stringify(content.toString().replace(/^\s+|\s+$/g, '').replace(/\s*\n\s*/g, "\n"))
+            if /\.css$/.test(path)
+              "Template.css['#{name}'] = #{content};"
+            else
+              "Template.html['#{name}'] = #{content};"
+
       dist:
-        src: ['etc/intro.txt', 'compiled/favlist.js', 'etc/outro.txt']
-        dest: 'dist/niconicofavlist.user.js'
+        files:
+          'dist/niconicofavlist.user.js': [
+            'etc/intro.txt'
+            'compiled/templates.js'
+            'compiled/compiled.js'
+            'etc/outro.txt'
+          ]
+        options:
+          banner: grunt.file.read 'etc/header.txt'
 
     clean:
       compiled:
@@ -30,11 +53,6 @@ module.exports = (grunt) ->
       files: ['src/**/*.ts', 'test/**/*.ts']
       tasks: ['compile']
 
-  grunt.loadNpmTasks 'grunt-typescript'
-  grunt.loadNpmTasks 'grunt-contrib-concat'
-  grunt.loadNpmTasks 'grunt-contrib-clean'
-  grunt.loadNpmTasks 'grunt-contrib-watch'
-
-  grunt.registerTask 'compile', ['typescript:compile']
-  grunt.registerTask 'release', ['typescript:release', 'concat']
+  grunt.registerTask 'compile', ['concat:templates', 'typescript:compile']
+  grunt.registerTask 'release', ['concat:templates', 'typescript:release', 'concat:dist']
   grunt.registerTask 'default', ['compile']
