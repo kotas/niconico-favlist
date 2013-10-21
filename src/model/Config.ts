@@ -1,5 +1,6 @@
 
 interface IConfig {
+    update(config: IConfig): void;
     getCheckInterval(): number;
     getMaxNewVideos(): number;
     isCheckedListHidden(): boolean;
@@ -15,6 +16,13 @@ class Config implements IConfig {
         private hideCheckedList: boolean  = false,
         private orderDescendant: boolean  = false
     ) {
+    }
+
+    update(config: IConfig): void {
+        this.checkInterval   = config.getCheckInterval();
+        this.maxNewVideos    = config.getMaxNewVideos();
+        this.hideCheckedList = config.isCheckedListHidden();
+        this.orderDescendant = config.isOrderDescendant();
     }
 
     getCheckInterval(): number {

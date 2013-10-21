@@ -40,6 +40,7 @@ DI.register('FavlistApp', (): IFavlistApp => {
 DI.register('FavlistController', (): IFavlistController => {
     return new FavlistController(
         DI.resolve('Config'),
+        DI.resolve('ConfigStorage'),
         DI.resolve('MylistCollectionStorage'),
         DI.resolve('UpdateInterval'),
         DI.resolve('MylistFeedFactory')

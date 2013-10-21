@@ -8,7 +8,6 @@
  * delegate events from:
  *   - FavlistMylistsView
  *   - FavlistMylistsMylistView
- *   - FavlistMylistsVideoView
  *   - FavlistSettingsView
  */
 class FavlistView extends View {
@@ -59,10 +58,12 @@ class FavlistView extends View {
     }
 
     lock() {
+        this.$el.addClass('locked');
         this.$el.find('.favlistCheckNowButton').attr('disabled', true).addClass('disabled');
     }
 
     unlock() {
+        this.$el.removeClass('locked');
         this.$el.find('.favlistCheckNowButton').removeAttr('disabled').removeClass('disabled');
     }
 

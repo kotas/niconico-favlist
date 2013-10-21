@@ -1,8 +1,9 @@
 /// <reference path="../model/Config.ts" />
-/// <reference path="../model/UpdateInterval.ts" />
+/// <reference path="../model/ConfigStorage.ts" />
 /// <reference path="../model/MylistCollectionStorage.ts" />
 /// <reference path="../model/MylistCollection.ts" />
 /// <reference path="../model/MylistCollectionUpdater.ts" />
+/// <reference path="../model/UpdateInterval.ts" />
 /// <reference path="../model/MylistFeedFactory.ts" />
 /// <reference path="../view/FavlistView.ts" />
 
@@ -18,6 +19,7 @@ class FavlistController implements IFavlistController {
 
     constructor(
         private config: IConfig,
+        private configStorage: IConfigStorage,
         private mylistCollectionStorage: IMylistCollectionStorage,
         private updateInterval: IUpdateInterval,
         private mylistFeedFactory: IMylistFeedFactory
@@ -42,6 +44,12 @@ class FavlistController implements IFavlistController {
         this.favlistView.addListener('settingPageRequest', () => {
             this.favlistView.showSettingPage();
         });
+        this.setEventHandlersForMylistsView();
+        this.setEventHandlersForMylistCollectionUpdater();
+        this.setEventHandlersForSettingsView();
+    }
+
+    private setEventHandlersForMylistsView() {
         this.favlistView.addListener('checkNowRequest', () => {
             this.mylistCollectionUpdater.updateAll(() => {
                 this.mylistCollectionStorage.store(this.mylistCollection);
@@ -55,7 +63,9 @@ class FavlistController implements IFavlistController {
             mylist.markVideoAsWatched(video);
             this.mylistCollectionStorage.store(this.mylistCollection);
         });
+    }
 
+    private setEventHandlersForMylistCollectionUpdater() {
         var updateMylistViewStatus = (mylist: Mylist, status: string, dismiss: boolean = false): FavlistMylistsMylistView => {
             var collectionView = this.favlistView.getMylistCollectionView();
             var mylistView = collectionView.getMylistView(mylist.getMylistId());
@@ -85,6 +95,30 @@ class FavlistController implements IFavlistController {
         this.mylistCollectionUpdater.addListener('finishUpdateAll', () => {
             this.mylistCollectionStorage.store(this.mylistCollection);
             this.favlistView.unlock();
+        });
+    }
+
+    private setEventHandlersForSettingsView() {
+        this.favlistView.addListener('settingSave', (savedMylists: IFavlistSettingSavedMylist[], savedConfig: IConfig) => {
+            var newMylists: Mylist[] = [];
+            savedMylists.forEach((savedMylist: IFavlistSettingSavedMylist) => {
+                var mylist = this.mylistCollection.get(savedMylist.mylistId);
+                if (mylist) {
+                    mylist.setDisplayTitle(savedMylist.title);
+                    newMylists.push(mylist);
+                }
+            });
+            this.mylistCollection.setMylists(newMylists);
+            this.mylistCollectionStorage.store(this.mylistCollection);
+
+            this.config.update(savedConfig);
+            this.configStorage.store(this.config);
+
+            this.favlistView.showMylistPage();
+        });
+
+        this.favlistView.addListener('settingCancel', () => {
+            this.favlistView.showMylistPage();
         });
     }
 

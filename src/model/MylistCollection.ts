@@ -5,6 +5,7 @@
  * events:
  *   - addMylist(mylist: Mylist)
  *   - removeMylist(mylist: Mylist)
+ *   - update()
  */
 class MylistCollection extends util.EventEmitter {
 
@@ -30,9 +31,15 @@ class MylistCollection extends util.EventEmitter {
         return (index >= 0);
     }
 
+    setMylists(mylists: Mylist[]): void {
+        this.mylists = Array.prototype.slice.call(mylists);
+        this.emitEvent('update');
+    }
+
     add(mylist: Mylist): void {
         this.mylists.push(mylist);
         this.emitEvent('addMylist', [mylist]);
+        this.emitEvent('update');
     }
 
     remove(mylist: Mylist): boolean {
@@ -48,6 +55,7 @@ class MylistCollection extends util.EventEmitter {
         var mylist = this.mylists[index];
         this.mylists.splice(index, 1);
         this.emitEvent('removeMylist', [mylist]);
+        this.emitEvent('update');
         return true;
     }
 

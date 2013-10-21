@@ -1,0 +1,30 @@
+.favlistSettingMylist {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.favlistSettingMylistTitle {
+    position: relative;
+    margin-bottom: 4px;
+}
+.favlistMylistTitleEdit {
+    width: 98%;
+}
+
+.favlistMylistRemoveButton {
+    float: right;
+}
+
+.favlistConfigItems {
+    list-style-type: none;
+}
+.favlistConfigItems li {
+    margin-bottom: 10px;
+}
+.favlistConfigItems li label {
+    color: #333;
+}
+.favlistConfigItems .favlistConfigText {
+    margin-left: 10px;
+}

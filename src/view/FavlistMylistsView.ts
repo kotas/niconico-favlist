@@ -21,15 +21,7 @@ class FavlistMylistsView extends View {
     ) {
         super($parent, Template.load(Templates.favlist_mylists));
         this.$mylists = this.$el.find('.favlistMylists');
-        this.update();
         this.setEventHandlers();
-    }
-
-    setMylistCollection(mylistCollection: MylistCollection) {
-        if (this.mylistCollection !== mylistCollection) {
-            this.mylistCollection = mylistCollection;
-            this.updateMylistViews();
-        }
     }
 
     update() {

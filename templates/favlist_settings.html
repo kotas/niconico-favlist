@@ -1,26 +1,13 @@
 <div class="favlistSettingPage">
-    <div class="favlistMylists">
-        <div class="favlistTemplate favlistMylist">
-            <div class="favlistMylistHeader">
-                <div class="favlistMylistTitle">
-                    <input class="favlistMylistTitleEdit" type="text" value="" />
-                </div>
-                <div class="favlistMylistButtons">
-                    <button class="favlistMylistMoveUpButton">▲</button>
-                    <button class="favlistMylistMoveDownButton">▼</button>
-                    <button class="favlistMylistMoveTopButton">↑</button>
-                    <button class="favlistMylistRemoveButton">削除</button>
-                </div>
-            </div>
-        </div>
+    <div class="favlistSettingMylists">
     </div>
 
     <form class="favlistConfig" action="javascript:void(0);">
         <ul class="favlistConfigItems">
-            <li><label>更新チェック間隔: <input type="text" name="favlistConfigCheckInterval" value="" /> 秒</label></li>
-            <li><label>新着動画数の上限: <input type="text" name="favlistConfigMaxNewVideos" value="" /> 件まで</label></li>
-            <li><label><input type="checkbox" name="favlistConfigHideCheckedList" value="1" /> 新着がないマイリストを隠す</label></li>
-            <li><label><input type="checkbox" name="favlistConfigOrderDescendant" value="1" /> 動画を新しい順に並べる</label></li>
+            <li><label>更新チェック間隔 <input type="text" class="favlistConfigText favlistConfigCheckInterval" value="" size="6" /> 秒</label></li>
+            <li><label>新着動画の表示数 <input type="text" class="favlistConfigText favlistConfigMaxNewVideos" value="" size="6" /> 件まで</label></li>
+            <li><label><input type="checkbox" class="favlistConfigCheckbox favlistConfigHideCheckedList" value="1" /> 新着がないマイリストを隠す</label></li>
+            <li><label><input type="checkbox" class="favlistConfigCheckbox favlistConfigOrderDescendant" value="1" /> 動画を新しい順に並べる</label></li>
         </ul>
         <div class="favlistButtons">
             <button class="favlistButtonSave favlistSaveSettingsButton">設定を保存</button>

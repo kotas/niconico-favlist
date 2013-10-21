@@ -24,7 +24,7 @@ class ConfigStorage implements IConfigStorage {
     }
 
     store(config: IConfig): void {
-        this.storage.setInteger('checkInteval',    config.getCheckInterval());
+        this.storage.setInteger('checkInterval',   config.getCheckInterval());
         this.storage.setInteger('maxNewVideos',    config.getMaxNewVideos());
         this.storage.setBoolean('hideCheckedList', config.isCheckedListHidden());
         this.storage.setBoolean('orderDescendant', config.isOrderDescendant());

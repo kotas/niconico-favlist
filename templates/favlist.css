@@ -48,25 +48,6 @@
     position: relative;
 }
 
-.favlistMylistHeader {
-    display: table;
-    width: 100%;
-}
-.favlistMylistTitleLabel {
-    display: table-cell;
-    width: 100%;
-}
-.favlistMylistButtons {
-    display: table-cell;
-    padding-left: 8px;
-}
-.favlistMylistButtons button {
-    font-size: 10px;
-}
-
-.favlistButtons {
-    margin-top: 10px;
-}
 .favlistButtons button {
     margin-right: 4px;
 }

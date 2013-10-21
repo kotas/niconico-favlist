@@ -3,11 +3,15 @@
 
 enum Templates {
     favlist,
+    rescue_container,
+
     favlist_mylists,
-    favlist_settings,
     mylist,
     video,
-    rescue_container,
+
+    favlist_settings,
+    settings_mylist,
+
     register,
     rescue_register,
 }

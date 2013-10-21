@@ -1,30 +1,47 @@
 
-.favlistMylist {
+.favlistMylistInner {
     margin-bottom: 8px;
     padding-bottom: 8px;
     border-bottom: 1px solid #eeeeee;
 }
 
-.checkedMylistHidden .favlistMylist {
+.checkedMylistHidden .favlistMylistInner {
     display: none;
 }
-.checkedMylistHidden .favlistMylist.hasNewVideo,
-.checkedMylistHidden .favlistMylist.hasStatus {
+.checkedMylistHidden .hasNewVideo .favlistMylistInner,
+.checkedMylistHidden .hasStatus .favlistMylistInner {
     display: block;
 }
 
+
+.favlistMylistHeader {
+    display: table;
+    width: 100%;
+}
+
+.favlistMylistTitleLabel {
+    display: table-cell;
+    width: 100%;
+}
 .favlistMylist.hasNewVideo .favlistMylistTitleLabel {
     font-weight: bold;
 }
-
 .favlistMylistNewCountLabel {
     display: none;
     color: #C00;
+    white-space: nowrap;
 }
 .favlistMylist.hasNewVideo .favlistMylistNewCountLabel {
     display: inline;
 }
 
+.favlistMylistButtons {
+    display: table-cell;
+    padding-left: 8px;
+}
+.favlistMylistButtons button {
+    font-size: 10px;
+}
 .favlistMylist.hasStatus .favlistMylistButtons {
     display: none;
 }

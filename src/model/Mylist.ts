@@ -58,6 +58,9 @@ class Mylist extends util.EventEmitter {
     }
 
     setDisplayTitle(title: string): void {
+        if (title === this.title) {
+            title = '';
+        }
         if (this.displayTitle !== title) {
             this.displayTitle = title;
             this.emitEvent('updateDisplayTitle');
