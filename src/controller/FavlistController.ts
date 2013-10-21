@@ -1,5 +1,4 @@
-/// <reference path="../util/Storage.ts" />
-/// <reference path="../util/UrlFetcher.ts" />
+/// <reference path="../model/Config.ts" />
 /// <reference path="../model/UpdateInterval.ts" />
 /// <reference path="../model/MylistCollectionStorage.ts" />
 /// <reference path="../model/MylistCollection.ts" />

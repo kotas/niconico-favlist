@@ -1,4 +1,4 @@
-/// <reference path="../DI_map.ts" />
+/// <reference path="../IFavlistDI.ts" />
 
 interface IFavlistApp {
     start();

@@ -1,5 +1,6 @@
 /// <reference path="./View.ts" />
 /// <reference path="../model/MylistCollection.ts" />
+/// <reference path="../model/Config.ts" />
 /// <reference path="./FavlistMylistsMylistView.ts" />
 
 /**
@@ -14,6 +15,7 @@ class FavlistMylistsView extends View {
     private mylistViews: { [mylistId: string]: FavlistMylistsMylistView } = {};
 
     constructor(
+        private config: IConfig,
         $parent: JQuery,
         private mylistCollection: MylistCollection
     ) {
@@ -32,6 +34,7 @@ class FavlistMylistsView extends View {
 
     update() {
         this.$el.toggleClass('noMylist', this.mylistCollection.isEmpty());
+        this.$el.toggleClass('checkedMylistHidden', this.config.isCheckedListHidden());
         this.updateMylistViews();
     }
 
@@ -43,7 +46,7 @@ class FavlistMylistsView extends View {
         this.mylistViews = {};
         this.$mylists.empty();
         this.mylistCollection.getMylists().forEach((mylist: Mylist) => {
-            var mylistView = new FavlistMylistsMylistView(this.$mylists, mylist);
+            var mylistView = new FavlistMylistsMylistView(this.config, this.$mylists, mylist);
             mylistView.addEventDelegator((eventName, args) => this.emitEvent(eventName, args));
             mylistView.show();
             this.mylistViews[mylist.getMylistId().toString()] = mylistView;

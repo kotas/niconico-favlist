@@ -1,4 +1,5 @@
 /// <reference path="./View.ts" />
+/// <reference path="../model/Config.ts" />
 /// <reference path="../model/Mylist.ts" />
 /// <reference path="./FavlistMylistsVideoView.ts" />
 
@@ -14,6 +15,7 @@ class FavlistMylistsMylistView extends View {
     private dismissStatusTimer: number;
 
     constructor(
+        private config: IConfig,
         $parent: JQuery,
         private mylist: Mylist
     ) {
@@ -63,12 +65,24 @@ class FavlistMylistsMylistView extends View {
 
         this.videoViews = [];
         this.$videos.empty();
-        this.mylist.getNewVideos().forEach((video: Video) => {
+        this.getVisibleVideos().forEach((video: Video) => {
             var videoView = new FavlistMylistsVideoView(this.$videos, video);
             this.setEventHandlersForVideoView(videoView);
             videoView.show();
             this.videoViews.push(videoView);
         });
+    }
+
+    private getVisibleVideos(): Video[] {
+        var videos = this.mylist.getNewVideos();
+
+        var order = this.config.isOrderDescendant() ? 1 : -1;
+        videos.sort((a: Video, b: Video) => {
+            return (b.getTimestamp() - a.getTimestamp()) * order;
+        });
+
+        var max = this.config.getMaxNewVideos();
+        return (max > 0) ? videos.slice(0, max) : videos;
     }
 
     private setEventHandlers() {

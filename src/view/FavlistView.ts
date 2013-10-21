@@ -43,7 +43,7 @@ class FavlistView extends View {
         if (this.mylistsView) {
             return this.mylistsView;
         }
-        this.mylistsView = new FavlistMylistsView(this.$pages, this.mylistCollection);
+        this.mylistsView = new FavlistMylistsView(this.config, this.$pages, this.mylistCollection);
         this.mylistsView.addEventDelegator((eventName, args) => this.emitEvent(eventName, args));
         return this.mylistsView;
     }
@@ -53,7 +53,7 @@ class FavlistView extends View {
             return this.settingsView;
         }
 
-        this.settingsView = new FavlistSettingsView(this.$pages, this.mylistCollection, this.config);
+        this.settingsView = new FavlistSettingsView(this.config, this.$pages, this.mylistCollection);
         this.settingsView.addEventDelegator((eventName, args) => this.emitEvent(eventName, args));
         return this.settingsView;
     }

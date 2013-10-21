@@ -5,6 +5,14 @@
     border-bottom: 1px solid #eeeeee;
 }
 
+.checkedMylistHidden .favlistMylist {
+    display: none;
+}
+.checkedMylistHidden .favlistMylist.hasNewVideo,
+.checkedMylistHidden .favlistMylist.hasStatus {
+    display: block;
+}
+
 .favlistMylist.hasNewVideo .favlistMylistTitleLabel {
     font-weight: bold;
 }
