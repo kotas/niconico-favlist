@@ -33,11 +33,22 @@ class RegisterView extends View {
     }
 
     private static findParent(): JQuery {
-        var $parents = $('#SYS_box_mylist_header table td, .userDetail #watchBtns').eq(0);
-        if ($parents.length === 0) {
-            $parents = $('#PAGEBODY, body').eq(0);
+        var $parent = $('#SYS_box_mylist_header table td').eq(0);
+        if ($parent.length > 0) {
+            return $parent;
         }
-        return $parents;
+
+        $parent = $('#watchBtns').eq(0);
+        if ($parent.length > 0) {
+            return $('<div />').css({
+                'display': 'inline-block',
+                'margin-left': '8px'
+            }).insertAfter($parent);
+        }
+
+        $parent = Template.load(Templates.rescue_register);
+        $parent.appendTo(document.body);
+        return $parent;
     }
 
 }

@@ -7,12 +7,11 @@
  *   - checkNowRequest(mylistCollection: MylistCollection)
  * delegate events from:
  *   - FavlistMylistsMylistView
- *   - FavlistMylistsVideoView
  */
 class FavlistMylistsView extends View {
 
     private $mylists: JQuery;
-    private mylistViews: FavlistMylistsMylistView[] = [];
+    private mylistViews: { [mylistId: string]: FavlistMylistsMylistView } = {};
 
     constructor(
         $parent: JQuery,
@@ -36,14 +35,18 @@ class FavlistMylistsView extends View {
         this.updateMylistViews();
     }
 
+    getMylistView(mylistId: MylistId): FavlistMylistsMylistView {
+        return this.mylistViews[mylistId.toString()] || null;
+    }
+
     private updateMylistViews() {
-        this.mylistViews = [];
+        this.mylistViews = {};
         this.$mylists.empty();
         this.mylistCollection.getMylists().forEach((mylist: Mylist) => {
             var mylistView = new FavlistMylistsMylistView(this.$mylists, mylist);
             mylistView.addEventDelegator((eventName, args) => this.emitEvent(eventName, args));
             mylistView.show();
-            this.mylistViews.push(mylistView);
+            this.mylistViews[mylist.getMylistId().toString()] = mylistView;
         });
     }
 

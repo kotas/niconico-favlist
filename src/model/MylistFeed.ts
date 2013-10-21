@@ -21,7 +21,7 @@ class MylistFeedEntry {
     }
 
     getMemo(): string {
-        return this.scrape(/<p class="nico-memo">(.*?)<\/p>/);
+        return this.scrape(/<p class="nico-memo">((?:.|\n)*?)<\/p>/);
     }
 
     getTimestamp(): number {

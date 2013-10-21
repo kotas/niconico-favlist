@@ -1,0 +1,8 @@
+#favlistRescueRegister {
+    position: fixed;
+    left: 10px;
+    bottom: 10px;
+    padding: 4px;
+    background: #ccc;
+    border-radius: 4px;
+}

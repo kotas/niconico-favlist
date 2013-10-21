@@ -43,7 +43,7 @@ class MylistCollectionStorage {
             '0', /* for backward compatibility */
             escape(mylist.getMylistId().toString()),
             escape(mylist.getTitle() || ''),
-            mylist.getCheckedVideoIds().join(':'),
+            mylist.getWatchedVideoIds().join(':'),
             mylist.getNewVideos().map(video => this.serializeVideo(video)).join(':'),
             escape(mylist.getDisplayTitle() || ''),
             '' /* for backward compatibility */

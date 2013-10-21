@@ -18,45 +18,52 @@ class FavlistView extends View {
     private mylistsView: FavlistMylistsView;
     private settingsView: FavlistSettingsView;
 
-    constructor() {
+    constructor(
+        private mylistCollection: MylistCollection,
+        private config: Config
+    ) {
         super(FavlistView.createContainer(), Template.load(Templates.favlist));
         this.$pages = this.$el.find('.favlistPages');
         this.setEventHandlers();
     }
 
-    showMylistPage(mylistCollection: MylistCollection) {
+    showMylistPage() {
         this.$pages.children().hide();
-        this.getMylistCollectionView(mylistCollection).show();
+        this.getMylistCollectionView().show();
         this.$el.removeClass('inSettingView');
     }
 
-    showSettingPage(mylistCollection: MylistCollection, config: Config) {
+    showSettingPage() {
         this.$pages.children().hide();
-        this.getSettingView(mylistCollection, config).show();
+        this.getSettingView().show();
         this.$el.addClass('inSettingView');
     }
 
-    getMylistCollectionView(mylistCollection: MylistCollection): FavlistMylistsView {
+    getMylistCollectionView(): FavlistMylistsView {
         if (this.mylistsView) {
-            this.mylistsView.setMylistCollection(mylistCollection);
-            return this.mylistsView;
-        } else {
-            this.mylistsView = new FavlistMylistsView(this.$pages, mylistCollection);
-            this.mylistsView.addEventDelegator((eventName, args) => this.emitEvent(eventName, args));
             return this.mylistsView;
         }
+        this.mylistsView = new FavlistMylistsView(this.$pages, this.mylistCollection);
+        this.mylistsView.addEventDelegator((eventName, args) => this.emitEvent(eventName, args));
+        return this.mylistsView;
     }
 
-    getSettingView(mylistCollection: MylistCollection, config: Config): FavlistSettingsView {
+    getSettingView(): FavlistSettingsView {
         if (this.settingsView) {
-            this.settingsView.setMylistCollection(mylistCollection);
-            this.settingsView.setConfig(config);
-            return this.settingsView;
-        } else {
-            this.settingsView = new FavlistSettingsView(this.$pages, mylistCollection, config);
-            this.settingsView.addEventDelegator((eventName, args) => this.emitEvent(eventName, args));
             return this.settingsView;
         }
+
+        this.settingsView = new FavlistSettingsView(this.$pages, this.mylistCollection, this.config);
+        this.settingsView.addEventDelegator((eventName, args) => this.emitEvent(eventName, args));
+        return this.settingsView;
+    }
+
+    lock() {
+        this.$el.find('.favlistCheckNowButton').attr('disabled', true).addClass('disabled');
+    }
+
+    unlock() {
+        this.$el.find('.favlistCheckNowButton').removeAttr('disabled').removeClass('disabled');
     }
 
     private setEventHandlers() {

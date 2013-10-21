@@ -50,8 +50,8 @@ module.exports = (grunt) ->
         src: ['compiled', 'dist']
 
     watch:
-      files: ['src/**/*.ts', 'test/**/*.ts']
-      tasks: ['compile']
+      files: ['src/**/*.ts', 'test/**/*.ts', 'templates/**/*.html', 'templates/**/*.css']
+      tasks: ['release']
 
   grunt.registerTask 'compile', ['concat:templates', 'typescript:compile']
   grunt.registerTask 'release', ['concat:templates', 'typescript:release', 'concat:dist']

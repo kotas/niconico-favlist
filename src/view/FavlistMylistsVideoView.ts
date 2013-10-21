@@ -1,4 +1,5 @@
 /// <reference path="./View.ts" />
+/// <reference path="../model/Mylist.ts" />
 /// <reference path="../model/Video.ts" />
 
 /**
@@ -22,10 +23,15 @@ class FavlistMylistsVideoView extends View {
             title: this.video.getTitle()
         });
         this.$el.find('.favlistVideoThumbnail img').attr('src', this.video.getThumbnail());
-        this.$el.find('.favlistVideoTimestamp').text(ViewHelper.formatTimestamp(this.video.getTimestamp()));
-        this.$el.find('.favlistVideoTitle a').text(this.video.getTitle());
-        if (this.video.getMemo()) {
-            this.$el.find('.favlistVideoMemo').html(this.video.getMemo()).show();
+        this.$el.find('.favlistVideoTimestamp')
+            .text(ViewHelper.formatTimestamp(this.video.getTimestamp()))
+            .attr('title', new Date(this.video.getTimestamp()).toLocaleString());
+        this.$el.find('.favlistVideoTitle').html(this.video.getTitle() || "(無題)");
+
+        var memo = this.video.getMemo();
+        if (memo) {
+            this.$el.find('.favlistVideoMemoText').html(memo);
+            this.$el.find('.favlistVideoMemo').show();
         } else {
             this.$el.find('.favlistVideoMemo').hide();
         }
@@ -34,6 +40,10 @@ class FavlistMylistsVideoView extends View {
     private setEventHandlers() {
         this.$el.find('.favlistVideoLink').click(() => {
             this.emitEvent('videoWatch', [this.video]);
+        });
+        this.$el.find('.favlistVideoMemo').click(() => {
+            this.$el.find('.favlistVideoMemo').toggleClass('expanded');
+            return false;
         });
     }
 

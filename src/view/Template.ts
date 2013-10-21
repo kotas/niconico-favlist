@@ -9,6 +9,7 @@ enum Templates {
     video,
     rescue_container,
     register,
+    rescue_register,
 }
 
 module Template {

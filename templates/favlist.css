@@ -1,9 +1,12 @@
 .favlistApp {
     background: white;
-    font-size: 13px;
+    font-size: 12px;
+    line-height: 1.2em;
     margin-bottom: 8px;
     border-radius: 2px;
     box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    position: relative;
+    width: 100%;
 }
 
 .favlistHeader {
@@ -42,18 +45,20 @@
 
 .favlistPages {
     padding: 10px;
+    position: relative;
 }
 
 .favlistMylistHeader {
     display: table;
     width: 100%;
 }
-.favlistMylistTitle {
+.favlistMylistTitleLabel {
     display: table-cell;
     width: 100%;
 }
 .favlistMylistButtons {
     display: table-cell;
+    padding-left: 8px;
 }
 .favlistMylistButtons button {
     font-size: 10px;
@@ -62,7 +67,23 @@
 .favlistButtons {
     margin-top: 10px;
 }
+.favlistButtons button {
+    margin-right: 4px;
+}
 
+a.favlistMylistLink, a.favlistMylistLink:link,
+a.favlistVideoLink, a.favlistVideoLink:link {
+    color: #006699 !important;
+}
+a.favlistMylistLink:visited, a.favlistVideoLink:visited {
+    color: #005584 !important;
+}
+a.favlistMylistLink:hover, a.favlistVideoLink:hover {
+    color: #0584C3 !important;
+}
+a.favlistMylistLink:active, a.favlistVideoLink:active {
+    color: #52aeea !important;
+}
 
 .favlistApp button {
     display: inline-block;
@@ -71,14 +92,22 @@
     color: white;
     border: none;
     border-radius: 4px;
-    margin-right: 4px;
     white-space: nowrap;
+    box-shadow: 1px 1px 0 #333;
+}
+.favlistApp button.disabled,
+.favlistApp button[disabled] {
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none;
+    opacity: .2;
 }
 .favlistApp button:hover {
     background: #777777;
 }
 .favlistApp button:active {
     background: #555555;
+    box-shadow: none;
 }
 
 .favlistApp button.favlistButtonSave {

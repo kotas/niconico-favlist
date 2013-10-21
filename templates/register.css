@@ -1,10 +1,3 @@
-/*
-<div class="favlistRegister">
-    <button class="favlistRegisterButton"><span>★</span> favlist に登録</button>
-    <button class="favlistUnregisterButton"><span>×</span> favlist の登録を解除</button>
-</div>
-*/
-
 .favlistRegister {
     display: inline-block;
 }
@@ -20,20 +13,20 @@
 
 .favlistRegister button {
     padding: 4px 10px;
-    color: #333333;
+    color: white;
     border: none;
-    background: #eeeeee;
     border-radius: 4px;
     white-space: nowrap;
     font-size: 12px;
     text-decoration: none;
     text-align: center;
+    background: #435d69;
 }
 .favlistRegister button:hover {
-    background: #cccccc;
+    background: #4f6d7b;
 }
 .favlistRegister button:active {
-    background: #dddddd;
+    background: #3d5560;
 }
 
 .favlistRegisterButton span {
@@ -41,5 +34,5 @@
 }
 
 .favlistUnregisterButton span {
-    color: #f00;
+    color: #ff6462;
 }

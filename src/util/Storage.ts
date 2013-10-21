@@ -20,7 +20,7 @@ module util {
     export class GMStorage implements IStorage {
 
         static isAvailable(): boolean {
-            return (typeof GM_getValue !== 'undefined');
+            return (typeof GM_getValue !== 'undefined' && GM_getValue.toString().indexOf('not supported') === -1);
         }
 
         get(key: string, defaultValue?: any): any {

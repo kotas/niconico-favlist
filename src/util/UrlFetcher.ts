@@ -25,12 +25,24 @@ module util {
     }
 
     export interface IUrlFetcher {
-
         fetch(option: IUrlFetchOption, callback: IUrlFetchCallback): IUrlFetchAborter;
-
     }
 
-    export class GMUrlFetcher {
+    export function chooseUrlFetcher(userAgent: string): IUrlFetcher {
+        if (GMUrlFetcher.isAvailable()) {
+            return new GMUrlFetcher(userAgent);
+        } else if (XHRUrlFetcher.isAvailable()) {
+            return new XHRUrlFetcher(userAgent);
+        } else {
+            throw new Error('No supported URL fetcher');
+        }
+    }
+
+    export class GMUrlFetcher implements IUrlFetcher {
+
+        static isAvailable(): boolean {
+            return (typeof GM_xmlhttpRequest !== 'undefined');
+        }
 
         constructor(private userAgent: string) {}
 
@@ -65,7 +77,11 @@ module util {
 
     }
 
-    export class XHRUrlFetcher {
+    export class XHRUrlFetcher implements IUrlFetcher {
+
+        static isAvailable(): boolean {
+            return (typeof XMLHttpRequest !== 'undefined');
+        }
 
         constructor(private userAgent: string) {}
 

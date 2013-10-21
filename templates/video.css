@@ -9,6 +9,8 @@
 
 .favlistVideoThumbnail {
     display: table-cell;
+    vertical-align: middle;
+    padding-right: 8px;
 }
 .favlistVideoThumbnail a img {
     border: none;
@@ -16,16 +18,40 @@
     height: 34px;
 }
 
-.favlistVideoTitleInfo {
+.favlistVideoInfo {
     display: table-cell;
+    vertical-align: middle;
+    width: 100%;
+    font-size: 11px;
 }
-.favlistVideoTimestampLabel {
-    font-size: 10px;
+.favlistVideoTitle {
+    margin-right: 4px;
+}
+.favlistVideoTimestamp {
+    font-size: 9px;
+    color: #999;
+    white-space: nowrap;
 }
 
 .favlistVideoMemo {
     margin-top: 4px;
-    padding: 4px;
+    padding: 4px 8px;
     border-radius: 2px;
+    background: #efefef;
     box-shadow: 1px 1px 1px #ccc;
+    cursor: pointer;
+}
+.favlistVideoMemo:hover {
+    background: #f3f3f3;
+}
+
+.favlistVideoMemoText {
+    display: block;
+    height: 28px;
+    overflow: hidden;
+    font-size: 10px;
+}
+.favlistVideoMemo.expanded .favlistVideoMemoText {
+    white-space: pre;
+    height: auto;
 }

@@ -1,4 +1,6 @@
 
-    (new FavlistApp()).start();
+    $(function () {
+        (new FavlistApp()).start();
+    });
 
-})(this.unsafeWindow || window, (this.unsafeWindow || window).jQuery);
+})(jQuery);

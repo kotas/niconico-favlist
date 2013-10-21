@@ -1,6 +1,11 @@
 /// <reference path="./Mylist.ts" />
 /// <reference path="../util/EventEmitter.ts" />
 
+/**
+ * events:
+ *   - addMylist(mylist: Mylist)
+ *   - removeMylist(mylist: Mylist)
+ */
 class MylistCollection extends util.EventEmitter {
 
     constructor(private mylists: Mylist[]) {
@@ -31,7 +36,7 @@ class MylistCollection extends util.EventEmitter {
 
     add(mylist: Mylist): void {
         this.mylists.push(mylist);
-        this.emitEvent('add', [mylist]);
+        this.emitEvent('addMylist', [mylist]);
     }
 
     remove(mylist: Mylist): boolean {
@@ -46,7 +51,7 @@ class MylistCollection extends util.EventEmitter {
 
         var mylist = this.mylists[index];
         this.mylists.splice(index, 1);
-        this.emitEvent('remove', [mylist]);
+        this.emitEvent('removeMylist', [mylist]);
         return true;
     }
 

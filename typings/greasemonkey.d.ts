@@ -37,6 +37,7 @@ declare var GM_info: {
         resources: Object;
         "run-at": string;
         unwrap: boolean;
+        version: string;
     };
     scriptMetaStr: string;
     scriptWillUpdate: boolean;

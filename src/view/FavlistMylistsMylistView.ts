@@ -5,8 +5,7 @@
 /**
  * events:
  *   - mylistClearRequest(mylist: Mylist)
- * delegate events from:
- *   - FavlistMylistsVideoView
+ *   - mylistVideoWatch(mylist: Mylist, video: Video)
  */
 class FavlistMylistsMylistView extends View {
 
@@ -42,21 +41,31 @@ class FavlistMylistsMylistView extends View {
     }
 
     hideStatus() {
-        this.$el.removeClass('hasClass');
+        this.$el.removeClass('hasStatus');
         this.$el.find('.favlistMylistStatus span').hide();
     }
 
     update() {
-        this.$el.toggleClass('hasNewVideo', this.mylist.getNewCount() > 0);
-        this.$el.find('.favlistMylistTitle').text(this.mylist.getDisplayTitle() || this.mylist.getTitle());
         this.$el.find('.favlistMylistLink').attr('href', this.mylist.getURL());
-        this.$el.find('.favlistMylistNewCount').text(this.mylist.getNewCount().toString());
+        this.updateTitle();
+        this.updateVideos();
+    }
+
+    private updateTitle() {
+        this.$el.find('.favlistMylistTitle').text(this.mylist.getDisplayTitle() || this.mylist.getTitle() || "(無題)");
+    }
+
+    private updateVideos() {
+        var count = this.mylist.getNewCount();
+        this.$el.toggleClass('hasNewVideo', count > 0);
+        this.$el.find('.favlistMylistNewCount').text(count.toString());
+        this.$el.find('.favlistMylistClearButton').attr('disabled', count === 0).toggleClass('disabled', count === 0);
 
         this.videoViews = [];
         this.$videos.empty();
         this.mylist.getNewVideos().forEach((video: Video) => {
             var videoView = new FavlistMylistsVideoView(this.$videos, video);
-            videoView.addEventDelegator((eventName, args) => this.emitEvent(eventName, args));
+            this.setEventHandlersForVideoView(videoView);
             videoView.show();
             this.videoViews.push(videoView);
         });
@@ -66,6 +75,27 @@ class FavlistMylistsMylistView extends View {
         this.$el.find('.favlistMylistClearButton').click(() => {
             this.emitEvent('mylistClearRequest', [this.mylist]);
             return false;
+        });
+
+        /*
+         *   - updateTitle()
+         *   - updateDisplayTitle()
+         *   - updateVideos()
+         */
+        this.mylist.addListener('updateTitle', () => {
+            this.updateTitle();
+        });
+        this.mylist.addListener('updateDisplayTitle', () => {
+            this.updateTitle();
+        });
+        this.mylist.addListener('updateVideos', () => {
+            this.updateVideos();
+        });
+    }
+
+    private setEventHandlersForVideoView(videoView: FavlistMylistsVideoView) {
+        videoView.addListener('videoWatch', (video: Video) => {
+            this.emitEvent('mylistVideoWatch', [this.mylist, video]);
         });
     }
 

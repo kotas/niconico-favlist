@@ -10,5 +10,11 @@
 // @include        http://www.nicovideo.jp/mylist/*
 // @include        http://www.nicovideo.jp/user/*
 // @include        http://www.nicovideo.jp/video_top*
+// @grant          GM_getValue
+// @grant          GM_setValue
+// @grant          GM_addStyle
+// @grant          GM_xmlhttpRequest
+// @grant          GM_info
+// @require        http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js
 // ==/UserScript==
 
