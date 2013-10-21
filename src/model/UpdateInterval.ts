@@ -1,17 +1,25 @@
 /// <reference path="../util/Storage.ts" />
+/// <reference path="./Config.ts" />
 
-class UpdateInterval {
+interface IUpdateInterval {
+    isExpired(): boolean;
+    expire(): void;
+    updateLastUpdateTime(): void;
+    getLastUpdateTime(): number;
+}
+
+class UpdateInterval implements IUpdateInterval {
 
     constructor(
         private storage: util.IStorage,
-        private checkInterval: number
+        private config: IConfig
     ) {
     }
 
     isExpired(): boolean {
         var currentTime = this.getCurrentTimeInSeconds();
         var lastUpdate  = this.getLastUpdateTime();
-        return (lastUpdate === null || lastUpdate + this.checkInterval < currentTime);
+        return (lastUpdate === null || lastUpdate + this.config.getCheckInterval() < currentTime);
     }
 
     expire(): void {

@@ -7,7 +7,7 @@ class FavlistSettingsView extends View {
     constructor(
         $parent: JQuery,
         private mylistCollection: MylistCollection,
-        private config: Config
+        private config: IConfig
     ) {
         super($parent, Template.load(Templates.favlist_settings));
         this.update();

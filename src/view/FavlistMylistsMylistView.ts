@@ -77,11 +77,6 @@ class FavlistMylistsMylistView extends View {
             return false;
         });
 
-        /*
-         *   - updateTitle()
-         *   - updateDisplayTitle()
-         *   - updateVideos()
-         */
         this.mylist.addListener('updateTitle', () => {
             this.updateTitle();
         });

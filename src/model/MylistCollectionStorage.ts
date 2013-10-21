@@ -5,7 +5,12 @@
 declare function escape(s: string): string;
 declare function unescape(s: string): string;
 
-class MylistCollectionStorage {
+interface IMylistCollectionStorage {
+    get(): MylistCollection;
+    store(mylistCollection: MylistCollection): void;
+}
+
+class MylistCollectionStorage implements IMylistCollectionStorage {
 
     constructor(private storage: util.IStorage) {}
 

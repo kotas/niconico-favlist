@@ -4,27 +4,37 @@
 /// <reference path="../util/UrlFetcher.ts" />
 /// <reference path="../util/CustomError.ts" />
 
-
 class MylistFeedFetchError extends util.CustomError {
     constructor(message: string, public httpStatus?: number) {
         super('MylistFeedFetchError', message);
     }
 }
 
+interface IMylistFeedFactory {
+    getFeedFromServer(mylistId: MylistId, callback: (error: MylistFeedFetchError, feed: MylistFeed) => any): util.IUrlFetchAborter;
+}
+
 class MylistFeedFactory {
 
-    constructor(private fetcher: util.IUrlFetcher) {}
+    constructor(
+        private fetcher: util.IUrlFetcher,
+        private userAgent: string
+    ) {}
 
     getFeedFromServer(mylistId: MylistId, callback: (error: MylistFeedFetchError, feed: MylistFeed) => any): util.IUrlFetchAborter {
-        var feedURL = Nicovideo.getMylistFeedURL(mylistId);
-        return this.fetcher.fetch({ method: 'GET', url: feedURL }, (error: Error, response: util.IUrlFetchResponse) => {
+        var options: util.IUrlFetchOption = {
+            method:  'GET',
+            url:     Nicovideo.getMylistFeedURL(mylistId),
+            headers: { 'User-Agent': this.userAgent }
+        };
+        return this.fetcher.fetch(options, (error: Error, response: util.IUrlFetchResponse) => {
             if (error) {
                 callback(new MylistFeedFetchError(error.message || error), null);
                 return;
             }
 
             if (response.status === 200) {
-                callback(null, new MylistFeed(feedURL, response.responseText));
+                callback(null, new MylistFeed(options.url, response.responseText));
             } else {
                 callback(new MylistFeedFetchError('Failed to fetch URL: ' + response.statusText, response.status), null);
             }

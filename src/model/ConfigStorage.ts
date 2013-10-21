@@ -1,7 +1,12 @@
 /// <reference path="../util/Storage.ts" />
 /// <reference path="./Config.ts" />
 
-class ConfigStorage {
+interface IConfigStorage {
+    get(): IConfig;
+    store(config: IConfig): void;
+}
+
+class ConfigStorage implements IConfigStorage {
 
     private storage: util.TypedStorage;
 
@@ -9,7 +14,7 @@ class ConfigStorage {
         this.storage = new util.TypedStorage(storage);
     }
 
-    get(): Config {
+    get(): IConfig {
         return new Config(
             this.storage.getInteger('checkInterval'),
             this.storage.getInteger('maxNewVideos'),
@@ -18,7 +23,7 @@ class ConfigStorage {
         );
     }
 
-    store(config: Config): void {
+    store(config: IConfig): void {
         this.storage.setInteger('checkInteval',    config.getCheckInterval());
         this.storage.setInteger('maxNewVideos',    config.getMaxNewVideos());
         this.storage.setBoolean('hideCheckedList', config.isCheckedListHidden());

@@ -16,10 +16,6 @@ class MylistCollection extends util.EventEmitter {
         return this.mylists;
     }
 
-    getVisibleMylists(): Mylist[] {
-        return this.mylists;
-    }
-
     isEmpty(): boolean {
         return this.mylists.length === 0;
     }

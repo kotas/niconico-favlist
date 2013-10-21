@@ -4,19 +4,20 @@
 /// <reference path="../model/UpdateInterval.ts" />
 /// <reference path="../view/RegisterView.ts" />
 
-class RegisterController {
+interface IRegisterController {
+    start();
+}
 
-    private storage: util.IStorage;
-    private mylistCollectionStorage: MylistCollectionStorage;
+class RegisterController implements IRegisterController {
+
     private mylistCollection: MylistCollection;
-    private updateInterval: UpdateInterval;
     private registerView: RegisterView;
     private mylist: Mylist;
 
-    constructor() {
-        this.storage = util.chooseStorage();
-        this.mylistCollectionStorage = new MylistCollectionStorage(this.storage);
-        this.updateInterval = new UpdateInterval(this.storage, 0);
+    constructor(
+        private mylistCollectionStorage: IMylistCollectionStorage,
+        private updateInterval: IUpdateInterval
+    ) {
         this.registerView = new RegisterView();
         this.mylist = this.createMylistFromPage();
         this.setEventHandlers();

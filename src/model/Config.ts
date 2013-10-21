@@ -1,5 +1,13 @@
 
-class Config {
+interface IConfig {
+    getCheckInterval(): number;
+    getMaxNewVideos(): number;
+    isCheckedListHidden(): boolean;
+    isOrderDescendant(): boolean;
+    getUserAgent(): string;
+}
+
+class Config implements IConfig {
 
     constructor(
         private checkInterval: number     = 30 * 60,

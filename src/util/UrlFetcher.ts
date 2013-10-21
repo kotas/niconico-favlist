@@ -28,11 +28,11 @@ module util {
         fetch(option: IUrlFetchOption, callback: IUrlFetchCallback): IUrlFetchAborter;
     }
 
-    export function chooseUrlFetcher(userAgent: string): IUrlFetcher {
+    export function chooseUrlFetcher(): IUrlFetcher {
         if (GMUrlFetcher.isAvailable()) {
-            return new GMUrlFetcher(userAgent);
+            return new GMUrlFetcher();
         } else if (XHRUrlFetcher.isAvailable()) {
-            return new XHRUrlFetcher(userAgent);
+            return new XHRUrlFetcher();
         } else {
             throw new Error('No supported URL fetcher');
         }
@@ -44,12 +44,9 @@ module util {
             return (typeof GM_xmlhttpRequest !== 'undefined');
         }
 
-        constructor(private userAgent: string) {}
+        constructor() {}
 
         fetch(option: IUrlFetchOption, callback: IUrlFetchCallback): IUrlFetchAborter {
-            option.headers = option.headers || {};
-            option.headers['User-Agent'] = this.userAgent;
-
             return GM_xmlhttpRequest({
                 url: option.url,
                 method: option.method,
@@ -83,7 +80,7 @@ module util {
             return (typeof XMLHttpRequest !== 'undefined');
         }
 
-        constructor(private userAgent: string) {}
+        constructor() {}
 
         fetch(option: IUrlFetchOption, callback: IUrlFetchCallback): IUrlFetchAborter {
             var req = new XMLHttpRequest();
@@ -118,7 +115,6 @@ module util {
                 req.timeout = option.timeout;
             }
 
-            req.setRequestHeader('User-Agent', this.userAgent);
             req.send(null);
             return { abort: () => { req.abort(); } };
         }

@@ -93,13 +93,11 @@ a.favlistMylistLink:active, a.favlistVideoLink:active {
     border: none;
     border-radius: 4px;
     white-space: nowrap;
-    box-shadow: 1px 1px 0 #333;
 }
 .favlistApp button.disabled,
 .favlistApp button[disabled] {
     cursor: not-allowed;
     pointer-events: none;
-    box-shadow: none;
     opacity: .2;
 }
 .favlistApp button:hover {
@@ -107,7 +105,6 @@ a.favlistMylistLink:active, a.favlistVideoLink:active {
 }
 .favlistApp button:active {
     background: #555555;
-    box-shadow: none;
 }
 
 .favlistApp button.favlistButtonSave {

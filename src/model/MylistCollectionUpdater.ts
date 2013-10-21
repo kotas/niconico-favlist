@@ -1,6 +1,6 @@
 /// <reference path="./UpdateInterval.ts" />
-/// <reference path="./MylistCollection.ts" />
 /// <reference path="./MylistFeedFactory.ts" />
+/// <reference path="./MylistCollection.ts" />
 /// <reference path="../util/EventEmitter.ts" />
 
 /**
@@ -14,9 +14,9 @@
 class MylistCollectionUpdater extends util.EventEmitter {
 
     constructor(
-        private updateInterval: UpdateInterval,
-        private mylistCollection: MylistCollection,
-        private mylistFeedFactory: MylistFeedFactory
+        private updateInterval: IUpdateInterval,
+        private mylistFeedFactory: IMylistFeedFactory,
+        private mylistCollection: MylistCollection
     ) {
         super();
     }

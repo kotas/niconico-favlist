@@ -1,7 +1,10 @@
-/// <reference path="./RegisterController.ts" />
-/// <reference path="./FavlistController.ts" />
+/// <reference path="../DI_map.ts" />
 
-class FavlistApp {
+interface IFavlistApp {
+    start();
+}
+
+class FavlistApp implements IFavlistApp {
 
     start() {
         try {
@@ -18,9 +21,9 @@ class FavlistApp {
 
         var path = window.location.pathname;
         if (/^\/mylist|^\/user/.test(path)) {
-            (new RegisterController()).start();
+            DI.resolve('RegisterController').start();
         } else if (/^\/$|^\/video_top/.test(path)) {
-            (new FavlistController()).start();
+            DI.resolve('FavlistController').start();
         }
     }
 

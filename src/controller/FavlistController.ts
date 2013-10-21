@@ -1,7 +1,5 @@
 /// <reference path="../util/Storage.ts" />
 /// <reference path="../util/UrlFetcher.ts" />
-/// <reference path="../model/ConfigStorage.ts" />
-/// <reference path="../model/Config.ts" />
 /// <reference path="../model/UpdateInterval.ts" />
 /// <reference path="../model/MylistCollectionStorage.ts" />
 /// <reference path="../model/MylistCollection.ts" />
@@ -9,26 +7,27 @@
 /// <reference path="../model/MylistFeedFactory.ts" />
 /// <reference path="../view/FavlistView.ts" />
 
-class FavlistController {
+interface IFavlistController {
+    start();
+}
 
-    private storage: util.IStorage;
-    private configStorage: ConfigStorage;
-    private config: Config;
-    private mylistCollectionStorage: MylistCollectionStorage;
+class FavlistController implements IFavlistController {
+
     private mylistCollection: MylistCollection;
     private mylistCollectionUpdater: MylistCollectionUpdater;
     private favlistView: FavlistView;
 
-    constructor() {
-        this.storage = util.chooseStorage();
-        this.configStorage = new ConfigStorage(this.storage);
-        this.config = this.configStorage.get();
-        this.mylistCollectionStorage = new MylistCollectionStorage(this.storage);
+    constructor(
+        private config: IConfig,
+        private mylistCollectionStorage: IMylistCollectionStorage,
+        private updateInterval: IUpdateInterval,
+        private mylistFeedFactory: IMylistFeedFactory
+    ) {
         this.mylistCollection = this.mylistCollectionStorage.get();
         this.mylistCollectionUpdater = new MylistCollectionUpdater(
-            new UpdateInterval(this.storage, this.config.getCheckInterval()),
-            this.mylistCollection,
-            new MylistFeedFactory(util.chooseUrlFetcher(this.config.getUserAgent()))
+            this.updateInterval,
+            this.mylistFeedFactory,
+            this.mylistCollection
         );
         this.favlistView = new FavlistView(this.mylistCollection, this.config);
         this.setEventHandlers();

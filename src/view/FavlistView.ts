@@ -20,7 +20,7 @@ class FavlistView extends View {
 
     constructor(
         private mylistCollection: MylistCollection,
-        private config: Config
+        private config: IConfig
     ) {
         super(FavlistView.createContainer(), Template.load(Templates.favlist));
         this.$pages = this.$el.find('.favlistPages');

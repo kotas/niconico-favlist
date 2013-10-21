@@ -1,6 +1,6 @@
 
     $(function () {
-        (new FavlistApp()).start();
+        DI.resolve('FavlistApp').start();
     });
 
 })(jQuery);

@@ -47,7 +47,7 @@
 
 .favlistVideoMemoText {
     display: block;
-    height: 28px;
+    max-height: 28px;
     overflow: hidden;
     font-size: 10px;
 }
