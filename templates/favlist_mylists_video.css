@@ -53,5 +53,5 @@
 }
 .favlistVideoMemo.expanded .favlistVideoMemoText {
     white-space: pre;
-    height: auto;
+    max-height: none;
 }

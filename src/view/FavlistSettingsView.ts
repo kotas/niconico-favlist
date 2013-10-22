@@ -92,7 +92,7 @@ class FavlistSettingsView extends View {
         this.mylistCollection.getMylists().forEach((mylist: Mylist) => {
             var $mylist = $template.clone();
             $mylist.data('mylistId', mylist.getMylistId());
-            $mylist.find('.favlistMylistTitleEdit').val(mylist.getOverrideTitle() || mylist.getOriginalTitle());
+            $mylist.find('.favlistMylistTitleEdit').val(mylist.getTitle()).attr('placeholder', mylist.getOriginalTitle());
             this.setEventHandlersForMylistView($mylist);
             this.$mylists.append($mylist);
         });

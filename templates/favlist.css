@@ -70,6 +70,7 @@ a.favlistMylistLink:active, a.favlistVideoLink:active {
     display: inline-block;
     padding: 2px 10px;
     background: #666666;
+    font-family: sans-serif;
     color: white;
     border: none;
     border-radius: 4px;

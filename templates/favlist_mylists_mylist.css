@@ -22,6 +22,11 @@
 .favlistMylistTitleLabel {
     display: table-cell;
     width: 100%;
+    max-width: 1px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
 }
 .favlistMylist.hasNewVideo .favlistMylistTitleLabel {
     font-weight: bold;
