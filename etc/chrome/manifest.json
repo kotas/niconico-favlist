@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+  "name": "<%= pkg.name %>",
+  "version": "<%= pkg.version %>",
+  "author": "<%= pkg.author %>",
+  "homepage_url": "<%= pkg.homepage %>",
+
+  "default_locale": "ja",
+  "description": "Get your favorite mylists checked twenty-four-seven!",
+
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+
+  "browser_action": {
+    "default_icon": {
+      "19": "toolbar_icon19.png",
+      "38": "toolbar_icon38.png"
+    },
+    "default_title": "<%= pkg.name %>"
+  },
+
+  "background": {
+    "persistent": false
+  },
+
+  "option_page": "options.html",
+
+  "permissions": [
+    "alarms",
+    "storage",
+    "tabs"
+  ]
+}
