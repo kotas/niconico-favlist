@@ -47,10 +47,10 @@ class MylistCollectionStorage implements IMylistCollectionStorage {
         return [
             '0', /* for backward compatibility */
             escape(mylist.getMylistId().toString()),
-            escape(mylist.getTitle() || ''),
+            escape(mylist.getOriginalTitle() || ''),
             mylist.getWatchedVideoIds().join(':'),
             mylist.getNewVideos().map(video => this.serializeVideo(video)).join(':'),
-            escape(mylist.getDisplayTitle() || ''),
+            escape(mylist.getOverrideTitle() || ''),
             '' /* for backward compatibility */
         ].join(';');
     }

@@ -7,15 +7,14 @@
 /**
  * events:
  *   - updateTitle()
- *   - updateDisplayTitle()
  *   - updateVideos()
  */
 class Mylist extends util.EventEmitter {
 
     constructor(
         private mylistId: MylistId,
-        private title: string = '',
-        private displayTitle: string = '',
+        private originalTitle: string = '',
+        private overrideTitle: string = '',
         private newVideos: Video[] = [],
         private watchedVideoIds: string[] = []
     ) {
@@ -27,11 +26,15 @@ class Mylist extends util.EventEmitter {
     }
 
     getTitle(): string {
-        return this.title;
+        return this.overrideTitle || this.originalTitle;
     }
 
-    getDisplayTitle(): string {
-        return this.displayTitle;
+    getOriginalTitle(): string {
+        return this.originalTitle;
+    }
+
+    getOverrideTitle(): string {
+        return this.overrideTitle;
     }
 
     getNewVideos(): Video[] {
@@ -50,20 +53,22 @@ class Mylist extends util.EventEmitter {
         return Nicovideo.getMylistURL(this.mylistId);
     }
 
-    setTitle(title: string): void {
-        if (this.title !== title) {
-            this.title = title;
-            this.emitEvent('updateTitle');
+    setOriginalTitle(title: string): void {
+        if (this.originalTitle !== title) {
+            this.originalTitle = title;
+            if (!this.overrideTitle) {
+                this.emitEvent('updateTitle');
+            }
         }
     }
 
-    setDisplayTitle(title: string): void {
-        if (title === this.title) {
+    setOverrideTitle(title: string): void {
+        if (title === this.overrideTitle) {
             title = '';
         }
-        if (this.displayTitle !== title) {
-            this.displayTitle = title;
-            this.emitEvent('updateDisplayTitle');
+        if (this.overrideTitle !== title) {
+            this.overrideTitle = title;
+            this.emitEvent('updateTitle');
         }
     }
 
@@ -86,7 +91,7 @@ class Mylist extends util.EventEmitter {
 
     updateWithFeed(feed: MylistFeed): void {
         if (feed.getTitle()) {
-            this.setTitle(feed.getTitle());
+            this.setOriginalTitle(feed.getTitle());
         }
         this.updateVideos(feed.getEntries().map((entry: MylistFeedEntry): Video => {
             return new Video(
@@ -117,7 +122,7 @@ class Mylist extends util.EventEmitter {
             }
         });
 
-        this.emitEvent('updateVideos', [this]);
+        this.emitEvent('updateVideos');
     }
 
 }

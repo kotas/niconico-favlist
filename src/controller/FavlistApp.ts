@@ -21,7 +21,7 @@ class FavlistApp implements IFavlistApp {
 
         var path = window.location.pathname;
         if (/^\/mylist|^\/user/.test(path)) {
-            DI.resolve('RegisterController').start();
+            DI.resolve('SubscribeController').start();
         } else if (/^\/$|^\/video_top/.test(path)) {
             DI.resolve('FavlistController').start();
         }

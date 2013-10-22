@@ -14,30 +14,23 @@ interface IFavlistController {
 class FavlistController implements IFavlistController {
 
     private mylistCollection: MylistCollection;
-    private mylistCollectionUpdater: MylistCollectionUpdater;
     private favlistView: FavlistView;
 
     constructor(
         private config: IConfig,
         private configStorage: IConfigStorage,
         private mylistCollectionStorage: IMylistCollectionStorage,
-        private updateInterval: IUpdateInterval,
-        private mylistFeedFactory: IMylistFeedFactory
+        private mylistCollectionUpdater: IMylistCollectionUpdater
     ) {
         this.mylistCollection = this.mylistCollectionStorage.get();
-        this.mylistCollectionUpdater = new MylistCollectionUpdater(
-            this.updateInterval,
-            this.mylistFeedFactory,
-            this.mylistCollection
-        );
-        this.favlistView = new FavlistView(this.mylistCollection, this.config);
+        this.favlistView = new FavlistView(this.config, this.mylistCollection, this.mylistCollectionUpdater);
         this.setEventHandlers();
     }
 
     start() {
         this.favlistView.show();
         this.favlistView.showMylistPage();
-        this.mylistCollectionUpdater.updateAllIfExpired();
+        this.mylistCollectionUpdater.updateAllIfExpired(this.mylistCollection);
     }
 
     private setEventHandlers() {
@@ -51,9 +44,7 @@ class FavlistController implements IFavlistController {
 
     private setEventHandlersForMylistsView() {
         this.favlistView.addListener('checkNowRequest', () => {
-            this.mylistCollectionUpdater.updateAll(() => {
-                this.mylistCollectionStorage.store(this.mylistCollection);
-            });
+            this.mylistCollectionUpdater.updateAll(this.mylistCollection);
         });
         this.favlistView.addListener('mylistClearRequest', (mylist: Mylist) => {
             mylist.markAllVideosAsWatched();
@@ -66,35 +57,8 @@ class FavlistController implements IFavlistController {
     }
 
     private setEventHandlersForMylistCollectionUpdater() {
-        var updateMylistViewStatus = (mylist: Mylist, status: string, dismiss: boolean = false): FavlistMylistsMylistView => {
-            var collectionView = this.favlistView.getMylistCollectionView();
-            var mylistView = collectionView.getMylistView(mylist.getMylistId());
-            if (!mylistView) return null;
-            if (status !== null) {
-                mylistView.showStatus(status, dismiss);
-            } else {
-                mylistView.hideStatus();
-            }
-            return mylistView;
-        };
-        this.mylistCollectionUpdater.addListener('startUpdateAll', () => {
-            this.favlistView.lock();
-            this.mylistCollection.getMylists().forEach((mylist: Mylist) => {
-                updateMylistViewStatus(mylist, 'waiting');
-            });
-        });
-        this.mylistCollectionUpdater.addListener('startUpdateMylist', (mylist: Mylist) => {
-            updateMylistViewStatus(mylist, 'updating');
-        });
-        this.mylistCollectionUpdater.addListener('failedUpdateMylist', (mylist: Mylist, error: MylistFeedFetchError) => {
-            updateMylistViewStatus(mylist, 'failed', true);
-        });
-        this.mylistCollectionUpdater.addListener('finishUpdateMylist', (mylist: Mylist) => {
-            updateMylistViewStatus(mylist, null);
-        });
         this.mylistCollectionUpdater.addListener('finishUpdateAll', () => {
             this.mylistCollectionStorage.store(this.mylistCollection);
-            this.favlistView.unlock();
         });
     }
 
@@ -104,7 +68,7 @@ class FavlistController implements IFavlistController {
             savedMylists.forEach((savedMylist: IFavlistSettingSavedMylist) => {
                 var mylist = this.mylistCollection.get(savedMylist.mylistId);
                 if (mylist) {
-                    mylist.setDisplayTitle(savedMylist.title);
+                    mylist.setOverrideTitle(savedMylist.title);
                     newMylists.push(mylist);
                 }
             });

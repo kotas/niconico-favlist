@@ -1,17 +1,17 @@
-.favlistRegister {
+.favlistSubscribeView {
     display: inline-block;
 }
 
-.favlistRegister,
-.registered .favlistUnregisterButton {
+.favlistSubscribeView,
+.favlistSubscribeView.subscribed .favlistUnsubscribeButton {
     display: inline-block;
 }
-.registered .favlistRegisterButton,
-.favlistUnregisterButton {
+.favlistSubscribeView.subscribed .favlistSubscribeButton,
+.favlistUnsubscribeButton {
     display: none;
 }
 
-.favlistRegister button {
+.favlistSubscribeView button {
     padding: 4px 10px;
     color: white;
     border: none;
@@ -22,17 +22,17 @@
     text-align: center;
     background: #435d69;
 }
-.favlistRegister button:hover {
+.favlistSubscribeView button:hover {
     background: #4f6d7b;
 }
-.favlistRegister button:active {
+.favlistSubscribeView button:active {
     background: #3d5560;
 }
 
-.favlistRegisterButton span {
+.favlistSubscribeButton span {
     color: #fc3;
 }
 
-.favlistUnregisterButton span {
+.favlistUnsubscribeButton span {
     color: #ff6462;
 }

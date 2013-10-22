@@ -17,8 +17,8 @@ class FavlistSettingsView extends View {
     private $mylists: JQuery;
 
     constructor(
-        private config: IConfig,
         $parent: JQuery,
+        private config: IConfig,
         private mylistCollection: MylistCollection
     ) {
         super($parent, Template.load(Templates.favlist_settings));
@@ -86,13 +86,13 @@ class FavlistSettingsView extends View {
     }
 
     private updateMylistViews() {
-        var $template = $(Template.load(Templates.settings_mylist));
+        var $template = $(Template.load(Templates.favlist_settings_mylist));
 
         this.$mylists.empty();
         this.mylistCollection.getMylists().forEach((mylist: Mylist) => {
             var $mylist = $template.clone();
             $mylist.data('mylistId', mylist.getMylistId());
-            $mylist.find('.favlistMylistTitleEdit').val(mylist.getDisplayTitle() || mylist.getTitle());
+            $mylist.find('.favlistMylistTitleEdit').val(mylist.getOverrideTitle() || mylist.getOriginalTitle());
             this.setEventHandlersForMylistView($mylist);
             this.$mylists.append($mylist);
         });

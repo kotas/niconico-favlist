@@ -1,4 +1,4 @@
-.favlistRescueOuter {
+.favlistViewRescue {
     position: fixed;
     width: 360px;
     height: 360px;
@@ -15,9 +15,9 @@
 }
 
 .favlistRescueOpen,
-.favlistRescueOuter.closed .favlistRescueClose {
+.favlistViewRescue.closed .favlistRescueClose {
     display: none;
 }
-.favlistRescueOuter.closed .favlistRescueOpen {
+.favlistViewRescue.closed .favlistRescueOpen {
     display: inline;
 }

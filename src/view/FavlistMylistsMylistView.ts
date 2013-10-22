@@ -15,11 +15,11 @@ class FavlistMylistsMylistView extends View {
     private dismissStatusTimer: number;
 
     constructor(
-        private config: IConfig,
         $parent: JQuery,
+        private config: IConfig,
         private mylist: Mylist
     ) {
-        super($parent, Template.load(Templates.mylist));
+        super($parent, Template.load(Templates.favlist_mylists_mylist));
         this.$videos = this.$el.find('.favlistMylistVideos');
         this.update();
         this.setEventHandlers();
@@ -54,7 +54,7 @@ class FavlistMylistsMylistView extends View {
     }
 
     private updateTitle() {
-        this.$el.find('.favlistMylistTitle').text(this.mylist.getDisplayTitle() || this.mylist.getTitle() || "(無題)");
+        this.$el.find('.favlistMylistTitle').text(this.mylist.getTitle() || "(無題)");
     }
 
     private updateVideos() {
@@ -92,9 +92,6 @@ class FavlistMylistsMylistView extends View {
         });
 
         this.mylist.addListener('updateTitle', () => {
-            this.updateTitle();
-        });
-        this.mylist.addListener('updateDisplayTitle', () => {
             this.updateTitle();
         });
         this.mylist.addListener('updateVideos', () => {

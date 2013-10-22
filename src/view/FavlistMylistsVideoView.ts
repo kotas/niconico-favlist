@@ -12,7 +12,7 @@ class FavlistMylistsVideoView extends View {
         $parent: JQuery,
         private video: Video
     ) {
-        super($parent, Template.load(Templates.video));
+        super($parent, Template.load(Templates.favlist_mylists_video));
         this.update();
         this.setEventHandlers();
     }

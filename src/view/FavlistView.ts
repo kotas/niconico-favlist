@@ -1,6 +1,9 @@
 /// <reference path="./View.ts" />
 /// <reference path="./FavlistMylistsView.ts" />
 /// <reference path="./FavlistSettingsView.ts" />
+/// <reference path="../model/Config.ts" />
+/// <reference path="../model/MylistCollection.ts" />
+/// <reference path="../model/MylistCollectionUpdater.ts" />
 
 /**
  * events:
@@ -18,8 +21,9 @@ class FavlistView extends View {
     private settingsView: FavlistSettingsView;
 
     constructor(
+        private config: IConfig,
         private mylistCollection: MylistCollection,
-        private config: IConfig
+        private mylistCollectionUpdater: IMylistCollectionUpdater
     ) {
         super(FavlistView.createContainer(), Template.load(Templates.favlist));
         this.$pages = this.$el.find('.favlistPages');
@@ -38,33 +42,23 @@ class FavlistView extends View {
         this.$el.addClass('inSettingView');
     }
 
-    getMylistCollectionView(): FavlistMylistsView {
+    private getMylistCollectionView(): FavlistMylistsView {
         if (this.mylistsView) {
             return this.mylistsView;
         }
-        this.mylistsView = new FavlistMylistsView(this.config, this.$pages, this.mylistCollection);
+        this.mylistsView = new FavlistMylistsView(this.$pages, this.config, this.mylistCollection, this.mylistCollectionUpdater);
         this.mylistsView.addEventDelegator((eventName, args) => this.emitEvent(eventName, args));
         return this.mylistsView;
     }
 
-    getSettingView(): FavlistSettingsView {
+    private getSettingView(): FavlistSettingsView {
         if (this.settingsView) {
             return this.settingsView;
         }
 
-        this.settingsView = new FavlistSettingsView(this.config, this.$pages, this.mylistCollection);
+        this.settingsView = new FavlistSettingsView(this.$pages, this.config, this.mylistCollection);
         this.settingsView.addEventDelegator((eventName, args) => this.emitEvent(eventName, args));
         return this.settingsView;
-    }
-
-    lock() {
-        this.$el.addClass('locked');
-        this.$el.find('.favlistCheckNowButton').attr('disabled', true).addClass('disabled');
-    }
-
-    unlock() {
-        this.$el.removeClass('locked');
-        this.$el.find('.favlistCheckNowButton').removeAttr('disabled').removeClass('disabled');
     }
 
     private setEventHandlers() {
@@ -83,7 +77,7 @@ class FavlistView extends View {
     }
 
     private static createRescueContainer(): JQuery {
-        var $outer = Template.load(Templates.rescue_container);
+        var $outer = Template.load(Templates.favlist_rescue);
         var $container = $outer.find('#favlistRescueContainer');
 
         $outer.find('.favlistRescueCaption a').click(() => {

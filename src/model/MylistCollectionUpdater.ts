@@ -3,36 +3,41 @@
 /// <reference path="./MylistCollection.ts" />
 /// <reference path="../util/EventEmitter.ts" />
 
+interface IMylistCollectionUpdater extends util.IEventEmitter {
+    updateAllIfExpired(collection: MylistCollection): util.IUrlFetchAborter;
+    updateAll(collection: MylistCollection): util.IUrlFetchAborter;
+}
+
 /**
  * events:
  *   - startUpdateAll()
  *   - startUpdateMylist(mylist: Mylist)
  *   - failedUpdateMylist(mylist: Mylist, error: MylistFeedFetchError)
  *   - finishUpdateMylist(mylist: Mylist)
+ *   - abortUpdateAll()
  *   - finishUpdateAll()
  */
-class MylistCollectionUpdater extends util.EventEmitter {
+class MylistCollectionUpdater extends util.EventEmitter implements IMylistCollectionUpdater {
 
     constructor(
         private updateInterval: IUpdateInterval,
-        private mylistFeedFactory: IMylistFeedFactory,
-        private mylistCollection: MylistCollection
+        private mylistFeedFactory: IMylistFeedFactory
     ) {
         super();
     }
 
-    updateAllIfExpired(): util.IUrlFetchAborter {
+    updateAllIfExpired(collection: MylistCollection): util.IUrlFetchAborter {
         if (this.updateInterval.isExpired()) {
-            return this.updateAll();
+            return this.updateAll(collection);
         } else {
             return null;
         }
     }
 
-    updateAll(callback?: (error: Error) => any): util.IUrlFetchAborter {
+    updateAll(collection: MylistCollection): util.IUrlFetchAborter {
         this.updateInterval.updateLastUpdateTime();
 
-        var mylists = Array.prototype.slice.call(this.mylistCollection.getMylists());
+        var mylists = Array.prototype.slice.call(collection.getMylists());
         if (mylists.length === 0) {
             return null;
         }
@@ -47,7 +52,6 @@ class MylistCollectionUpdater extends util.EventEmitter {
                 if (!aborted) {
                     aborted = true;
                     this.emitEvent('abortUpdateAll');
-                    callback && callback(new Error('Aborted'));
                 }
             }
         };
@@ -59,7 +63,9 @@ class MylistCollectionUpdater extends util.EventEmitter {
             if (!mylist) {
                 currentAborter = null;
                 this.emitEvent('finishUpdateAll');
-                callback && callback(null);
+            }
+            if (aborted) {
+                return;
             }
             currentAborter = this.updateMylist(mylist, updateNext);
         };
@@ -68,7 +74,7 @@ class MylistCollectionUpdater extends util.EventEmitter {
         return aborter;
     }
 
-    updateMylist(mylist: Mylist, callback?: (error: MylistFeedFetchError, mylist: Mylist) => any): util.IUrlFetchAborter {
+    private updateMylist(mylist: Mylist, callback?: (error: MylistFeedFetchError, mylist: Mylist) => any): util.IUrlFetchAborter {
         this.emitEvent('startUpdateMylist', [mylist]);
         return this.mylistFeedFactory.getFeedFromServer(
             mylist.getMylistId(),

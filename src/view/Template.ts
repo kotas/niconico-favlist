@@ -3,17 +3,17 @@
 
 enum Templates {
     favlist,
-    rescue_container,
+    favlist_rescue,
 
     favlist_mylists,
-    mylist,
-    video,
+    favlist_mylists_mylist,
+    favlist_mylists_video,
 
     favlist_settings,
-    settings_mylist,
+    favlist_settings_mylist,
 
-    register,
-    rescue_register,
+    subscribe,
+    subscribe_rescue,
 }
 
 module Template {

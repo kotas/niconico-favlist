@@ -1,38 +1,67 @@
 /// <reference path="../model/MylistCollectionStorage.ts" />
 /// <reference path="../model/MylistCollection.ts" />
 /// <reference path="../model/UpdateInterval.ts" />
-/// <reference path="../view/RegisterView.ts" />
+/// <reference path="../view/SubscribeView.ts" />
 
-interface IRegisterController {
+interface ISubscribeController {
     start();
 }
 
-class RegisterController implements IRegisterController {
+class SubscribeController implements ISubscribeController {
 
     private mylistCollection: MylistCollection;
-    private registerView: RegisterView;
+    private subscribeView: SubscribeView;
     private mylist: Mylist;
 
     constructor(
         private mylistCollectionStorage: IMylistCollectionStorage,
         private updateInterval: IUpdateInterval
     ) {
-        this.registerView = new RegisterView();
+        this.subscribeView = new SubscribeView();
         this.mylist = this.createMylistFromPage();
         this.setEventHandlers();
     }
 
     start() {
         this.reloadMylistCollection();
-        this.registerView.show();
+        this.subscribeView.show();
+    }
+
+    private setEventHandlers() {
+        this.subscribeView.addListener('subscribeRequest', () => {
+            this.subscribe();
+        });
+        this.subscribeView.addListener('unsubscribeRequest', () => {
+            this.unsubscribe();
+        });
+    }
+
+    private subscribe() {
+        this.reloadMylistCollection();
+        if (!this.mylistIsSubscribed()) {
+            this.mylistCollection.add(this.mylist);
+            this.mylistCollectionStorage.store(this.mylistCollection);
+            this.updateInterval.expire();
+            this.subscribeView.setSubscribed(true);
+        }
+    }
+
+    private unsubscribe() {
+        this.reloadMylistCollection();
+        if (this.mylistIsSubscribed()) {
+            this.mylistCollection.removeById(this.mylist.getMylistId());
+            this.mylistCollectionStorage.store(this.mylistCollection);
+            this.updateInterval.expire();
+            this.subscribeView.setSubscribed(false);
+        }
     }
 
     private reloadMylistCollection() {
         this.mylistCollection = this.mylistCollectionStorage.get();
-        this.registerView.setRegistered(this.mylistIsRegistered());
+        this.subscribeView.setSubscribed(this.mylistIsSubscribed());
     }
 
-    private mylistIsRegistered(): boolean {
+    private mylistIsSubscribed(): boolean {
         return this.mylistCollection.contains(this.mylist.getMylistId());
     }
 
@@ -55,27 +84,6 @@ class RegisterController implements IRegisterController {
         }
 
         return new Mylist(mylistId, title);
-    }
-
-    private setEventHandlers() {
-        this.registerView.addListener('registerRequest', () => {
-            this.reloadMylistCollection();
-            if (!this.mylistIsRegistered()) {
-                this.mylistCollection.add(this.mylist);
-                this.mylistCollectionStorage.store(this.mylistCollection);
-                this.updateInterval.expire();
-                this.registerView.setRegistered(true);
-            }
-        });
-        this.registerView.addListener('unregisterRequest', () => {
-            this.reloadMylistCollection();
-            if (this.mylistIsRegistered()) {
-                this.mylistCollection.removeById(this.mylist.getMylistId());
-                this.mylistCollectionStorage.store(this.mylistCollection);
-                this.updateInterval.expire();
-                this.registerView.setRegistered(false);
-            }
-        });
     }
 
 }

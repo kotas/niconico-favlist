@@ -24,6 +24,10 @@ DI.register('MylistCollectionStorage', (): IMylistCollectionStorage => {
     return new MylistCollectionStorage(DI.resolve('Storage'));
 });
 
+DI.register('MylistCollectionUpdater', (): IMylistCollectionUpdater => {
+    return new MylistCollectionUpdater(DI.resolve('UpdateInterval'), DI.resolve('MylistFeedFactory'));
+});
+
 DI.register('MylistFeedFactory', (): IMylistFeedFactory => {
     return new MylistFeedFactory(DI.resolve('UrlFetcher'), DI.resolve('Config').getUserAgent());
 });
@@ -42,13 +46,12 @@ DI.register('FavlistController', (): IFavlistController => {
         DI.resolve('Config'),
         DI.resolve('ConfigStorage'),
         DI.resolve('MylistCollectionStorage'),
-        DI.resolve('UpdateInterval'),
-        DI.resolve('MylistFeedFactory')
+        DI.resolve('MylistCollectionUpdater')
     );
 });
 
-DI.register('RegisterController', (): IRegisterController => {
-    return new RegisterController(
+DI.register('SubscribeController', (): ISubscribeController => {
+    return new SubscribeController(
         DI.resolve('MylistCollectionStorage'),
         DI.resolve('UpdateInterval')
     );
