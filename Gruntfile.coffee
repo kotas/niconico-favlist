@@ -42,6 +42,7 @@ module.exports = (grunt) ->
             'compiled/compiled.js'
             'etc/outro.txt'
           ]
+          'dist/niconicofavlist.meta.js': []
         options:
           banner: grunt.file.read 'etc/header.txt'
 
