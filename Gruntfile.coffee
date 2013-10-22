@@ -15,7 +15,7 @@ module.exports = (grunt) ->
         options:
           target: 'es3'
       release:
-        src:  ['compiled/templates.ts', 'src/**/*.ts']
+        src:  ['compiled/templates.ts', 'src/userscript.ts']
         dest: 'compiled/compiled.js'
         options:
           target: 'es3'
@@ -37,14 +37,14 @@ module.exports = (grunt) ->
       dist:
         files:
           'dist/niconicofavlist.user.js': [
-            'etc/intro.txt'
+            'etc/userscript/intro.txt'
             'compiled/templates.js'
             'compiled/compiled.js'
-            'etc/outro.txt'
+            'etc/userscript/outro.txt'
           ]
           'dist/niconicofavlist.meta.js': []
         options:
-          banner: grunt.file.read 'etc/header.txt'
+          banner: grunt.file.read 'etc/userscript/header.txt'
 
     clean:
       compiled:

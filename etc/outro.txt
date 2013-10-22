@@ -1,6 +1,0 @@
-
-    $(function () {
-        DI.resolve('FavlistApp').start();
-    });
-
-})(jQuery);

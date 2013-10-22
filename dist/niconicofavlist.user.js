@@ -16,6 +16,8 @@
 // @grant          GM_xmlhttpRequest
 // @grant          GM_info
 // @require        http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js
+// @downloadURL    https://raw.github.com/kotas/niconico-favlist/latest/dist/niconicofavlist.user.js
+// @updateURL      https://raw.github.com/kotas/niconico-favlist/latest/dist/niconicofavlist.meta.js
 // ==/UserScript==
 
 (function ($) {
@@ -1776,6 +1778,5 @@ DI.register('SubscribeController', function () {
 $(function () {
     DI.resolve('FavlistApp').start();
 });
-
 
 })(jQuery);
