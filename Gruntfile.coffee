@@ -47,7 +47,7 @@ module.exports = (grunt) ->
 
     clean:
       compiled:
-        src: ['compiled', 'dist']
+        src: ['compiled']
 
     watch:
       files: ['src/**/*.ts', 'test/**/*.ts', 'templates/**/*.html', 'templates/**/*.css']
