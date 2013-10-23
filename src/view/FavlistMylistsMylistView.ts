@@ -54,7 +54,7 @@ class FavlistMylistsMylistView extends View {
     }
 
     private updateTitle() {
-        this.$el.find('.favlistMylistTitle').text(this.mylist.getTitle() || "(無題)");
+        this.$el.find('.favlistMylistTitle').text(this.mylist.getTitle() || "(無題)").attr('title', this.mylist.getTitle());
     }
 
     private updateVideos() {

@@ -12,6 +12,10 @@
     width: 98%;
 }
 
+.favlistSettingMylistButtons button {
+    padding: 0px 10px;
+    font-size: 10px;
+}
 .favlistMylistRemoveButton {
     float: right;
 }
