@@ -243,31 +243,6 @@ var util;
     })();
     util.XHRUrlFetcher = XHRUrlFetcher;
 })(util || (util = {}));
-var FavlistApp = (function () {
-    function FavlistApp() {
-    }
-    FavlistApp.prototype.start = function () {
-        try  {
-            this.route();
-        } catch (e) {
-            console.error('[NicoNicoFavlist] Error: ' + (e.message || e));
-        }
-    };
-
-    FavlistApp.prototype.route = function () {
-        if (/rss=/.test(window.location.search)) {
-            return;
-        }
-
-        var path = window.location.pathname;
-        if (/^\/mylist|^\/user/.test(path)) {
-            DI.resolve('SubscribeController').start();
-        } else if (/^\/$|^\/video_top/.test(path)) {
-            DI.resolve('FavlistController').start();
-        }
-    };
-    return FavlistApp;
-})();
 var Config = (function () {
     function Config(checkInterval, maxNewVideos, hideCheckedList, orderDescendant) {
         if (typeof checkInterval === "undefined") { checkInterval = 30 * 60; }
@@ -931,23 +906,12 @@ var MylistFeedFactory = (function () {
 })();
 var MylistCollectionUpdater = (function (_super) {
     __extends(MylistCollectionUpdater, _super);
-    function MylistCollectionUpdater(updateInterval, mylistFeedFactory) {
+    function MylistCollectionUpdater(mylistFeedFactory) {
         _super.call(this);
-        this.updateInterval = updateInterval;
         this.mylistFeedFactory = mylistFeedFactory;
     }
-    MylistCollectionUpdater.prototype.updateAllIfExpired = function (collection) {
-        if (this.updateInterval.isExpired()) {
-            return this.updateAll(collection);
-        } else {
-            return null;
-        }
-    };
-
     MylistCollectionUpdater.prototype.updateAll = function (collection) {
         var _this = this;
-        this.updateInterval.updateLastUpdateTime();
-
         var mylists = Array.prototype.slice.call(collection.getMylists());
         if (mylists.length === 0) {
             return null;
@@ -999,6 +963,155 @@ var MylistCollectionUpdater = (function (_super) {
         });
     };
     return MylistCollectionUpdater;
+})(util.EventEmitter);
+var ConfigService = (function (_super) {
+    __extends(ConfigService, _super);
+    function ConfigService(configStorage) {
+        _super.call(this);
+        this.configStorage = configStorage;
+        this.config = this.configStorage.get();
+    }
+    ConfigService.prototype.getConfig = function () {
+        return this.config;
+    };
+
+    ConfigService.prototype.setSettings = function (configSettings) {
+        this.config.update(configSettings);
+        this.configStorage.store(this.config);
+        this.emitEvent('update', [this.config]);
+    };
+    return ConfigService;
+})(util.EventEmitter);
+var MylistStatus;
+(function (MylistStatus) {
+    MylistStatus[MylistStatus["Waiting"] = 0] = "Waiting";
+    MylistStatus[MylistStatus["Updating"] = 1] = "Updating";
+    MylistStatus[MylistStatus["Finished"] = 2] = "Finished";
+    MylistStatus[MylistStatus["Private"] = 3] = "Private";
+    MylistStatus[MylistStatus["Error"] = 4] = "Error";
+})(MylistStatus || (MylistStatus = {}));
+
+var MylistService = (function (_super) {
+    __extends(MylistService, _super);
+    function MylistService(storage, updateInterval, feedFactory) {
+        _super.call(this);
+        this.storage = storage;
+        this.updateInterval = updateInterval;
+        this.mylists = this.storage.get();
+        this.updater = new MylistCollectionUpdater(feedFactory);
+        this.setEventHandlersForUpdater();
+    }
+    MylistService.prototype.getMylistCollection = function () {
+        return this.mylists;
+    };
+
+    MylistService.prototype.setSettings = function (mylistSetting) {
+        var _this = this;
+        var newMylists = [];
+        mylistSetting.forEach(function (mylistSetting) {
+            var mylist = _this.mylists.get(mylistSetting.mylistId);
+            if (mylist) {
+                mylist.setOverrideTitle(mylistSetting.title);
+                newMylists.push(mylist);
+            }
+        });
+        this.mylists.setMylists(newMylists);
+        this.save();
+        this.emitEvent('updateMylists', [this.mylists]);
+    };
+
+    MylistService.prototype.updateAllIfExpired = function () {
+        if (this.updateInterval.isExpired()) {
+            this.updateAll();
+        }
+    };
+
+    MylistService.prototype.updateAll = function () {
+        this.updateInterval.updateLastUpdateTime();
+        this.updater.updateAll(this.mylists);
+    };
+
+    MylistService.prototype.markMylistAllWatched = function (mylist) {
+        mylist.markAllVideosAsWatched();
+        this.save();
+    };
+
+    MylistService.prototype.markVideoWatched = function (mylist, video) {
+        mylist.markVideoAsWatched(video);
+        this.save();
+    };
+
+    MylistService.prototype.save = function () {
+        this.storage.store(this.mylists);
+    };
+
+    MylistService.prototype.setEventHandlersForUpdater = function () {
+        var _this = this;
+        var changeMylistStatus = function (mylist, status) {
+            _this.emitEvent('changeMylistStatus', [mylist, status]);
+        };
+
+        this.updater.addListener('startUpdateAll', function () {
+            _this.emitEvent('startUpdateAll', [_this.mylists]);
+            _this.mylists.getMylists().forEach(function (mylist) {
+                changeMylistStatus(mylist, MylistStatus.Waiting);
+            });
+        });
+        this.updater.addListener('startUpdateMylist', function (mylist) {
+            changeMylistStatus(mylist, MylistStatus.Updating);
+        });
+        this.updater.addListener('failedUpdateMylist', function (mylist, error) {
+            if (error.httpStatus === 403) {
+                changeMylistStatus(mylist, MylistStatus.Private);
+            } else {
+                changeMylistStatus(mylist, MylistStatus.Error);
+            }
+        });
+        this.updater.addListener('finishUpdateMylist', function (mylist) {
+            changeMylistStatus(mylist, MylistStatus.Finished);
+        });
+        this.updater.addListener('finishUpdateAll', function () {
+            _this.save();
+            _this.emitEvent('finishUpdateAll', [_this.mylists]);
+        });
+    };
+    return MylistService;
+})(util.EventEmitter);
+var SubscriptionService = (function (_super) {
+    __extends(SubscriptionService, _super);
+    function SubscriptionService(mylist, mylistCollectionStorage, updateInterval) {
+        _super.call(this);
+        this.mylist = mylist;
+        this.mylistCollectionStorage = mylistCollectionStorage;
+        this.updateInterval = updateInterval;
+        this.mylists = this.mylistCollectionStorage.get();
+    }
+    SubscriptionService.prototype.isSubscribed = function () {
+        return this.mylists.contains(this.mylist.getMylistId());
+    };
+
+    SubscriptionService.prototype.subscribe = function () {
+        this.setSubscribed(true);
+    };
+
+    SubscriptionService.prototype.unsubscribe = function () {
+        this.setSubscribed(false);
+    };
+
+    SubscriptionService.prototype.setSubscribed = function (subscribed) {
+        this.mylists = this.mylistCollectionStorage.get();
+        if (subscribed !== this.isSubscribed()) {
+            if (subscribed) {
+                this.mylists.add(this.mylist);
+            } else {
+                this.mylists.removeById(this.mylist.getMylistId());
+            }
+            this.mylistCollectionStorage.store(this.mylists);
+            this.updateInterval.expire();
+            this.emitEvent('update', [subscribed]);
+        }
+    };
+    return SubscriptionService;
 })(util.EventEmitter);
 var Templates;
 (function (Templates) {
@@ -1082,41 +1195,62 @@ var ViewHelper;
 })(ViewHelper || (ViewHelper = {}));
 var View = (function (_super) {
     __extends(View, _super);
-    function View($parent, $el) {
+    function View($el) {
         _super.call(this);
-        this.$parent = $parent;
         this.$el = $el;
     }
+    View.prototype.appendTo = function ($parent) {
+        this.$el.appendTo($parent);
+    };
+
     View.prototype.show = function () {
         this.update();
-        if (this.$el.parents('html').length === 0) {
-            this.$el.appendTo(this.$parent);
-        }
         this.$el.show();
+        this.emitEvent('show');
     };
 
     View.prototype.update = function () {
     };
     return View;
 })(util.EventEmitter);
-var FavlistMylistsVideoView = (function (_super) {
-    __extends(FavlistMylistsVideoView, _super);
-    function FavlistMylistsVideoView($parent, video) {
-        _super.call(this, $parent, Template.load(Templates.favlist_mylists_video));
-        this.video = video;
-        this.update();
+var Subview = (function (_super) {
+    __extends(Subview, _super);
+    function Subview($el) {
+        _super.call(this);
+        this.$el = $el;
+    }
+    Subview.prototype.appendTo = function ($parent) {
+        this.$el.appendTo($parent);
+    };
+    return Subview;
+})(util.EventEmitter);
+var FavlistMylistsVideoSubview = (function (_super) {
+    __extends(FavlistMylistsVideoSubview, _super);
+    function FavlistMylistsVideoSubview() {
+        _super.call(this, Template.load(Templates.favlist_mylists_video));
         this.setEventHandlers();
     }
-    FavlistMylistsVideoView.prototype.update = function () {
-        this.$el.find('.favlistVideoLink').attr({
-            href: this.video.getURL(),
-            title: this.video.getTitle()
+    FavlistMylistsVideoSubview.prototype.setEventHandlers = function () {
+        var _this = this;
+        this.$el.find('.favlistVideoLink').click(function () {
+            _this.emitEvent('videoWatch');
         });
-        this.$el.find('.favlistVideoThumbnail img').attr('src', this.video.getThumbnail());
-        this.$el.find('.favlistVideoTimestamp').text(ViewHelper.formatTimestamp(this.video.getTimestamp())).attr('title', new Date(this.video.getTimestamp()).toLocaleString());
-        this.$el.find('.favlistVideoTitle').html(this.video.getTitle() || "(無題)");
+        this.$el.find('.favlistVideoMemo').click(function () {
+            _this.$el.find('.favlistVideoMemo').toggleClass('expanded');
+            return false;
+        });
+    };
 
-        var memo = this.video.getMemo();
+    FavlistMylistsVideoSubview.prototype.render = function (video) {
+        this.$el.find('.favlistVideoLink').attr({
+            href: video.getURL(),
+            title: video.getTitle()
+        });
+        this.$el.find('.favlistVideoThumbnail img').attr('src', video.getThumbnail());
+        this.$el.find('.favlistVideoTimestamp').text(ViewHelper.formatTimestamp(video.getTimestamp())).attr('title', new Date(video.getTimestamp()).toLocaleString());
+        this.$el.find('.favlistVideoTitle').html(video.getTitle() || "(無題)");
+
+        var memo = video.getMemo();
         if (memo) {
             this.$el.find('.favlistVideoMemoText').html(memo);
             this.$el.find('.favlistVideoMemo').show();
@@ -1124,41 +1258,99 @@ var FavlistMylistsVideoView = (function (_super) {
             this.$el.find('.favlistVideoMemo').hide();
         }
     };
-
-    FavlistMylistsVideoView.prototype.setEventHandlers = function () {
+    return FavlistMylistsVideoSubview;
+})(Subview);
+var FavlistMylistsMylistSubview = (function (_super) {
+    __extends(FavlistMylistsMylistSubview, _super);
+    function FavlistMylistsMylistSubview() {
+        _super.call(this, Template.load(Templates.favlist_mylists_mylist));
+        this.$videos = this.$el.find('.favlistMylistVideos');
+        this.setEventHandlersForView();
+    }
+    FavlistMylistsMylistSubview.prototype.setEventHandlersForView = function () {
         var _this = this;
-        this.$el.find('.favlistVideoLink').click(function () {
-            _this.emitEvent('videoWatch', [_this.video]);
-        });
-        this.$el.find('.favlistVideoMemo').click(function () {
-            _this.$el.find('.favlistVideoMemo').toggleClass('expanded');
+        this.$el.find('.favlistMylistClearButton').click(function () {
+            _this.emitEvent('mylistClearRequest');
             return false;
         });
     };
-    return FavlistMylistsVideoView;
-})(View);
-var FavlistMylistsMylistView = (function (_super) {
-    __extends(FavlistMylistsMylistView, _super);
-    function FavlistMylistsMylistView($parent, config, mylist) {
-        _super.call(this, $parent, Template.load(Templates.favlist_mylists_mylist));
-        this.config = config;
-        this.mylist = mylist;
-        this.videoViews = [];
-        this.$videos = this.$el.find('.favlistMylistVideos');
-        this.update();
-        this.setEventHandlers();
-    }
-    FavlistMylistsMylistView.prototype.showStatus = function (status, dismiss) {
+
+    FavlistMylistsMylistSubview.prototype.render = function (mylist, config) {
+        this.renderLink(mylist);
+        this.renderTitle(mylist);
+        this.renderVideos(mylist, config);
+    };
+
+    FavlistMylistsMylistSubview.prototype.renderLink = function (mylist) {
+        this.$el.find('.favlistMylistLink').attr('href', mylist.getURL());
+    };
+
+    FavlistMylistsMylistSubview.prototype.renderTitle = function (mylist) {
+        this.$el.find('.favlistMylistTitle').text(mylist.getTitle() || "(無題)").attr('title', mylist.getTitle());
+    };
+
+    FavlistMylistsMylistSubview.prototype.renderVideos = function (mylist, config) {
+        var _this = this;
+        var count = mylist.getNewCount();
+        this.$el.toggleClass('hasNewVideo', count > 0);
+        this.$el.find('.favlistMylistNewCount').text(count.toString());
+        this.$el.find('.favlistMylistClearButton').attr('disabled', count === 0).toggleClass('disabled', count === 0);
+
+        var videos = mylist.getNewVideos();
+        var order = config.isOrderDescendant() ? 1 : -1;
+        videos.sort(function (a, b) {
+            return (b.getTimestamp() - a.getTimestamp()) * order;
+        });
+        if (config.getMaxNewVideos() > 0) {
+            videos = videos.slice(0, config.getMaxNewVideos());
+        }
+
+        this.$videos.empty();
+        videos.forEach(function (video) {
+            var videoView = new FavlistMylistsVideoSubview();
+            _this.setEventHandlersForVideoView(video, videoView);
+            videoView.render(video);
+            videoView.appendTo(_this.$videos);
+        });
+    };
+
+    FavlistMylistsMylistSubview.prototype.setEventHandlersForVideoView = function (video, videoView) {
+        var _this = this;
+        videoView.addListener('videoWatch', function () {
+            _this.emitEvent('mylistVideoWatch', [video]);
+        });
+    };
+
+    FavlistMylistsMylistSubview.prototype.renderStatus = function (status) {
+        switch (status) {
+            case MylistStatus.Waiting:
+                this.showStatus('waiting');
+                break;
+            case MylistStatus.Updating:
+                this.showStatus('updating');
+                break;
+            case MylistStatus.Private:
+                this.showStatus('private', true);
+                break;
+            case MylistStatus.Error:
+                this.showStatus('error', true);
+                break;
+            case MylistStatus.Finished:
+                this.hideStatus();
+                break;
+        }
+    };
+
+    FavlistMylistsMylistSubview.prototype.showStatus = function (status, dismiss) {
         if (typeof dismiss === "undefined") { dismiss = false; }
         var _this = this;
+        this.$el.find('.favlistMylistStatus').find('span').hide().filter('.' + status).show();
+        this.$el.addClass('hasStatus');
+
         if (this.dismissStatusTimer) {
             clearTimeout(this.dismissStatusTimer);
             this.dismissStatusTimer = null;
         }
-
-        this.$el.find('.favlistMylistStatus span').hide();
-        this.$el.find('.favlistMylistStatus span.' + status).show();
-        this.$el.addClass('hasStatus');
         if (dismiss) {
             this.dismissStatusTimer = setTimeout(function () {
                 _this.dismissStatusTimer = null;
@@ -1167,173 +1359,117 @@ var FavlistMylistsMylistView = (function (_super) {
         }
     };
 
-    FavlistMylistsMylistView.prototype.hideStatus = function () {
+    FavlistMylistsMylistSubview.prototype.hideStatus = function () {
         this.$el.removeClass('hasStatus');
         this.$el.find('.favlistMylistStatus span').hide();
     };
-
-    FavlistMylistsMylistView.prototype.update = function () {
-        this.$el.find('.favlistMylistLink').attr('href', this.mylist.getURL());
-        this.updateTitle();
-        this.updateVideos();
-    };
-
-    FavlistMylistsMylistView.prototype.updateTitle = function () {
-        this.$el.find('.favlistMylistTitle').text(this.mylist.getTitle() || "(無題)").attr('title', this.mylist.getTitle());
-    };
-
-    FavlistMylistsMylistView.prototype.updateVideos = function () {
-        var _this = this;
-        var count = this.mylist.getNewCount();
-        this.$el.toggleClass('hasNewVideo', count > 0);
-        this.$el.find('.favlistMylistNewCount').text(count.toString());
-        this.$el.find('.favlistMylistClearButton').attr('disabled', count === 0).toggleClass('disabled', count === 0);
-
-        this.videoViews = [];
-        this.$videos.empty();
-        this.getVisibleVideos().forEach(function (video) {
-            var videoView = new FavlistMylistsVideoView(_this.$videos, video);
-            _this.setEventHandlersForVideoView(videoView);
-            videoView.show();
-            _this.videoViews.push(videoView);
-        });
-    };
-
-    FavlistMylistsMylistView.prototype.getVisibleVideos = function () {
-        var videos = this.mylist.getNewVideos();
-
-        var order = this.config.isOrderDescendant() ? 1 : -1;
-        videos.sort(function (a, b) {
-            return (b.getTimestamp() - a.getTimestamp()) * order;
-        });
-
-        var max = this.config.getMaxNewVideos();
-        return (max > 0) ? videos.slice(0, max) : videos;
-    };
-
-    FavlistMylistsMylistView.prototype.setEventHandlers = function () {
-        var _this = this;
-        this.$el.find('.favlistMylistClearButton').click(function () {
-            _this.emitEvent('mylistClearRequest', [_this.mylist]);
-            return false;
-        });
-
-        this.mylist.addListener('updateTitle', function () {
-            _this.updateTitle();
-        });
-        this.mylist.addListener('updateVideos', function () {
-            _this.updateVideos();
-        });
-    };
-
-    FavlistMylistsMylistView.prototype.setEventHandlersForVideoView = function (videoView) {
-        var _this = this;
-        videoView.addListener('videoWatch', function (video) {
-            _this.emitEvent('mylistVideoWatch', [_this.mylist, video]);
-        });
-    };
-    return FavlistMylistsMylistView;
-})(View);
+    return FavlistMylistsMylistSubview;
+})(Subview);
 var FavlistMylistsView = (function (_super) {
     __extends(FavlistMylistsView, _super);
-    function FavlistMylistsView($parent, config, mylistCollection, mylistCollectionUpdater) {
-        _super.call(this, $parent, Template.load(Templates.favlist_mylists));
-        this.config = config;
-        this.mylistCollection = mylistCollection;
-        this.mylistCollectionUpdater = mylistCollectionUpdater;
+    function FavlistMylistsView(configService, mylistService) {
+        _super.call(this, Template.load(Templates.favlist_mylists));
+        this.configService = configService;
+        this.mylistService = mylistService;
         this.mylistViews = {};
         this.$mylists = this.$el.find('.favlistMylists');
         this.setEventHandlers();
     }
-    FavlistMylistsView.prototype.update = function () {
-        this.$el.toggleClass('noMylist', this.mylistCollection.isEmpty());
-        this.$el.toggleClass('checkedMylistHidden', this.config.isCheckedListHidden());
-        this.updateMylistViews();
-    };
-
-    FavlistMylistsView.prototype.updateMylistViews = function () {
-        var _this = this;
-        this.mylistViews = {};
-        this.$mylists.empty();
-        this.mylistCollection.getMylists().forEach(function (mylist) {
-            var mylistView = new FavlistMylistsMylistView(_this.$mylists, _this.config, mylist);
-            mylistView.addEventDelegator(function (eventName, args) {
-                return _this.emitEvent(eventName, args);
-            });
-            mylistView.show();
-            _this.mylistViews[mylist.getMylistId().toString()] = mylistView;
-        });
-    };
-
     FavlistMylistsView.prototype.setEventHandlers = function () {
+        this.setEventHandlersForView();
+        this.setEventHandlersForConfigService();
+        this.setEventHandlersForMylistService();
+    };
+
+    FavlistMylistsView.prototype.setEventHandlersForView = function () {
         var _this = this;
         this.$el.find('.favlistCheckNowButton').click(function () {
-            _this.emitEvent('checkNowRequest', [_this.mylistCollection]);
+            _this.emitEvent('checkNowRequest');
             return false;
         });
-        this.setEventHandlersForMylistCollectionUpdater();
     };
 
-    FavlistMylistsView.prototype.setEventHandlersForMylistCollectionUpdater = function () {
+    FavlistMylistsView.prototype.setEventHandlersForConfigService = function () {
         var _this = this;
-        var updateMylistViewStatus = function (mylist, status, dismiss) {
-            if (typeof dismiss === "undefined") { dismiss = false; }
-            var mylistView = _this.mylistViews[mylist.getMylistId().toString()];
-            if (!mylistView)
-                return null;
-            if (status !== null) {
-                mylistView.showStatus(status, dismiss);
-            } else {
-                mylistView.hideStatus();
-            }
-            return mylistView;
-        };
-        this.mylistCollectionUpdater.addListener('startUpdateAll', function () {
+        this.configService.addListener('update', function () {
+            _this.update();
+        });
+    };
+
+    FavlistMylistsView.prototype.setEventHandlersForMylistService = function () {
+        var _this = this;
+        this.mylistService.addListener('update', function () {
+            _this.update();
+        });
+        this.mylistService.addListener('startUpdateAll', function () {
             _this.$el.find('.favlistCheckNowButton').attr('disabled', true).addClass('disabled');
-            _this.mylistCollection.getMylists().forEach(function (mylist) {
-                updateMylistViewStatus(mylist, 'waiting');
-            });
         });
-        this.mylistCollectionUpdater.addListener('startUpdateMylist', function (mylist) {
-            updateMylistViewStatus(mylist, 'updating');
+        this.mylistService.addListener('changeMylistStatus', function (mylist, status) {
+            var mylistView = _this.mylistViews[mylist.getMylistId().toString()];
+            if (mylistView) {
+                mylistView.renderStatus(status);
+            }
         });
-        this.mylistCollectionUpdater.addListener('failedUpdateMylist', function (mylist, error) {
-            updateMylistViewStatus(mylist, 'failed', true);
-        });
-        this.mylistCollectionUpdater.addListener('finishUpdateMylist', function (mylist) {
-            updateMylistViewStatus(mylist, null);
-        });
-        this.mylistCollectionUpdater.addListener('finishUpdateAll', function () {
+        this.mylistService.addListener('finishUpdateAll', function () {
             _this.$el.find('.favlistCheckNowButton').removeAttr('disabled').removeClass('disabled');
+        });
+    };
+
+    FavlistMylistsView.prototype.update = function () {
+        var _this = this;
+        var mylists = this.mylistService.getMylistCollection().getMylists();
+        var config = this.configService.getConfig();
+
+        this.$el.toggleClass('noMylist', mylists.length === 0);
+        this.$el.toggleClass('checkedMylistHidden', config.isCheckedListHidden());
+
+        this.mylistViews = {};
+        this.$mylists.empty();
+        mylists.forEach(function (mylist) {
+            var mylistId = mylist.getMylistId().toString();
+            var mylistView = new FavlistMylistsMylistSubview();
+            _this.setEventHandlersForMylistView(mylist, mylistView);
+            mylistView.render(mylist, config);
+            mylistView.appendTo(_this.$mylists);
+            _this.mylistViews[mylistId] = mylistView;
+        });
+    };
+
+    FavlistMylistsView.prototype.setEventHandlersForMylistView = function (mylist, mylistView) {
+        var _this = this;
+        mylistView.addListener('mylistClearRequest', function () {
+            _this.emitEvent('mylistClearRequest', [mylist]);
+        });
+        mylistView.addListener('mylistVideoWatch', function (video) {
+            _this.emitEvent('mylistVideoWatch', [mylist, video]);
         });
     };
     return FavlistMylistsView;
 })(View);
 var FavlistSettingsView = (function (_super) {
     __extends(FavlistSettingsView, _super);
-    function FavlistSettingsView($parent, config, mylistCollection) {
-        _super.call(this, $parent, Template.load(Templates.favlist_settings));
-        this.config = config;
-        this.mylistCollection = mylistCollection;
+    function FavlistSettingsView(configService, mylistService) {
+        _super.call(this, Template.load(Templates.favlist_settings));
+        this.configService = configService;
+        this.mylistService = mylistService;
         this.$mylists = this.$el.find('.favlistSettingMylists');
         this.setEventHandlers();
     }
-    FavlistSettingsView.prototype.update = function () {
-        this.updateMylistViews();
-        this.updateConfigView();
+    FavlistSettingsView.prototype.setEventHandlers = function () {
+        this.setEventHandlersForView();
     };
 
-    FavlistSettingsView.prototype.setEventHandlers = function () {
+    FavlistSettingsView.prototype.setEventHandlersForView = function () {
         var _this = this;
         this.$el.find('.favlistSaveSettingsButton').click(function () {
             try  {
-                var mylists = _this.getSavedMylists();
-                var config = _this.getSavedConfig();
+                var mylistSettings = _this.getMylistSettings();
+                var configSettings = _this.getConfigSettings();
             } catch (e) {
                 alert(e.message || e);
                 return false;
             }
-            _this.emitEvent('settingSave', [mylists, config]);
+            _this.emitEvent('settingSave', [mylistSettings, configSettings]);
             return false;
         });
         this.$el.find('.favlistCancelSettingsButton').click(function () {
@@ -1342,7 +1478,7 @@ var FavlistSettingsView = (function (_super) {
         });
     };
 
-    FavlistSettingsView.prototype.getSavedMylists = function () {
+    FavlistSettingsView.prototype.getMylistSettings = function () {
         var savedMylists = [];
         this.$mylists.children().each(function (i, el) {
             var $mylist = $(el);
@@ -1356,7 +1492,7 @@ var FavlistSettingsView = (function (_super) {
         return savedMylists;
     };
 
-    FavlistSettingsView.prototype.getSavedConfig = function () {
+    FavlistSettingsView.prototype.getConfigSettings = function () {
         var checkInterval = parseInt(this.$el.find('.favlistConfigCheckInterval').val(), 10);
         if (isNaN(checkInterval)) {
             throw new Error('更新チェック間隔は整数で指定してください');
@@ -1373,12 +1509,18 @@ var FavlistSettingsView = (function (_super) {
         return new Config(checkInterval, maxNewVideos, hideCheckedList, orderDescendant);
     };
 
+    FavlistSettingsView.prototype.update = function () {
+        this.updateMylistViews();
+        this.updateConfigView();
+    };
+
     FavlistSettingsView.prototype.updateMylistViews = function () {
         var _this = this;
-        var $template = $(Template.load(Templates.favlist_settings_mylist));
+        var mylists = this.mylistService.getMylistCollection().getMylists();
 
+        var $template = $(Template.load(Templates.favlist_settings_mylist));
         this.$mylists.empty();
-        this.mylistCollection.getMylists().forEach(function (mylist) {
+        mylists.forEach(function (mylist) {
             var $mylist = $template.clone();
             $mylist.data('mylistId', mylist.getMylistId());
             $mylist.find('.favlistMylistTitleEdit').val(mylist.getTitle()).attr('placeholder', mylist.getOriginalTitle());
@@ -1386,17 +1528,6 @@ var FavlistSettingsView = (function (_super) {
             _this.$mylists.append($mylist);
         });
         this.updateMylistButtons();
-    };
-
-    FavlistSettingsView.prototype.updateMylistButtons = function () {
-        var $mylists = this.$mylists.children();
-        var total = $mylists.length;
-        $mylists.each(function (i, el) {
-            var $mylist = $(el);
-            $mylist.find('.favlistMylistMoveUpButton').attr('disabled', (i === 0));
-            $mylist.find('.favlistMylistMoveDownButton').attr('disabled', (i === total - 1));
-            $mylist.find('.favlistMylistMoveTopButton').attr('disabled', (i === 0));
-        });
     };
 
     FavlistSettingsView.prototype.setEventHandlersForMylistView = function ($mylist) {
@@ -1425,59 +1556,59 @@ var FavlistSettingsView = (function (_super) {
         });
     };
 
+    FavlistSettingsView.prototype.updateMylistButtons = function () {
+        var $mylists = this.$mylists.children();
+        var total = $mylists.length;
+        $mylists.each(function (i, el) {
+            var $mylist = $(el);
+            $mylist.find('.favlistMylistMoveUpButton').attr('disabled', (i === 0));
+            $mylist.find('.favlistMylistMoveDownButton').attr('disabled', (i === total - 1));
+            $mylist.find('.favlistMylistMoveTopButton').attr('disabled', (i === 0));
+        });
+    };
+
     FavlistSettingsView.prototype.updateConfigView = function () {
-        this.$el.find('.favlistConfigCheckInterval').val(this.config.getCheckInterval().toString());
-        this.$el.find('.favlistConfigMaxNewVideos').val(this.config.getMaxNewVideos().toString());
-        this.$el.find('.favlistConfigHideCheckedList').attr('checked', this.config.isCheckedListHidden());
-        this.$el.find('.favlistConfigOrderDescendant').attr('checked', this.config.isOrderDescendant());
+        var config = this.configService.getConfig();
+        this.$el.find('.favlistConfigCheckInterval').val(config.getCheckInterval().toString());
+        this.$el.find('.favlistConfigMaxNewVideos').val(config.getMaxNewVideos().toString());
+        this.$el.find('.favlistConfigHideCheckedList').attr('checked', config.isCheckedListHidden());
+        this.$el.find('.favlistConfigOrderDescendant').attr('checked', config.isOrderDescendant());
     };
     return FavlistSettingsView;
 })(View);
 var FavlistView = (function (_super) {
     __extends(FavlistView, _super);
-    function FavlistView(config, mylistCollection, mylistCollectionUpdater) {
-        _super.call(this, FavlistView.createContainer(), Template.load(Templates.favlist));
-        this.config = config;
-        this.mylistCollection = mylistCollection;
-        this.mylistCollectionUpdater = mylistCollectionUpdater;
+    function FavlistView() {
+        _super.call(this, Template.load(Templates.favlist));
         this.$pages = this.$el.find('.favlistPages');
         this.setEventHandlers();
     }
-    FavlistView.prototype.showMylistPage = function () {
+    FavlistView.prototype.setMylistsView = function (view) {
+        this.mylistsView = view;
+        this.mylistsView.appendTo(this.$pages);
+    };
+
+    FavlistView.prototype.setSettingsView = function (view) {
+        this.settingsView = view;
+        this.settingsView.appendTo(this.$pages);
+    };
+
+    FavlistView.prototype.showMylistsPage = function () {
+        if (!this.mylistsView) {
+            throw new Error('MylistsView is not set');
+        }
         this.$pages.children().hide();
-        this.getMylistCollectionView().show();
+        this.mylistsView.show();
         this.$el.removeClass('inSettingView');
     };
 
-    FavlistView.prototype.showSettingPage = function () {
+    FavlistView.prototype.showSettingsPage = function () {
+        if (!this.settingsView) {
+            throw new Error('SettingsView is not set');
+        }
         this.$pages.children().hide();
-        this.getSettingView().show();
+        this.settingsView.show();
         this.$el.addClass('inSettingView');
-    };
-
-    FavlistView.prototype.getMylistCollectionView = function () {
-        var _this = this;
-        if (this.mylistsView) {
-            return this.mylistsView;
-        }
-        this.mylistsView = new FavlistMylistsView(this.$pages, this.config, this.mylistCollection, this.mylistCollectionUpdater);
-        this.mylistsView.addEventDelegator(function (eventName, args) {
-            return _this.emitEvent(eventName, args);
-        });
-        return this.mylistsView;
-    };
-
-    FavlistView.prototype.getSettingView = function () {
-        var _this = this;
-        if (this.settingsView) {
-            return this.settingsView;
-        }
-
-        this.settingsView = new FavlistSettingsView(this.$pages, this.config, this.mylistCollection);
-        this.settingsView.addEventDelegator(function (eventName, args) {
-            return _this.emitEvent(eventName, args);
-        });
-        return this.settingsView;
     };
 
     FavlistView.prototype.setEventHandlers = function () {
@@ -1487,118 +1618,25 @@ var FavlistView = (function (_super) {
             return false;
         });
     };
-
-    FavlistView.createContainer = function () {
-        var $parent = $('#favlistRescueContainer, #sideContents, .column.sub').eq(0);
-        if ($parent.length === 0) {
-            $parent = FavlistView.createRescueContainer();
-        }
-        return $('<div />').prependTo($parent);
-    };
-
-    FavlistView.createRescueContainer = function () {
-        var $outer = Template.load(Templates.favlist_rescue);
-        var $container = $outer.find('#favlistRescueContainer');
-
-        $outer.find('.favlistRescueCaption a').click(function () {
-            $outer.toggleClass('closed');
-            return false;
-        });
-
-        $outer.appendTo(window.document.body);
-        return $container;
-    };
     return FavlistView;
 })(View);
-var FavlistController = (function () {
-    function FavlistController(config, configStorage, mylistCollectionStorage, mylistCollectionUpdater) {
-        this.config = config;
-        this.configStorage = configStorage;
-        this.mylistCollectionStorage = mylistCollectionStorage;
-        this.mylistCollectionUpdater = mylistCollectionUpdater;
-        this.mylistCollection = this.mylistCollectionStorage.get();
-        this.favlistView = new FavlistView(this.config, this.mylistCollection, this.mylistCollectionUpdater);
-        this.setEventHandlers();
-    }
-    FavlistController.prototype.start = function () {
-        this.favlistView.show();
-        this.favlistView.showMylistPage();
-        this.mylistCollectionUpdater.updateAllIfExpired(this.mylistCollection);
-    };
-
-    FavlistController.prototype.setEventHandlers = function () {
-        var _this = this;
-        this.favlistView.addListener('settingPageRequest', function () {
-            _this.favlistView.showSettingPage();
-        });
-        this.setEventHandlersForMylistsView();
-        this.setEventHandlersForMylistCollectionUpdater();
-        this.setEventHandlersForSettingsView();
-    };
-
-    FavlistController.prototype.setEventHandlersForMylistsView = function () {
-        var _this = this;
-        this.favlistView.addListener('checkNowRequest', function () {
-            _this.mylistCollectionUpdater.updateAll(_this.mylistCollection);
-        });
-        this.favlistView.addListener('mylistClearRequest', function (mylist) {
-            mylist.markAllVideosAsWatched();
-            _this.mylistCollectionStorage.store(_this.mylistCollection);
-        });
-        this.favlistView.addListener('mylistVideoWatch', function (mylist, video) {
-            mylist.markVideoAsWatched(video);
-            _this.mylistCollectionStorage.store(_this.mylistCollection);
-        });
-    };
-
-    FavlistController.prototype.setEventHandlersForMylistCollectionUpdater = function () {
-        var _this = this;
-        this.mylistCollectionUpdater.addListener('finishUpdateAll', function () {
-            _this.mylistCollectionStorage.store(_this.mylistCollection);
-        });
-    };
-
-    FavlistController.prototype.setEventHandlersForSettingsView = function () {
-        var _this = this;
-        this.favlistView.addListener('settingSave', function (savedMylists, savedConfig) {
-            var newMylists = [];
-            savedMylists.forEach(function (savedMylist) {
-                var mylist = _this.mylistCollection.get(savedMylist.mylistId);
-                if (mylist) {
-                    mylist.setOverrideTitle(savedMylist.title);
-                    newMylists.push(mylist);
-                }
-            });
-            _this.mylistCollection.setMylists(newMylists);
-            _this.mylistCollectionStorage.store(_this.mylistCollection);
-
-            _this.config.update(savedConfig);
-            _this.configStorage.store(_this.config);
-
-            _this.favlistView.showMylistPage();
-        });
-
-        this.favlistView.addListener('settingCancel', function () {
-            _this.favlistView.showMylistPage();
-        });
-    };
-    return FavlistController;
-})();
 var SubscribeView = (function (_super) {
     __extends(SubscribeView, _super);
-    function SubscribeView() {
-        _super.call(this, SubscribeView.findParent(), Template.load(Templates.subscribe));
-        this.subscribed = false;
+    function SubscribeView(subscriptionService) {
+        _super.call(this, Template.load(Templates.subscribe));
+        this.subscriptionService = subscriptionService;
         this.setEventHandlers();
     }
-    SubscribeView.prototype.setSubscribed = function (subscribed) {
-        if (this.subscribed !== subscribed) {
-            this.subscribed = subscribed;
-            this.$el.toggleClass('subscribed', this.subscribed);
-        }
+    SubscribeView.prototype.update = function () {
+        this.$el.toggleClass('subscribed', this.subscriptionService.isSubscribed());
     };
 
     SubscribeView.prototype.setEventHandlers = function () {
+        this.setEventHandlersForView();
+        this.setEventHandlersForSubscription();
+    };
+
+    SubscribeView.prototype.setEventHandlersForView = function () {
         var _this = this;
         this.$el.find('.favlistSubscribeButton').click(function () {
             _this.emitEvent('subscribeRequest');
@@ -1610,100 +1648,164 @@ var SubscribeView = (function (_super) {
         });
     };
 
-    SubscribeView.findParent = function () {
-        var $parent = $('.content_312').eq(0);
-        if ($parent.length > 0) {
-            return $('<div />').css({
-                'padding': '10px',
-                'text-align': 'center'
-            }).prependTo($parent);
-        }
-
-        $parent = $('#watchBtns').eq(0);
-        if ($parent.length > 0) {
-            return $('<div />').css({
-                'display': 'inline-block',
-                'margin-left': '8px'
-            }).insertAfter($parent);
-        }
-
-        $parent = Template.load(Templates.subscribe_rescue);
-        $parent.appendTo(document.body);
-        return $parent;
+    SubscribeView.prototype.setEventHandlersForSubscription = function () {
+        var _this = this;
+        this.subscriptionService.addListener('update', function () {
+            _this.update();
+        });
     };
     return SubscribeView;
 })(View);
-var SubscribeController = (function () {
-    function SubscribeController(mylistCollectionStorage, updateInterval) {
-        this.mylistCollectionStorage = mylistCollectionStorage;
-        this.updateInterval = updateInterval;
-        this.subscribeView = new SubscribeView();
-        this.mylist = this.createMylistFromPage();
+var FavlistApp = (function () {
+    function FavlistApp() {
+    }
+    FavlistApp.prototype.start = function () {
+        try  {
+            this.route();
+        } catch (e) {
+            console.error('[NicoNicoFavlist] Error: ' + (e.message || e));
+        }
+    };
+
+    FavlistApp.prototype.route = function () {
+        if (/rss=/.test(window.location.search)) {
+            return;
+        }
+
+        var path = window.location.pathname;
+        if (/^\/mylist|^\/user/.test(path)) {
+            DI.resolve('SubscribeViewContainer');
+            DI.resolve('SubscribeController').start();
+        } else if (/^\/$|^\/video_top/.test(path)) {
+            DI.resolve('FavlistController').start();
+        }
+    };
+    return FavlistApp;
+})();
+var FavlistMylistsController = (function () {
+    function FavlistMylistsController(configService, mylistService) {
+        this.configService = configService;
+        this.mylistService = mylistService;
+        this.mylistsView = new FavlistMylistsView(this.configService, this.mylistService);
         this.setEventHandlers();
     }
+    FavlistMylistsController.prototype.getView = function () {
+        return this.mylistsView;
+    };
+
+    FavlistMylistsController.prototype.setEventHandlers = function () {
+        var _this = this;
+        this.mylistsView.addListener('show', function () {
+            _this.mylistService.updateAllIfExpired();
+        });
+        this.mylistsView.addListener('checkNowRequest', function () {
+            _this.mylistService.updateAll();
+        });
+        this.mylistsView.addListener('mylistClearRequest', function (mylist) {
+            _this.mylistService.markMylistAllWatched(mylist);
+        });
+        this.mylistsView.addListener('mylistVideoWatch', function (mylist, video) {
+            _this.mylistService.markVideoWatched(mylist, video);
+        });
+    };
+    return FavlistMylistsController;
+})();
+var FavlistSettingsController = (function (_super) {
+    __extends(FavlistSettingsController, _super);
+    function FavlistSettingsController(configService, mylistService) {
+        _super.call(this);
+        this.configService = configService;
+        this.mylistService = mylistService;
+        this.settingsView = new FavlistSettingsView(this.configService, this.mylistService);
+        this.setEventHandlers();
+    }
+    FavlistSettingsController.prototype.getView = function () {
+        return this.settingsView;
+    };
+
+    FavlistSettingsController.prototype.setEventHandlers = function () {
+        var _this = this;
+        this.settingsView.addListener('settingSave', function (mylistSettings, configSettings) {
+            _this.mylistService.setSettings(mylistSettings);
+            _this.configService.setSettings(configSettings);
+            _this.emitEvent('finish');
+        });
+
+        this.settingsView.addListener('settingCancel', function () {
+            _this.emitEvent('finish');
+        });
+    };
+    return FavlistSettingsController;
+})(util.EventEmitter);
+var FavlistController = (function () {
+    function FavlistController(favlistView, configService, mylistService) {
+        this.favlistView = favlistView;
+        this.configService = configService;
+        this.mylistService = mylistService;
+        this.setEventHandlersForView();
+    }
+    FavlistController.prototype.setEventHandlersForView = function () {
+        var _this = this;
+        this.favlistView.addListener('show', function () {
+            _this.showMylistsPage();
+        });
+        this.favlistView.addListener('settingPageRequest', function () {
+            _this.showSettingsPage();
+        });
+    };
+
+    FavlistController.prototype.getView = function () {
+        return this.favlistView;
+    };
+
+    FavlistController.prototype.start = function () {
+        this.favlistView.show();
+        this.showMylistsPage();
+    };
+
+    FavlistController.prototype.showMylistsPage = function () {
+        if (!this.mylistsController) {
+            this.mylistsController = new FavlistMylistsController(this.configService, this.mylistService);
+            this.favlistView.setMylistsView(this.mylistsController.getView());
+        }
+        this.favlistView.showMylistsPage();
+    };
+
+    FavlistController.prototype.showSettingsPage = function () {
+        var _this = this;
+        if (!this.settingsController) {
+            this.settingsController = new FavlistSettingsController(this.configService, this.mylistService);
+            this.settingsController.addListener('finish', function () {
+                return _this.showMylistsPage();
+            });
+            this.favlistView.setSettingsView(this.settingsController.getView());
+        }
+        this.favlistView.showSettingsPage();
+    };
+    return FavlistController;
+})();
+var SubscribeController = (function () {
+    function SubscribeController(subscribeView, subscriptionService) {
+        this.subscribeView = subscribeView;
+        this.subscriptionService = subscriptionService;
+        this.setEventHandlersForView();
+    }
+    SubscribeController.prototype.getView = function () {
+        return this.subscribeView;
+    };
+
     SubscribeController.prototype.start = function () {
-        this.reloadMylistCollection();
         this.subscribeView.show();
     };
 
-    SubscribeController.prototype.setEventHandlers = function () {
+    SubscribeController.prototype.setEventHandlersForView = function () {
         var _this = this;
         this.subscribeView.addListener('subscribeRequest', function () {
-            _this.subscribe();
+            _this.subscriptionService.subscribe();
         });
         this.subscribeView.addListener('unsubscribeRequest', function () {
-            _this.unsubscribe();
+            _this.subscriptionService.unsubscribe();
         });
-    };
-
-    SubscribeController.prototype.subscribe = function () {
-        this.reloadMylistCollection();
-        if (!this.mylistIsSubscribed()) {
-            this.mylistCollection.add(this.mylist);
-            this.mylistCollectionStorage.store(this.mylistCollection);
-            this.updateInterval.expire();
-            this.subscribeView.setSubscribed(true);
-        }
-    };
-
-    SubscribeController.prototype.unsubscribe = function () {
-        this.reloadMylistCollection();
-        if (this.mylistIsSubscribed()) {
-            this.mylistCollection.removeById(this.mylist.getMylistId());
-            this.mylistCollectionStorage.store(this.mylistCollection);
-            this.updateInterval.expire();
-            this.subscribeView.setSubscribed(false);
-        }
-    };
-
-    SubscribeController.prototype.reloadMylistCollection = function () {
-        this.mylistCollection = this.mylistCollectionStorage.get();
-        this.subscribeView.setSubscribed(this.mylistIsSubscribed());
-    };
-
-    SubscribeController.prototype.mylistIsSubscribed = function () {
-        return this.mylistCollection.contains(this.mylist.getMylistId());
-    };
-
-    SubscribeController.prototype.createMylistFromPage = function () {
-        var mylistId = MylistId.fromURL(window.location.href);
-        var title;
-
-        var $title = $([
-            '#SYS_box_mylist_header h1',
-            '.userDetail .profile h2'
-        ].join(',')).eq(0);
-
-        if ($title.length > 0) {
-            title = $title.text();
-        } else {
-            title = window.document.title.replace(/(?:のユーザーページ)?[ ‐-]+(?:ニコニコ動画|niconico).*$/, '');
-        }
-        if (mylistId.getIdType() === MylistIdType.User) {
-            title += 'の投稿動画';
-        }
-
-        return new Mylist(mylistId, title);
     };
     return SubscribeController;
 })();
@@ -1730,6 +1832,92 @@ var util;
         }
     };
 })(util || (util = {}));
+var NicovideoGlue;
+(function (NicovideoGlue) {
+    function getFavlistViewParent() {
+        var $parent = $('#favlistRescueContainer, #sideContents, .column.sub').eq(0);
+        if ($parent.length > 0) {
+            return $('<div />').prependTo($parent);
+        }
+
+        var $rescue = Template.load(Templates.favlist_rescue);
+        $rescue.appendTo(window.document.body);
+        $rescue.find('.favlistRescueCaption a').click(function () {
+            $rescue.toggleClass('closed');
+            return false;
+        });
+        return $rescue.find('#favlistRescueContainer');
+    }
+    NicovideoGlue.getFavlistViewParent = getFavlistViewParent;
+
+    function getSubscriveViewParent() {
+        var $parent = $('.content_312').eq(0);
+        if ($parent.length > 0) {
+            return $('<div />').css({
+                'padding': '10px',
+                'text-align': 'center'
+            }).prependTo($parent);
+        }
+
+        $parent = $('#watchBtns').eq(0);
+        if ($parent.length > 0) {
+            return $('<div />').css({
+                'display': 'inline-block',
+                'margin-left': '8px'
+            }).insertAfter($parent);
+        }
+
+        $parent = Template.load(Templates.subscribe_rescue);
+        $parent.appendTo(document.body);
+        return $parent;
+    }
+    NicovideoGlue.getSubscriveViewParent = getSubscriveViewParent;
+
+    function createMylistFromPage() {
+        var mylistId = MylistId.fromURL(window.location.href);
+        var title;
+
+        var $title = $([
+            '#SYS_box_mylist_header h1',
+            '.userDetail .profile h2'
+        ].join(',')).eq(0);
+
+        if ($title.length > 0) {
+            title = $title.text();
+        } else {
+            title = window.document.title.replace(/(?:のユーザーページ)?[ ‐-]+(?:ニコニコ動画|niconico).*$/, '');
+        }
+        if (mylistId.getIdType() === MylistIdType.User) {
+            title += 'の投稿動画';
+        }
+
+        return new Mylist(mylistId, title);
+    }
+    NicovideoGlue.createMylistFromPage = createMylistFromPage;
+})(NicovideoGlue || (NicovideoGlue = {}));
+var NicovideoSubscriptionService = (function (_super) {
+    __extends(NicovideoSubscriptionService, _super);
+    function NicovideoSubscriptionService(mylistCollectionStorage, updateInterval) {
+        _super.call(this, NicovideoGlue.createMylistFromPage(), mylistCollectionStorage, updateInterval);
+    }
+    return NicovideoSubscriptionService;
+})(SubscriptionService);
+var NicovideoFavlistView = (function (_super) {
+    __extends(NicovideoFavlistView, _super);
+    function NicovideoFavlistView() {
+        _super.call(this);
+        this.appendTo(NicovideoGlue.getFavlistViewParent());
+    }
+    return NicovideoFavlistView;
+})(FavlistView);
+var NicovideoSubscribeView = (function (_super) {
+    __extends(NicovideoSubscribeView, _super);
+    function NicovideoSubscribeView(subscriptionService) {
+        _super.call(this, subscriptionService);
+        this.appendTo(NicovideoGlue.getSubscriveViewParent());
+    }
+    return NicovideoSubscribeView;
+})(SubscribeView);
 var DI = util.DI;
 
 DI.register('Storage', function () {
@@ -1738,10 +1926,6 @@ DI.register('Storage', function () {
 
 DI.register('UrlFetcher', function () {
     return util.chooseUrlFetcher();
-});
-
-DI.register('Config', function () {
-    return DI.resolve('ConfigStorage').get();
 });
 
 DI.register('ConfigStorage', function () {
@@ -1753,7 +1937,7 @@ DI.register('MylistCollectionStorage', function () {
 });
 
 DI.register('MylistCollectionUpdater', function () {
-    return new MylistCollectionUpdater(DI.resolve('UpdateInterval'), DI.resolve('MylistFeedFactory'));
+    return new MylistCollectionUpdater(DI.resolve('MylistFeedFactory'));
 });
 
 DI.register('MylistFeedFactory', function () {
@@ -1764,16 +1948,36 @@ DI.register('UpdateInterval', function () {
     return new UpdateInterval(DI.resolve('Storage'), DI.resolve('Config'));
 });
 
+DI.register('ConfigService', function () {
+    return new ConfigService(DI.resolve('ConfigStorage'));
+});
+
+DI.register('MylistService', function () {
+    return new MylistService(DI.resolve('MylistStorage'), DI.resolve('UpdateInterval'), DI.resolve('MylistFeedFactory'));
+});
+
+DI.register('SubscriptionService', function () {
+    return new NicovideoSubscriptionService(DI.resolve('MylistCollectionStorage'), DI.resolve('UpdateInterval'));
+});
+
+DI.register('FavlistView', function () {
+    return new NicovideoFavlistView();
+});
+
+DI.register('SubscribeView', function () {
+    return new NicovideoSubscribeView(DI.resolve('SubscriptionService'));
+});
+
 DI.register('FavlistApp', function () {
     return new FavlistApp();
 });
 
 DI.register('FavlistController', function () {
-    return new FavlistController(DI.resolve('Config'), DI.resolve('ConfigStorage'), DI.resolve('MylistCollectionStorage'), DI.resolve('MylistCollectionUpdater'));
+    return new FavlistController(DI.resolve('FavlistView'), DI.resolve('ConfigService'), DI.resolve('MylistService'));
 });
 
 DI.register('SubscribeController', function () {
-    return new SubscribeController(DI.resolve('MylistCollectionStorage'), DI.resolve('UpdateInterval'));
+    return new SubscribeController(DI.resolve('SubscribeView'), DI.resolve('SubscriptionService'));
 });
 $(function () {
     DI.resolve('FavlistApp').start();

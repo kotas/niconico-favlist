@@ -4,7 +4,6 @@
 /// <reference path="../util/EventEmitter.ts" />
 
 interface IMylistCollectionUpdater extends util.IEventEmitter {
-    updateAllIfExpired(collection: MylistCollection): util.IUrlFetchAborter;
     updateAll(collection: MylistCollection): util.IUrlFetchAborter;
 }
 
@@ -19,24 +18,11 @@ interface IMylistCollectionUpdater extends util.IEventEmitter {
  */
 class MylistCollectionUpdater extends util.EventEmitter implements IMylistCollectionUpdater {
 
-    constructor(
-        private updateInterval: IUpdateInterval,
-        private mylistFeedFactory: IMylistFeedFactory
-    ) {
+    constructor(private mylistFeedFactory: IMylistFeedFactory) {
         super();
     }
 
-    updateAllIfExpired(collection: MylistCollection): util.IUrlFetchAborter {
-        if (this.updateInterval.isExpired()) {
-            return this.updateAll(collection);
-        } else {
-            return null;
-        }
-    }
-
     updateAll(collection: MylistCollection): util.IUrlFetchAborter {
-        this.updateInterval.updateLastUpdateTime();
-
         var mylists = Array.prototype.slice.call(collection.getMylists());
         if (mylists.length === 0) {
             return null;

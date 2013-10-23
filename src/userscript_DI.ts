@@ -1,5 +1,8 @@
 /// <reference path="./IFavlistDI.ts" />
 /// <reference path="./util/DI.ts" />
+/// <reference path="./userscript/NicovideoSubscriptionService.ts" />
+/// <reference path="./userscript/NicovideoFavlistView.ts" />
+/// <reference path="./userscript/NicovideoSubscribeView.ts" />
 
 var DI: IFavlistDI = util.DI;
 
@@ -12,10 +15,6 @@ DI.register('UrlFetcher', (): util.IUrlFetcher => {
 });
 
 
-DI.register('Config', (): IConfig => {
-    return DI.resolve('ConfigStorage').get();
-});
-
 DI.register('ConfigStorage', (): IConfigStorage => {
     return new ConfigStorage(DI.resolve('Storage'));
 });
@@ -25,7 +24,7 @@ DI.register('MylistCollectionStorage', (): IMylistCollectionStorage => {
 });
 
 DI.register('MylistCollectionUpdater', (): IMylistCollectionUpdater => {
-    return new MylistCollectionUpdater(DI.resolve('UpdateInterval'), DI.resolve('MylistFeedFactory'));
+    return new MylistCollectionUpdater(DI.resolve('MylistFeedFactory'));
 });
 
 DI.register('MylistFeedFactory', (): IMylistFeedFactory => {
@@ -37,22 +36,50 @@ DI.register('UpdateInterval', (): IUpdateInterval => {
 });
 
 
+DI.register('ConfigService', (): IConfigService => {
+    return new ConfigService(DI.resolve('ConfigStorage'));
+});
+
+DI.register('MylistService', (): IMylistService => {
+    return new MylistService(
+        DI.resolve('MylistStorage'),
+        DI.resolve('UpdateInterval'),
+        DI.resolve('MylistFeedFactory')
+    );
+});
+
+DI.register('SubscriptionService', (): ISubscriptionService => {
+    return new NicovideoSubscriptionService(
+        DI.resolve('MylistCollectionStorage'),
+        DI.resolve('UpdateInterval')
+    );
+});
+
+
+DI.register('FavlistView', (): IFavlistView => {
+    return new NicovideoFavlistView();
+});
+
+DI.register('SubscribeView', (): ISubscribeView => {
+    return new NicovideoSubscribeView(DI.resolve('SubscriptionService'));
+});
+
+
 DI.register('FavlistApp', (): IFavlistApp => {
     return new FavlistApp();
 });
 
 DI.register('FavlistController', (): IFavlistController => {
     return new FavlistController(
-        DI.resolve('Config'),
-        DI.resolve('ConfigStorage'),
-        DI.resolve('MylistCollectionStorage'),
-        DI.resolve('MylistCollectionUpdater')
+        DI.resolve('FavlistView'),
+        DI.resolve('ConfigService'),
+        DI.resolve('MylistService')
     );
 });
 
 DI.register('SubscribeController', (): ISubscribeController => {
     return new SubscribeController(
-        DI.resolve('MylistCollectionStorage'),
-        DI.resolve('UpdateInterval')
+        DI.resolve('SubscribeView'),
+        DI.resolve('SubscriptionService')
     );
 });

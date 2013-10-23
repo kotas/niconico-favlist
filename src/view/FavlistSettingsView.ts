@@ -1,15 +1,10 @@
 /// <reference path="./View.ts" />
-/// <reference path="../model/MylistCollection.ts" />
-/// <reference path="../model/Config.ts" />
-
-interface IFavlistSettingSavedMylist {
-    mylistId: MylistId;
-    title: string;
-}
+/// <reference path="../service/ConfigService.ts" />
+/// <reference path="../service/MylistService.ts" />
 
 /**
  * events:
- *   - settingSave(savedMylists: IFavlistSettingSavedMylist[], savedConfig: IConfig)
+ *   - settingSave(mylistSettings: IMylistSetting[], configSettings: IConfig)
  *   - settingCancel()
  */
 class FavlistSettingsView extends View {
@@ -17,30 +12,28 @@ class FavlistSettingsView extends View {
     private $mylists: JQuery;
 
     constructor(
-        $parent: JQuery,
-        private config: IConfig,
-        private mylistCollection: MylistCollection
+        private configService: IConfigService,
+        private mylistService: IMylistService
     ) {
-        super($parent, Template.load(Templates.favlist_settings));
+        super(Template.load(Templates.favlist_settings));
         this.$mylists = this.$el.find('.favlistSettingMylists');
         this.setEventHandlers();
     }
 
-    update() {
-        this.updateMylistViews();
-        this.updateConfigView();
+    private setEventHandlers() {
+        this.setEventHandlersForView();
     }
 
-    private setEventHandlers() {
+    private setEventHandlersForView() {
         this.$el.find('.favlistSaveSettingsButton').click(() => {
             try {
-                var mylists = this.getSavedMylists();
-                var config = this.getSavedConfig();
+                var mylistSettings = this.getMylistSettings();
+                var configSettings = this.getConfigSettings();
             } catch (e) {
                 alert(e.message || e);
                 return false;
             }
-            this.emitEvent('settingSave', [mylists, config]);
+            this.emitEvent('settingSave', [mylistSettings, configSettings]);
             return false;
         });
         this.$el.find('.favlistCancelSettingsButton').click(() => {
@@ -49,8 +42,8 @@ class FavlistSettingsView extends View {
         });
     }
 
-    private getSavedMylists(): IFavlistSettingSavedMylist[] {
-        var savedMylists: IFavlistSettingSavedMylist[] = [];
+    private getMylistSettings(): IMylistSetting[] {
+        var savedMylists: IMylistSetting[] = [];
         this.$mylists.children().each((i, el) => {
             var $mylist = $(el);
             var mylistId: MylistId = $mylist.data('mylistId');
@@ -63,7 +56,7 @@ class FavlistSettingsView extends View {
         return savedMylists;
     }
 
-    private getSavedConfig(): IConfig {
+    private getConfigSettings(): IConfig {
         var checkInterval: number = parseInt(this.$el.find('.favlistConfigCheckInterval').val(), 10);
         if (isNaN(checkInterval)) {
             throw new Error('更新チェック間隔は整数で指定してください');
@@ -85,11 +78,17 @@ class FavlistSettingsView extends View {
         );
     }
 
-    private updateMylistViews() {
-        var $template = $(Template.load(Templates.favlist_settings_mylist));
+    update() {
+        this.updateMylistViews();
+        this.updateConfigView();
+    }
 
+    private updateMylistViews() {
+        var mylists = this.mylistService.getMylistCollection().getMylists();
+
+        var $template = $(Template.load(Templates.favlist_settings_mylist));
         this.$mylists.empty();
-        this.mylistCollection.getMylists().forEach((mylist: Mylist) => {
+        mylists.forEach((mylist: Mylist) => {
             var $mylist = $template.clone();
             $mylist.data('mylistId', mylist.getMylistId());
             $mylist.find('.favlistMylistTitleEdit').val(mylist.getTitle()).attr('placeholder', mylist.getOriginalTitle());
@@ -97,17 +96,6 @@ class FavlistSettingsView extends View {
             this.$mylists.append($mylist);
         });
         this.updateMylistButtons();
-    }
-
-    private updateMylistButtons() {
-        var $mylists = this.$mylists.children();
-        var total = $mylists.length;
-        $mylists.each((i, el) => {
-            var $mylist = $(el);
-            $mylist.find('.favlistMylistMoveUpButton').attr('disabled', (i === 0));
-            $mylist.find('.favlistMylistMoveDownButton').attr('disabled', (i === total - 1));
-            $mylist.find('.favlistMylistMoveTopButton').attr('disabled', (i === 0));
-        });
     }
 
     private setEventHandlersForMylistView($mylist: JQuery) {
@@ -135,11 +123,23 @@ class FavlistSettingsView extends View {
         });
     }
 
+    private updateMylistButtons() {
+        var $mylists = this.$mylists.children();
+        var total = $mylists.length;
+        $mylists.each((i, el) => {
+            var $mylist = $(el);
+            $mylist.find('.favlistMylistMoveUpButton').attr('disabled', (i === 0));
+            $mylist.find('.favlistMylistMoveDownButton').attr('disabled', (i === total - 1));
+            $mylist.find('.favlistMylistMoveTopButton').attr('disabled', (i === 0));
+        });
+    }
+
     private updateConfigView() {
-        this.$el.find('.favlistConfigCheckInterval').val(this.config.getCheckInterval().toString());
-        this.$el.find('.favlistConfigMaxNewVideos').val(this.config.getMaxNewVideos().toString());
-        this.$el.find('.favlistConfigHideCheckedList').attr('checked', this.config.isCheckedListHidden());
-        this.$el.find('.favlistConfigOrderDescendant').attr('checked', this.config.isOrderDescendant());
+        var config = this.configService.getConfig();
+        this.$el.find('.favlistConfigCheckInterval').val(config.getCheckInterval().toString());
+        this.$el.find('.favlistConfigMaxNewVideos').val(config.getMaxNewVideos().toString());
+        this.$el.find('.favlistConfigHideCheckedList').attr('checked', config.isCheckedListHidden());
+        this.$el.find('.favlistConfigOrderDescendant').attr('checked', config.isOrderDescendant());
     }
 
 }

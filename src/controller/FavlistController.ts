@@ -1,89 +1,60 @@
-/// <reference path="../model/Config.ts" />
-/// <reference path="../model/ConfigStorage.ts" />
-/// <reference path="../model/MylistCollectionStorage.ts" />
-/// <reference path="../model/MylistCollection.ts" />
-/// <reference path="../model/MylistCollectionUpdater.ts" />
-/// <reference path="../model/UpdateInterval.ts" />
-/// <reference path="../model/MylistFeedFactory.ts" />
 /// <reference path="../view/FavlistView.ts" />
+/// <reference path="../service/ConfigService.ts" />
+/// <reference path="../service/MylistService.ts" />
+/// <reference path="./FavlistMylistsController.ts" />
+/// <reference path="./FavlistSettingsController.ts" />
 
 interface IFavlistController {
+    getView(): IFavlistView;
     start();
 }
 
 class FavlistController implements IFavlistController {
 
-    private mylistCollection: MylistCollection;
-    private favlistView: FavlistView;
+    private mylistsController: FavlistMylistsController;
+    private settingsController: FavlistSettingsController;
 
     constructor(
-        private config: IConfig,
-        private configStorage: IConfigStorage,
-        private mylistCollectionStorage: IMylistCollectionStorage,
-        private mylistCollectionUpdater: IMylistCollectionUpdater
+        private favlistView: IFavlistView,
+        private configService: IConfigService,
+        private mylistService: IMylistService
     ) {
-        this.mylistCollection = this.mylistCollectionStorage.get();
-        this.favlistView = new FavlistView(this.config, this.mylistCollection, this.mylistCollectionUpdater);
-        this.setEventHandlers();
+        this.setEventHandlersForView();
+    }
+
+    private setEventHandlersForView() {
+        this.favlistView.addListener('show', () => {
+            this.showMylistsPage();
+        });
+        this.favlistView.addListener('settingPageRequest', () => {
+            this.showSettingsPage();
+        });
+    }
+
+    getView(): IFavlistView {
+        return this.favlistView;
     }
 
     start() {
         this.favlistView.show();
-        this.favlistView.showMylistPage();
-        this.mylistCollectionUpdater.updateAllIfExpired(this.mylistCollection);
+        this.showMylistsPage();
     }
 
-    private setEventHandlers() {
-        this.favlistView.addListener('settingPageRequest', () => {
-            this.favlistView.showSettingPage();
-        });
-        this.setEventHandlersForMylistsView();
-        this.setEventHandlersForMylistCollectionUpdater();
-        this.setEventHandlersForSettingsView();
+    private showMylistsPage() {
+        if (!this.mylistsController) {
+            this.mylistsController = new FavlistMylistsController(this.configService, this.mylistService);
+            this.favlistView.setMylistsView(this.mylistsController.getView());
+        }
+        this.favlistView.showMylistsPage();
     }
 
-    private setEventHandlersForMylistsView() {
-        this.favlistView.addListener('checkNowRequest', () => {
-            this.mylistCollectionUpdater.updateAll(this.mylistCollection);
-        });
-        this.favlistView.addListener('mylistClearRequest', (mylist: Mylist) => {
-            mylist.markAllVideosAsWatched();
-            this.mylistCollectionStorage.store(this.mylistCollection);
-        });
-        this.favlistView.addListener('mylistVideoWatch', (mylist: Mylist, video: Video) => {
-            mylist.markVideoAsWatched(video);
-            this.mylistCollectionStorage.store(this.mylistCollection);
-        });
-    }
-
-    private setEventHandlersForMylistCollectionUpdater() {
-        this.mylistCollectionUpdater.addListener('finishUpdateAll', () => {
-            this.mylistCollectionStorage.store(this.mylistCollection);
-        });
-    }
-
-    private setEventHandlersForSettingsView() {
-        this.favlistView.addListener('settingSave', (savedMylists: IFavlistSettingSavedMylist[], savedConfig: IConfig) => {
-            var newMylists: Mylist[] = [];
-            savedMylists.forEach((savedMylist: IFavlistSettingSavedMylist) => {
-                var mylist = this.mylistCollection.get(savedMylist.mylistId);
-                if (mylist) {
-                    mylist.setOverrideTitle(savedMylist.title);
-                    newMylists.push(mylist);
-                }
-            });
-            this.mylistCollection.setMylists(newMylists);
-            this.mylistCollectionStorage.store(this.mylistCollection);
-
-            this.config.update(savedConfig);
-            this.configStorage.store(this.config);
-
-            this.favlistView.showMylistPage();
-        });
-
-        this.favlistView.addListener('settingCancel', () => {
-            this.favlistView.showMylistPage();
-        });
+    private showSettingsPage() {
+        if (!this.settingsController) {
+            this.settingsController = new FavlistSettingsController(this.configService, this.mylistService);
+            this.settingsController.addListener('finish', () => this.showMylistsPage());
+            this.favlistView.setSettingsView(this.settingsController.getView());
+        }
+        this.favlistView.showSettingsPage();
     }
 
 }

@@ -1,84 +1,90 @@
 /// <reference path="./View.ts" />
-/// <reference path="./FavlistMylistsMylistView.ts" />
-/// <reference path="../model/MylistCollection.ts" />
-/// <reference path="../model/MylistCollectionUpdater.ts" />
-/// <reference path="../model/Config.ts" />
+/// <reference path="./FavlistMylistsMylistSubview.ts" />
+/// <reference path="../service/ConfigService.ts" />
+/// <reference path="../service/MylistService.ts" />
 
 /**
  * events:
- *   - checkNowRequest(mylistCollection: MylistCollection)
- * delegate events from:
- *   - FavlistMylistsMylistView
+ *   - checkNowRequest()
+ *   - mylistClearRequest(mylist: Mylist)
+ *   - mylistVideoWatch(mylist: Mylist, video: Video)
  */
 class FavlistMylistsView extends View {
 
     private $mylists: JQuery;
-    private mylistViews: { [mylistId: string]: FavlistMylistsMylistView } = {};
+    private mylistViews: { [mylistId: string]: FavlistMylistsMylistSubview } = {};
 
     constructor(
-        $parent: JQuery,
-        private config: IConfig,
-        private mylistCollection: MylistCollection,
-        private mylistCollectionUpdater: IMylistCollectionUpdater
+        private configService: IConfigService,
+        private mylistService: IMylistService
     ) {
-        super($parent, Template.load(Templates.favlist_mylists));
+        super(Template.load(Templates.favlist_mylists));
         this.$mylists = this.$el.find('.favlistMylists');
         this.setEventHandlers();
     }
 
-    update() {
-        this.$el.toggleClass('noMylist', this.mylistCollection.isEmpty());
-        this.$el.toggleClass('checkedMylistHidden', this.config.isCheckedListHidden());
-        this.updateMylistViews();
-    }
-
-    private updateMylistViews() {
-        this.mylistViews = {};
-        this.$mylists.empty();
-        this.mylistCollection.getMylists().forEach((mylist: Mylist) => {
-            var mylistView = new FavlistMylistsMylistView(this.$mylists, this.config, mylist);
-            mylistView.addEventDelegator((eventName, args) => this.emitEvent(eventName, args));
-            mylistView.show();
-            this.mylistViews[mylist.getMylistId().toString()] = mylistView;
-        });
-    }
-
     private setEventHandlers() {
+        this.setEventHandlersForView();
+        this.setEventHandlersForConfigService();
+        this.setEventHandlersForMylistService();
+    }
+
+    private setEventHandlersForView() {
         this.$el.find('.favlistCheckNowButton').click(() => {
-            this.emitEvent('checkNowRequest', [this.mylistCollection]);
+            this.emitEvent('checkNowRequest');
             return false;
         });
-        this.setEventHandlersForMylistCollectionUpdater();
     }
 
-    private setEventHandlersForMylistCollectionUpdater() {
-        var updateMylistViewStatus = (mylist: Mylist, status: string, dismiss: boolean = false): FavlistMylistsMylistView => {
-            var mylistView = this.mylistViews[mylist.getMylistId().toString()];
-            if (!mylistView) return null;
-            if (status !== null) {
-                mylistView.showStatus(status, dismiss);
-            } else {
-                mylistView.hideStatus();
-            }
-            return mylistView;
-        };
-        this.mylistCollectionUpdater.addListener('startUpdateAll', () => {
+    private setEventHandlersForConfigService() {
+        this.configService.addListener('update', () => {
+            this.update();
+        });
+    }
+
+    private setEventHandlersForMylistService() {
+        this.mylistService.addListener('update', () => {
+            this.update();
+        });
+        this.mylistService.addListener('startUpdateAll', () => {
             this.$el.find('.favlistCheckNowButton').attr('disabled', true).addClass('disabled');
-            this.mylistCollection.getMylists().forEach((mylist: Mylist) => {
-                updateMylistViewStatus(mylist, 'waiting');
-            });
         });
-        this.mylistCollectionUpdater.addListener('startUpdateMylist', (mylist: Mylist) => {
-            updateMylistViewStatus(mylist, 'updating');
+        this.mylistService.addListener('changeMylistStatus', (mylist: Mylist, status: MylistStatus) => {
+            var mylistView = this.mylistViews[mylist.getMylistId().toString()];
+            if (mylistView) {
+                mylistView.renderStatus(status);
+            }
         });
-        this.mylistCollectionUpdater.addListener('failedUpdateMylist', (mylist: Mylist, error: MylistFeedFetchError) => {
-            updateMylistViewStatus(mylist, 'failed', true);
-        });
-        this.mylistCollectionUpdater.addListener('finishUpdateMylist', (mylist: Mylist) => {
-            updateMylistViewStatus(mylist, null);
-        });
-        this.mylistCollectionUpdater.addListener('finishUpdateAll', () => {
+        this.mylistService.addListener('finishUpdateAll', () => {
             this.$el.find('.favlistCheckNowButton').removeAttr('disabled').removeClass('disabled');
+        });
+    }
+
+    update() {
+        var mylists = this.mylistService.getMylistCollection().getMylists();
+        var config = this.configService.getConfig();
+
+        this.$el.toggleClass('noMylist', mylists.length === 0);
+        this.$el.toggleClass('checkedMylistHidden', config.isCheckedListHidden());
+
+        this.mylistViews = {};
+        this.$mylists.empty();
+        mylists.forEach((mylist: Mylist) => {
+            var mylistId = mylist.getMylistId().toString();
+            var mylistView = new FavlistMylistsMylistSubview();
+            this.setEventHandlersForMylistView(mylist, mylistView);
+            mylistView.render(mylist, config);
+            mylistView.appendTo(this.$mylists);
+            this.mylistViews[mylistId] = mylistView;
+        });
+    }
+
+    private setEventHandlersForMylistView(mylist: Mylist, mylistView: FavlistMylistsMylistSubview) {
+        mylistView.addListener('mylistClearRequest', () => {
+            this.emitEvent('mylistClearRequest', [mylist]);
+        });
+        mylistView.addListener('mylistVideoWatch', (video: Video) => {
+            this.emitEvent('mylistVideoWatch', [mylist, video]);
         });
     }
 
