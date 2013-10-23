@@ -76,6 +76,7 @@
     background: #36689d;
 }
 .favlistMylistStatus span.private,
-.favlistMylistStatus span.failed {
+.favlistMylistStatus span.deleted,
+.favlistMylistStatus span.error {
     background: #900;
 }

@@ -15,7 +15,7 @@ module.exports = (grunt) ->
         options:
           target: 'es3'
       release:
-        src:  ['compiled/templates.ts', 'src/userscript.ts']
+        src:  ['compiled/templates.ts', 'src/userscript/main.ts']
         dest: 'compiled/compiled.js'
         options:
           target: 'es3'

@@ -16,16 +16,12 @@ interface IMylistFeedFactory {
 
 class MylistFeedFactory {
 
-    constructor(
-        private fetcher: util.IUrlFetcher,
-        private userAgent: string
-    ) {}
+    constructor(private fetcher: util.IUrlFetcher) {}
 
     getFeedFromServer(mylistId: MylistId, callback: (error: MylistFeedFetchError, feed: MylistFeed) => any): util.IUrlFetchAborter {
         var options: util.IUrlFetchOption = {
             method:  'GET',
-            url:     Nicovideo.getMylistFeedURL(mylistId),
-            headers: { 'User-Agent': this.userAgent }
+            url:     Nicovideo.getMylistFeedURL(mylistId)
         };
         return this.fetcher.fetch(options, (error: Error, response: util.IUrlFetchResponse) => {
             if (error) {

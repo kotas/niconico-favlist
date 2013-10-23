@@ -1,6 +1,6 @@
 /// <reference path="../view/FavlistSettingsView.ts" />
-/// <reference path="../service/MylistService.ts" />
 /// <reference path="../service/ConfigService.ts" />
+/// <reference path="../service/MylistService.ts" />
 /// <reference path="../util/EventEmitter.ts" />
 
 /**
@@ -16,15 +16,17 @@ class FavlistSettingsController extends util.EventEmitter {
         private mylistService: IMylistService
     ) {
         super();
-        this.settingsView = new FavlistSettingsView(this.configService, this.mylistService);
-        this.setEventHandlers();
     }
 
     getView(): FavlistSettingsView {
+        if (!this.settingsView) {
+            this.settingsView = new FavlistSettingsView(this.configService, this.mylistService);
+            this.setEventHandlersForView();
+        }
         return this.settingsView;
     }
 
-    private setEventHandlers() {
+    private setEventHandlersForView() {
         this.settingsView.addListener('settingSave', (mylistSettings: IMylistSetting[], configSettings: IConfig) => {
             this.mylistService.setSettings(mylistSettings);
             this.configService.setSettings(configSettings);

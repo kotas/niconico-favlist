@@ -58,13 +58,13 @@ class FavlistSettingsView extends View {
 
     private getConfigSettings(): IConfig {
         var checkInterval: number = parseInt(this.$el.find('.favlistConfigCheckInterval').val(), 10);
-        if (isNaN(checkInterval)) {
-            throw new Error('更新チェック間隔は整数で指定してください');
+        if (isNaN(checkInterval) || checkInterval < 0) {
+            throw new Error('更新チェック間隔は正の整数で指定してください');
         }
 
         var maxNewVideos: number = parseInt(this.$el.find('.favlistConfigMaxNewVideos').val(), 10);
-        if (isNaN(maxNewVideos)) {
-            throw new Error('新着動画の表示数は整数で指定してください');
+        if (isNaN(maxNewVideos) || checkInterval < 0) {
+            throw new Error('新着動画の表示数は正の整数で指定してください');
         }
 
         var hideCheckedList: boolean = this.$el.find('.favlistConfigHideCheckedList').is(':checked');

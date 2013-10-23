@@ -1,15 +1,12 @@
 /// <reference path="./View.ts" />
 /// <reference path="../service/SubscriptionService.ts" />
 
-interface ISubscribeView extends IView {
-}
-
 /**
  * events:
  *   - subscribeRequest()
  *   - unsubscribeRequest()
  */
-class SubscribeView extends View implements ISubscribeView {
+class SubscribeView extends View {
 
     constructor(
         private subscriptionService: ISubscriptionService

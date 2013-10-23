@@ -1,26 +1,24 @@
 /// <reference path="../view/SubscribeView.ts" />
 /// <reference path="../service/SubscriptionService.ts" />
 
-interface ISubscribeController {
-    getView(): ISubscribeView;
-    start();
-}
+class SubscribeController {
 
-class SubscribeController implements ISubscribeController {
+    private subscribeView: SubscribeView;
 
     constructor(
-        private subscribeView: ISubscribeView,
         private subscriptionService: ISubscriptionService
-    ) {
-        this.setEventHandlersForView();
-    }
-
-    getView(): ISubscribeView {
-        return this.subscribeView;
-    }
+    ) {}
 
     start() {
-        this.subscribeView.show();
+        this.getView().show();
+    }
+
+    getView(): SubscribeView {
+        if (!this.subscribeView) {
+            this.subscribeView = new SubscribeView(this.subscriptionService);
+            this.setEventHandlersForView();
+        }
+        return this.subscribeView;
     }
 
     private setEventHandlersForView() {

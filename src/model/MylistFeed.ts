@@ -38,10 +38,7 @@ class MylistFeedEntry {
 
 class MylistFeed {
 
-    constructor(
-        private url: string,
-        private xml: string
-        ) {}
+    constructor(private url: string, private xml: string) {}
 
     getURL(): string {
         return this.url;

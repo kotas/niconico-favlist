@@ -25,7 +25,7 @@
 var Template = { html: {}, css: {} };
 Template.html['favlist'] = "<div class=\"favlistView\">\n<div class=\"favlistHeader\">\n<div class=\"favlistHeaderTitle\">favlist</div>\n<a href=\"#\" class=\"favlistSettingButton\">設定</a>\n</div>\n<div class=\"favlistPages\">\n</div>\n</div>";
 Template.html['favlist_mylists'] = "<div class=\"favlistMylistsView\">\n<div class=\"favlistNoMylist\">\n<div class=\"favlistNoMylistTitle\">マイリストが登録されていません</div>\n<div class=\"favlistNoMylistDescription\">チェックしたいマイリストのページで「favlist に登録」してください！</div>\n</div>\n<div class=\"favlistMylists\">\n</div>\n<div class=\"favlistButtons\">\n<button class=\"favlistCheckNowButton\">今すぐ更新</button>\n</div>\n</div>";
-Template.html['favlist_mylists_mylist'] = "<div class=\"favlistMylist\">\n<div class=\"favlistMylistInner\">\n<div class=\"favlistMylistHeader\">\n<div class=\"favlistMylistTitleLabel\">\n<span class=\"favlistMylistNewCountLabel\">\n(<span class=\"favlistMylistNewCount\"></span>)\n</span>\n<a href=\"#\" class=\"favlistMylistTitle favlistMylistLink\"></a>\n</div>\n<div class=\"favlistMylistButtons\">\n<button class=\"favlistMylistClearButton\">クリア</button>\n</div>\n<div class=\"favlistMylistStatus\">\n<span class=\"waiting\">待機中</span>\n<span class=\"updating\">更新中</span>\n<span class=\"private\">非公開</span>\n<span class=\"failed\">更新失敗</span>\n</div>\n</div>\n<div class=\"favlistMylistVideos\">\n</div>\n</div>\n</div>";
+Template.html['favlist_mylists_mylist'] = "<div class=\"favlistMylist\">\n<div class=\"favlistMylistInner\">\n<div class=\"favlistMylistHeader\">\n<div class=\"favlistMylistTitleLabel\">\n<span class=\"favlistMylistNewCountLabel\">\n(<span class=\"favlistMylistNewCount\"></span>)\n</span>\n<a href=\"#\" class=\"favlistMylistTitle favlistMylistLink\"></a>\n</div>\n<div class=\"favlistMylistButtons\">\n<button class=\"favlistMylistClearButton\">クリア</button>\n</div>\n<div class=\"favlistMylistStatus\">\n<span class=\"waiting\">待機中</span>\n<span class=\"updating\">更新中</span>\n<span class=\"private\">非公開</span>\n<span class=\"deleted\">削除された</span>\n<span class=\"error\">更新失敗</span>\n</div>\n</div>\n<div class=\"favlistMylistVideos\">\n</div>\n</div>\n</div>";
 Template.html['favlist_mylists_video'] = "<div class=\"favlistVideo\">\n<div class=\"favlistVideoHeader\">\n<div class=\"favlistVideoThumbnail\">\n<a href=\"\" title=\"\" class=\"favlistVideoLink\"><img src=\"\" /></a>\n</div>\n<div class=\"favlistVideoInfo\">\n<a href=\"\" title=\"\" class=\"favlistVideoLink favlistVideoTitle\"></a>\n<span class=\"favlistVideoTimestamp\"></span>\n</div>\n</div>\n<div class=\"favlistVideoMemo\">\n<div class=\"favlistVideoMemoText\"></div>\n</div>\n</div>";
 Template.html['favlist_rescue'] = "<div class=\"favlistViewRescue\">\n<div class=\"favlistRescueCaption\">\nレスキューモードで実行中 (\n<a href=\"#\" class=\"favlistRescueClose\">Favlist を閉じる</a>\n<a href=\"#\" class=\"favlistRescueOpen\">Favlist を開く</a>\n)\n</div>\n<div id=\"favlistRescueContainer\"></div>\n</div>";
 Template.html['favlist_settings'] = "<div class=\"favlistSettingsView\">\n<div class=\"favlistSettingMylists\">\n</div>\n<form class=\"favlistConfig\" action=\"javascript:void(0);\">\n<ul class=\"favlistConfigItems\">\n<li><label>更新チェック間隔 <input type=\"text\" class=\"favlistConfigText favlistConfigCheckInterval\" value=\"\" size=\"6\" /> 秒</label></li>\n<li><label>新着動画の表示数 <input type=\"text\" class=\"favlistConfigText favlistConfigMaxNewVideos\" value=\"\" size=\"6\" /> 件まで</label></li>\n<li><label><input type=\"checkbox\" class=\"favlistConfigCheckbox favlistConfigHideCheckedList\" value=\"1\" /> 新着がないマイリストを隠す</label></li>\n<li><label><input type=\"checkbox\" class=\"favlistConfigCheckbox favlistConfigOrderDescendant\" value=\"1\" /> 動画を新しい順に並べる</label></li>\n</ul>\n<div class=\"favlistButtons\">\n<button class=\"favlistButtonSave favlistSaveSettingsButton\">設定を保存</button>\n<button class=\"favlistCancelSettingsButton\">キャンセル</button>\n</div>\n</form>\n</div>";
@@ -34,7 +34,7 @@ Template.html['subscribe'] = "<div class=\"favlistSubscribeView\">\n<button clas
 Template.html['subscribe_rescue'] = "<div id=\"favlistSubscribeViewRescue\">\n</div>";
 Template.css['favlist'] = ".favlistView {\nbackground: white;\nfont-size: 12px;\nline-height: 1.2em;\nmargin-bottom: 8px;\nborder-radius: 2px;\nbox-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);\nposition: relative;\nwidth: 100%;\n}\n.favlistHeader {\ndisplay: table;\nwidth: 100%;\nheight: 30px;\n}\n.favlistHeaderTitle {\ndisplay: table-cell;\npadding: 5px 10px;\nbackground: #ccc;\ncolor: #333;\nfont-size: 13px;\nfont-weight: bold;\nvertical-align: middle;\n}\n.favlistSettingButton {\ndisplay: table-cell;\nbackground: #336666;\nwidth: 4em;\ntext-align: center;\ncolor: #ffffff !important;\ntext-decoration: none;\nwhite-space: nowrap;\nvertical-align: middle;\n}\n.favlistSettingButton:hover {\nbackground: #669999;\ntext-decoration: underline;\n}\n.inSettingView .favlistSettingButton {\ndisplay: none;\n}\n.favlistPages {\npadding: 10px;\nposition: relative;\n}\n.favlistButtons button {\nmargin-right: 4px;\n}\na.favlistMylistLink, a.favlistMylistLink:link,\na.favlistVideoLink, a.favlistVideoLink:link {\ncolor: #006699 !important;\n}\na.favlistMylistLink:visited, a.favlistVideoLink:visited {\ncolor: #005584 !important;\n}\na.favlistMylistLink:hover, a.favlistVideoLink:hover {\ncolor: #0584C3 !important;\n}\na.favlistMylistLink:active, a.favlistVideoLink:active {\ncolor: #52aeea !important;\n}\n.favlistView button {\ndisplay: inline-block;\npadding: 2px 10px;\nbackground: #666666;\nfont-family: sans-serif;\ncolor: white;\nborder: none;\nborder-radius: 4px;\nwhite-space: nowrap;\n}\n.favlistView button.disabled,\n.favlistView button[disabled] {\ncursor: not-allowed;\npointer-events: none;\nopacity: .2;\n}\n.favlistView button:hover {\nbackground: #777777;\n}\n.favlistView button:active {\nbackground: #555555;\n}\n.favlistView button.favlistButtonSave {\nbackground: #339933;\n}\n.favlistView button.favlistButtonSave:hover {\nbackground: #55BB55;\n}\n.favlistView button.favlistButtonSave:hover {\nbackground: #228822;\n}";
 Template.css['favlist_mylists'] = ".favlistNoMylist {\ndisplay: none;\n}\n.noMylist .favlistNoMylist {\ndisplay: block;\n}\n.favlistNoMylistTitle {\npadding: 30px;\ntext-align: center;\ncolor: #cccccc;\n}\n.noMylist .favlistMylists {\ndisplay: none;\n}\n.noMylist .favlistButtons {\ndisplay: none;\n}";
-Template.css['favlist_mylists_mylist'] = ".favlistMylistInner {\nmargin-bottom: 8px;\npadding-bottom: 8px;\nborder-bottom: 1px solid #eeeeee;\n}\n.checkedMylistHidden .favlistMylistInner {\ndisplay: none;\n}\n.checkedMylistHidden .hasNewVideo .favlistMylistInner,\n.checkedMylistHidden .hasStatus .favlistMylistInner {\ndisplay: block;\n}\n.favlistMylistHeader {\ndisplay: table;\nwidth: 100%;\n}\n.favlistMylistTitleLabel {\ndisplay: table-cell;\nwidth: 100%;\nmax-width: 1px;\noverflow: hidden;\ntext-overflow: ellipsis;\nwhite-space: nowrap;\nvertical-align: middle;\n}\n.favlistMylist.hasNewVideo .favlistMylistTitleLabel {\nfont-weight: bold;\n}\n.favlistMylistNewCountLabel {\ndisplay: none;\ncolor: #C00;\nwhite-space: nowrap;\n}\n.favlistMylist.hasNewVideo .favlistMylistNewCountLabel {\ndisplay: inline;\n}\n.favlistMylistButtons {\ndisplay: table-cell;\npadding-left: 8px;\n}\n.favlistMylistButtons button {\nfont-size: 10px;\n}\n.favlistMylist.hasStatus .favlistMylistButtons {\ndisplay: none;\n}\n.favlistMylistStatus {\ndisplay: none;\n}\n.favlistMylist.hasStatus .favlistMylistStatus {\ndisplay: table-cell;\npadding-left: 8px;\n}\n.favlistMylistStatus span {\ndisplay: inline-block;\npadding: 2px 10px;\nborder-radius: 10px;\nbackground: black;\nfont-size: 10px;\ncolor: white;\nwhite-space: nowrap;\n}\n.favlistMylistStatus span.waiting {\ncolor: #999;\nbackground: #efefef;\n}\n.favlistMylistStatus span.updating {\nbackground: #36689d;\n}\n.favlistMylistStatus span.private,\n.favlistMylistStatus span.failed {\nbackground: #900;\n}";
+Template.css['favlist_mylists_mylist'] = ".favlistMylistInner {\nmargin-bottom: 8px;\npadding-bottom: 8px;\nborder-bottom: 1px solid #eeeeee;\n}\n.checkedMylistHidden .favlistMylistInner {\ndisplay: none;\n}\n.checkedMylistHidden .hasNewVideo .favlistMylistInner,\n.checkedMylistHidden .hasStatus .favlistMylistInner {\ndisplay: block;\n}\n.favlistMylistHeader {\ndisplay: table;\nwidth: 100%;\n}\n.favlistMylistTitleLabel {\ndisplay: table-cell;\nwidth: 100%;\nmax-width: 1px;\noverflow: hidden;\ntext-overflow: ellipsis;\nwhite-space: nowrap;\nvertical-align: middle;\n}\n.favlistMylist.hasNewVideo .favlistMylistTitleLabel {\nfont-weight: bold;\n}\n.favlistMylistNewCountLabel {\ndisplay: none;\ncolor: #C00;\nwhite-space: nowrap;\n}\n.favlistMylist.hasNewVideo .favlistMylistNewCountLabel {\ndisplay: inline;\n}\n.favlistMylistButtons {\ndisplay: table-cell;\npadding-left: 8px;\n}\n.favlistMylistButtons button {\nfont-size: 10px;\n}\n.favlistMylist.hasStatus .favlistMylistButtons {\ndisplay: none;\n}\n.favlistMylistStatus {\ndisplay: none;\n}\n.favlistMylist.hasStatus .favlistMylistStatus {\ndisplay: table-cell;\npadding-left: 8px;\n}\n.favlistMylistStatus span {\ndisplay: inline-block;\npadding: 2px 10px;\nborder-radius: 10px;\nbackground: black;\nfont-size: 10px;\ncolor: white;\nwhite-space: nowrap;\n}\n.favlistMylistStatus span.waiting {\ncolor: #999;\nbackground: #efefef;\n}\n.favlistMylistStatus span.updating {\nbackground: #36689d;\n}\n.favlistMylistStatus span.private,\n.favlistMylistStatus span.deleted,\n.favlistMylistStatus span.error {\nbackground: #900;\n}";
 Template.css['favlist_mylists_video'] = ".favlistVideo {\nmargin: 8px 4px 0;\n}\n.favlistVideoHeader {\ndisplay: table;\nwidth: 100%;\n}\n.favlistVideoThumbnail {\ndisplay: table-cell;\nvertical-align: middle;\npadding-right: 8px;\n}\n.favlistVideoThumbnail a img {\nborder: none;\nwidth: 46px;\nheight: 34px;\n}\n.favlistVideoInfo {\ndisplay: table-cell;\nvertical-align: middle;\nwidth: 100%;\nfont-size: 11px;\n}\n.favlistVideoTitle {\nmargin-right: 4px;\n}\n.favlistVideoTimestamp {\nfont-size: 9px;\ncolor: #999;\nwhite-space: nowrap;\n}\n.favlistVideoMemo {\nmargin-top: 4px;\npadding: 4px 8px;\nborder-radius: 2px;\nbackground: #efefef;\nbox-shadow: 1px 1px 1px #ccc;\ncursor: pointer;\n}\n.favlistVideoMemo:hover {\nbackground: #f3f3f3;\n}\n.favlistVideoMemoText {\ndisplay: block;\nmax-height: 28px;\noverflow: hidden;\nfont-size: 10px;\n}\n.favlistVideoMemo.expanded .favlistVideoMemoText {\nwhite-space: pre;\nmax-height: none;\n}";
 Template.css['favlist_rescue'] = ".favlistViewRescue {\nposition: fixed;\nwidth: 360px;\nheight: 360px;\nright: 10px;\nbottom: 10px;\noverflow: auto;\nbackground-color: white;\nborder: 1px solid #cccccc;\n}\n.favlistRescueCaption {\nfont-size: 12px;\ncolor: #cc0000;\n}\n.favlistRescueOpen,\n.favlistViewRescue.closed .favlistRescueClose {\ndisplay: none;\n}\n.favlistViewRescue.closed .favlistRescueOpen {\ndisplay: inline;\n}";
 Template.css['favlist_settings'] = ".favlistConfigItems {\nlist-style-type: none;\n}\n.favlistConfigItems li {\nmargin-bottom: 10px;\n}\n.favlistConfigItems li label {\ncolor: #333;\n}\n.favlistConfigItems .favlistConfigText {\nmargin-left: 10px;\n}";
@@ -158,6 +158,17 @@ var util;
     }
     util.chooseUrlFetcher = chooseUrlFetcher;
 
+    function getUserAgent() {
+        var s = '';
+        if (typeof GM_info !== 'undefined' && GM_info.script && GM_info.script.name && GM_info.script.version) {
+            s = GM_info.script.name + '/' + GM_info.script.version + ' Greasemonkey ';
+        }
+        if (typeof window.navigator !== 'undefined' && window.navigator.userAgent) {
+            s += window.navigator.userAgent;
+        }
+        return s;
+    }
+
     var GMUrlFetcher = (function () {
         function GMUrlFetcher() {
         }
@@ -166,10 +177,12 @@ var util;
         };
 
         GMUrlFetcher.prototype.fetch = function (option, callback) {
+            var headers = option.headers || {};
+            headers['User-Agent'] = getUserAgent();
             return GM_xmlhttpRequest({
                 url: option.url,
                 method: option.method,
-                headers: option.headers,
+                headers: headers,
                 timeout: option.timeout,
                 onload: function (response) {
                     callback(null, {
@@ -234,6 +247,7 @@ var util;
                 req.timeout = option.timeout;
             }
 
+            req.setRequestHeader('User-Agent', getUserAgent());
             req.send(null);
             return { abort: function () {
                     req.abort();
@@ -275,19 +289,6 @@ var Config = (function () {
 
     Config.prototype.isOrderDescendant = function () {
         return this.orderDescendant;
-    };
-
-    Config.prototype.getUserAgent = function () {
-        var s;
-        if (typeof GM_info !== 'undefined' && GM_info.script && GM_info.script.name && GM_info.script.version) {
-            s = GM_info.script.name + '/' + GM_info.script.version + ' Greasemonkey';
-        } else {
-            s = 'NicoNicoFavlist';
-        }
-        if (typeof window.navigator !== 'undefined' && window.navigator.userAgent) {
-            s += ' ' + window.navigator.userAgent;
-        }
-        return s;
     };
     return Config;
 })();
@@ -817,15 +818,34 @@ var MylistCollectionStorage = (function () {
     };
     return MylistCollectionStorage;
 })();
+var ConfigService = (function (_super) {
+    __extends(ConfigService, _super);
+    function ConfigService(configStorage) {
+        _super.call(this);
+        this.configStorage = configStorage;
+        this.config = this.configStorage.get();
+    }
+    ConfigService.prototype.getConfig = function () {
+        return this.config;
+    };
+
+    ConfigService.prototype.setSettings = function (configSettings) {
+        this.config.update(configSettings);
+        this.configStorage.store(this.config);
+        this.emitEvent('update', [this.config]);
+    };
+    return ConfigService;
+})(util.EventEmitter);
 var UpdateInterval = (function () {
-    function UpdateInterval(storage, config) {
+    function UpdateInterval(storage, configService) {
         this.storage = storage;
-        this.config = config;
+        this.configService = configService;
     }
     UpdateInterval.prototype.isExpired = function () {
         var currentTime = this.getCurrentTimeInSeconds();
         var lastUpdate = this.getLastUpdateTime();
-        return (lastUpdate === null || lastUpdate + this.config.getCheckInterval() < currentTime);
+        var interval = this.configService.getConfig().getCheckInterval();
+        return (lastUpdate === null || lastUpdate + interval < currentTime);
     };
 
     UpdateInterval.prototype.expire = function () {
@@ -879,15 +899,13 @@ var MylistFeedFetchError = (function (_super) {
 })(util.CustomError);
 
 var MylistFeedFactory = (function () {
-    function MylistFeedFactory(fetcher, userAgent) {
+    function MylistFeedFactory(fetcher) {
         this.fetcher = fetcher;
-        this.userAgent = userAgent;
     }
     MylistFeedFactory.prototype.getFeedFromServer = function (mylistId, callback) {
         var options = {
             method: 'GET',
-            url: Nicovideo.getMylistFeedURL(mylistId),
-            headers: { 'User-Agent': this.userAgent }
+            url: Nicovideo.getMylistFeedURL(mylistId)
         };
         return this.fetcher.fetch(options, function (error, response) {
             if (error) {
@@ -938,6 +956,7 @@ var MylistCollectionUpdater = (function (_super) {
             if (!mylist) {
                 currentAborter = null;
                 _this.emitEvent('finishUpdateAll');
+                return;
             }
             if (aborted) {
                 return;
@@ -964,40 +983,23 @@ var MylistCollectionUpdater = (function (_super) {
     };
     return MylistCollectionUpdater;
 })(util.EventEmitter);
-var ConfigService = (function (_super) {
-    __extends(ConfigService, _super);
-    function ConfigService(configStorage) {
-        _super.call(this);
-        this.configStorage = configStorage;
-        this.config = this.configStorage.get();
-    }
-    ConfigService.prototype.getConfig = function () {
-        return this.config;
-    };
-
-    ConfigService.prototype.setSettings = function (configSettings) {
-        this.config.update(configSettings);
-        this.configStorage.store(this.config);
-        this.emitEvent('update', [this.config]);
-    };
-    return ConfigService;
-})(util.EventEmitter);
 var MylistStatus;
 (function (MylistStatus) {
     MylistStatus[MylistStatus["Waiting"] = 0] = "Waiting";
     MylistStatus[MylistStatus["Updating"] = 1] = "Updating";
     MylistStatus[MylistStatus["Finished"] = 2] = "Finished";
     MylistStatus[MylistStatus["Private"] = 3] = "Private";
-    MylistStatus[MylistStatus["Error"] = 4] = "Error";
+    MylistStatus[MylistStatus["Deleted"] = 4] = "Deleted";
+    MylistStatus[MylistStatus["Error"] = 5] = "Error";
 })(MylistStatus || (MylistStatus = {}));
 
 var MylistService = (function (_super) {
     __extends(MylistService, _super);
-    function MylistService(storage, updateInterval, feedFactory) {
+    function MylistService(mylistsStorage, updateInterval, feedFactory) {
         _super.call(this);
-        this.storage = storage;
+        this.mylistsStorage = mylistsStorage;
         this.updateInterval = updateInterval;
-        this.mylists = this.storage.get();
+        this.mylists = this.mylistsStorage.get();
         this.updater = new MylistCollectionUpdater(feedFactory);
         this.setEventHandlersForUpdater();
     }
@@ -1017,7 +1019,7 @@ var MylistService = (function (_super) {
         });
         this.mylists.setMylists(newMylists);
         this.save();
-        this.emitEvent('updateMylists', [this.mylists]);
+        this.emitEvent('update');
     };
 
     MylistService.prototype.updateAllIfExpired = function () {
@@ -1034,15 +1036,17 @@ var MylistService = (function (_super) {
     MylistService.prototype.markMylistAllWatched = function (mylist) {
         mylist.markAllVideosAsWatched();
         this.save();
+        this.emitEvent('updateMylist', [mylist]);
     };
 
     MylistService.prototype.markVideoWatched = function (mylist, video) {
         mylist.markVideoAsWatched(video);
         this.save();
+        this.emitEvent('updateMylist', [mylist]);
     };
 
     MylistService.prototype.save = function () {
-        this.storage.store(this.mylists);
+        this.mylistsStorage.store(this.mylists);
     };
 
     MylistService.prototype.setEventHandlersForUpdater = function () {
@@ -1052,7 +1056,7 @@ var MylistService = (function (_super) {
         };
 
         this.updater.addListener('startUpdateAll', function () {
-            _this.emitEvent('startUpdateAll', [_this.mylists]);
+            _this.emitEvent('startUpdateAll');
             _this.mylists.getMylists().forEach(function (mylist) {
                 changeMylistStatus(mylist, MylistStatus.Waiting);
             });
@@ -1063,16 +1067,19 @@ var MylistService = (function (_super) {
         this.updater.addListener('failedUpdateMylist', function (mylist, error) {
             if (error.httpStatus === 403) {
                 changeMylistStatus(mylist, MylistStatus.Private);
+            } else if (error.httpStatus === 404 || error.httpStatus === 410) {
+                changeMylistStatus(mylist, MylistStatus.Deleted);
             } else {
                 changeMylistStatus(mylist, MylistStatus.Error);
             }
         });
         this.updater.addListener('finishUpdateMylist', function (mylist) {
             changeMylistStatus(mylist, MylistStatus.Finished);
+            _this.emitEvent('updateMylist', [mylist]);
         });
         this.updater.addListener('finishUpdateAll', function () {
             _this.save();
-            _this.emitEvent('finishUpdateAll', [_this.mylists]);
+            _this.emitEvent('finishUpdateAll');
         });
     };
     return MylistService;
@@ -1113,6 +1120,29 @@ var SubscriptionService = (function (_super) {
     };
     return SubscriptionService;
 })(util.EventEmitter);
+var util;
+(function (util) {
+    var initializers = {};
+    var instances = {};
+
+    util.DI = {
+        register: function (name, initializer) {
+            initializers[name] = initializer;
+        },
+        resolve: function (name) {
+            if (typeof instances[name] !== 'undefined') {
+                return instances[name];
+            }
+            if (typeof initializers[name] === 'undefined') {
+                throw new Error('[DI] Not registered: ' + name);
+            }
+            instances[name] = initializers[name]();
+            initializers[name] = undefined;
+            delete initializers[name];
+            return instances[name];
+        }
+    };
+})(util || (util = {}));
 var Templates;
 (function (Templates) {
     Templates[Templates["favlist"] = 0] = "favlist";
@@ -1156,6 +1186,80 @@ var Template;
         }
     }
 })(Template || (Template = {}));
+var NicovideoGlue;
+(function (NicovideoGlue) {
+    function getFavlistViewParent() {
+        var $parent = $('#favlistRescueContainer, #sideContents, .column.sub').eq(0);
+        if ($parent.length > 0) {
+            return $('<div />').prependTo($parent);
+        }
+
+        var $rescue = Template.load(Templates.favlist_rescue);
+        $rescue.appendTo(window.document.body);
+        $rescue.find('.favlistRescueCaption a').click(function () {
+            $rescue.toggleClass('closed');
+            return false;
+        });
+        return $rescue.find('#favlistRescueContainer');
+    }
+    NicovideoGlue.getFavlistViewParent = getFavlistViewParent;
+
+    function getSubscribeViewParent() {
+        var $parent = $('.content_312').eq(0);
+        if ($parent.length > 0) {
+            return $('<div />').css({
+                'padding': '10px',
+                'text-align': 'center'
+            }).prependTo($parent);
+        }
+
+        $parent = $('#watchBtns').eq(0);
+        if ($parent.length > 0) {
+            return $('<div />').css({
+                'display': 'inline-block',
+                'margin-left': '8px'
+            }).insertAfter($parent);
+        }
+
+        $parent = Template.load(Templates.subscribe_rescue);
+        $parent.appendTo(document.body);
+        return $parent;
+    }
+    NicovideoGlue.getSubscribeViewParent = getSubscribeViewParent;
+
+    function createMylistFromPage() {
+        var mylistId = MylistId.fromURL(window.location.href);
+        var title;
+
+        var $title = $([
+            '#SYS_box_mylist_header h1',
+            '.userDetail .profile h2'
+        ].join(',')).eq(0);
+
+        if ($title.length > 0) {
+            title = $title.text();
+        } else {
+            title = window.document.title.replace(/(?:のユーザーページ)?[ ‐-]+(?:ニコニコ動画|niconico).*$/, '');
+        }
+        if (mylistId.getIdType() === MylistIdType.User) {
+            title += 'の投稿動画';
+        }
+
+        return new Mylist(mylistId, title);
+    }
+    NicovideoGlue.createMylistFromPage = createMylistFromPage;
+})(NicovideoGlue || (NicovideoGlue = {}));
+var userscript;
+(function (userscript) {
+    var UserScriptSubscriptionService = (function (_super) {
+        __extends(UserScriptSubscriptionService, _super);
+        function UserScriptSubscriptionService(mylistCollectionStorage, updateInterval) {
+            _super.call(this, NicovideoGlue.createMylistFromPage(), mylistCollectionStorage, updateInterval);
+        }
+        return UserScriptSubscriptionService;
+    })(SubscriptionService);
+    userscript.UserScriptSubscriptionService = UserScriptSubscriptionService;
+})(userscript || (userscript = {}));
 var ViewHelper;
 (function (ViewHelper) {
     function formatTimestamp(timestamp) {
@@ -1213,6 +1317,69 @@ var View = (function (_super) {
     };
     return View;
 })(util.EventEmitter);
+var SubscribeView = (function (_super) {
+    __extends(SubscribeView, _super);
+    function SubscribeView(subscriptionService) {
+        _super.call(this, Template.load(Templates.subscribe));
+        this.subscriptionService = subscriptionService;
+        this.setEventHandlers();
+    }
+    SubscribeView.prototype.update = function () {
+        this.$el.toggleClass('subscribed', this.subscriptionService.isSubscribed());
+    };
+
+    SubscribeView.prototype.setEventHandlers = function () {
+        this.setEventHandlersForView();
+        this.setEventHandlersForSubscription();
+    };
+
+    SubscribeView.prototype.setEventHandlersForView = function () {
+        var _this = this;
+        this.$el.find('.favlistSubscribeButton').click(function () {
+            _this.emitEvent('subscribeRequest');
+            return false;
+        });
+        this.$el.find('.favlistUnsubscribeButton').click(function () {
+            _this.emitEvent('unsubscribeRequest');
+            return false;
+        });
+    };
+
+    SubscribeView.prototype.setEventHandlersForSubscription = function () {
+        var _this = this;
+        this.subscriptionService.addListener('update', function () {
+            _this.update();
+        });
+    };
+    return SubscribeView;
+})(View);
+var SubscribeController = (function () {
+    function SubscribeController(subscriptionService) {
+        this.subscriptionService = subscriptionService;
+    }
+    SubscribeController.prototype.start = function () {
+        this.getView().show();
+    };
+
+    SubscribeController.prototype.getView = function () {
+        if (!this.subscribeView) {
+            this.subscribeView = new SubscribeView(this.subscriptionService);
+            this.setEventHandlersForView();
+        }
+        return this.subscribeView;
+    };
+
+    SubscribeController.prototype.setEventHandlersForView = function () {
+        var _this = this;
+        this.subscribeView.addListener('subscribeRequest', function () {
+            _this.subscriptionService.subscribe();
+        });
+        this.subscribeView.addListener('unsubscribeRequest', function () {
+            _this.subscriptionService.unsubscribe();
+        });
+    };
+    return SubscribeController;
+})();
 var Subview = (function (_super) {
     __extends(Subview, _super);
     function Subview($el) {
@@ -1332,6 +1499,9 @@ var FavlistMylistsMylistSubview = (function (_super) {
             case MylistStatus.Private:
                 this.showStatus('private', true);
                 break;
+            case MylistStatus.Deleted:
+                this.showStatus('deleted', true);
+                break;
             case MylistStatus.Error:
                 this.showStatus('error', true);
                 break;
@@ -1400,6 +1570,12 @@ var FavlistMylistsView = (function (_super) {
         var _this = this;
         this.mylistService.addListener('update', function () {
             _this.update();
+        });
+        this.mylistService.addListener('updateMylist', function (mylist) {
+            var mylistView = _this.mylistViews[mylist.getMylistId().toString()];
+            if (mylistView) {
+                mylistView.render(mylist, _this.configService.getConfig());
+            }
         });
         this.mylistService.addListener('startUpdateAll', function () {
             _this.$el.find('.favlistCheckNowButton').attr('disabled', true).addClass('disabled');
@@ -1494,13 +1670,13 @@ var FavlistSettingsView = (function (_super) {
 
     FavlistSettingsView.prototype.getConfigSettings = function () {
         var checkInterval = parseInt(this.$el.find('.favlistConfigCheckInterval').val(), 10);
-        if (isNaN(checkInterval)) {
-            throw new Error('更新チェック間隔は整数で指定してください');
+        if (isNaN(checkInterval) || checkInterval < 0) {
+            throw new Error('更新チェック間隔は正の整数で指定してください');
         }
 
         var maxNewVideos = parseInt(this.$el.find('.favlistConfigMaxNewVideos').val(), 10);
-        if (isNaN(maxNewVideos)) {
-            throw new Error('新着動画の表示数は整数で指定してください');
+        if (isNaN(maxNewVideos) || checkInterval < 0) {
+            throw new Error('新着動画の表示数は正の整数で指定してください');
         }
 
         var hideCheckedList = this.$el.find('.favlistConfigHideCheckedList').is(':checked');
@@ -1620,80 +1796,20 @@ var FavlistView = (function (_super) {
     };
     return FavlistView;
 })(View);
-var SubscribeView = (function (_super) {
-    __extends(SubscribeView, _super);
-    function SubscribeView(subscriptionService) {
-        _super.call(this, Template.load(Templates.subscribe));
-        this.subscriptionService = subscriptionService;
-        this.setEventHandlers();
-    }
-    SubscribeView.prototype.update = function () {
-        this.$el.toggleClass('subscribed', this.subscriptionService.isSubscribed());
-    };
-
-    SubscribeView.prototype.setEventHandlers = function () {
-        this.setEventHandlersForView();
-        this.setEventHandlersForSubscription();
-    };
-
-    SubscribeView.prototype.setEventHandlersForView = function () {
-        var _this = this;
-        this.$el.find('.favlistSubscribeButton').click(function () {
-            _this.emitEvent('subscribeRequest');
-            return false;
-        });
-        this.$el.find('.favlistUnsubscribeButton').click(function () {
-            _this.emitEvent('unsubscribeRequest');
-            return false;
-        });
-    };
-
-    SubscribeView.prototype.setEventHandlersForSubscription = function () {
-        var _this = this;
-        this.subscriptionService.addListener('update', function () {
-            _this.update();
-        });
-    };
-    return SubscribeView;
-})(View);
-var FavlistApp = (function () {
-    function FavlistApp() {
-    }
-    FavlistApp.prototype.start = function () {
-        try  {
-            this.route();
-        } catch (e) {
-            console.error('[NicoNicoFavlist] Error: ' + (e.message || e));
-        }
-    };
-
-    FavlistApp.prototype.route = function () {
-        if (/rss=/.test(window.location.search)) {
-            return;
-        }
-
-        var path = window.location.pathname;
-        if (/^\/mylist|^\/user/.test(path)) {
-            DI.resolve('SubscribeViewContainer');
-            DI.resolve('SubscribeController').start();
-        } else if (/^\/$|^\/video_top/.test(path)) {
-            DI.resolve('FavlistController').start();
-        }
-    };
-    return FavlistApp;
-})();
 var FavlistMylistsController = (function () {
     function FavlistMylistsController(configService, mylistService) {
         this.configService = configService;
         this.mylistService = mylistService;
-        this.mylistsView = new FavlistMylistsView(this.configService, this.mylistService);
-        this.setEventHandlers();
     }
     FavlistMylistsController.prototype.getView = function () {
+        if (!this.mylistsView) {
+            this.mylistsView = new FavlistMylistsView(this.configService, this.mylistService);
+            this.setEventHandlersForView();
+        }
         return this.mylistsView;
     };
 
-    FavlistMylistsController.prototype.setEventHandlers = function () {
+    FavlistMylistsController.prototype.setEventHandlersForView = function () {
         var _this = this;
         this.mylistsView.addListener('show', function () {
             _this.mylistService.updateAllIfExpired();
@@ -1716,14 +1832,16 @@ var FavlistSettingsController = (function (_super) {
         _super.call(this);
         this.configService = configService;
         this.mylistService = mylistService;
-        this.settingsView = new FavlistSettingsView(this.configService, this.mylistService);
-        this.setEventHandlers();
     }
     FavlistSettingsController.prototype.getView = function () {
+        if (!this.settingsView) {
+            this.settingsView = new FavlistSettingsView(this.configService, this.mylistService);
+            this.setEventHandlersForView();
+        }
         return this.settingsView;
     };
 
-    FavlistSettingsController.prototype.setEventHandlers = function () {
+    FavlistSettingsController.prototype.setEventHandlersForView = function () {
         var _this = this;
         this.settingsView.addListener('settingSave', function (mylistSettings, configSettings) {
             _this.mylistService.setSettings(mylistSettings);
@@ -1738,12 +1856,23 @@ var FavlistSettingsController = (function (_super) {
     return FavlistSettingsController;
 })(util.EventEmitter);
 var FavlistController = (function () {
-    function FavlistController(favlistView, configService, mylistService) {
-        this.favlistView = favlistView;
+    function FavlistController(configService, mylistService) {
         this.configService = configService;
         this.mylistService = mylistService;
-        this.setEventHandlersForView();
     }
+    FavlistController.prototype.start = function () {
+        this.getView().show();
+        this.showMylistsPage();
+    };
+
+    FavlistController.prototype.getView = function () {
+        if (!this.favlistView) {
+            this.favlistView = new FavlistView();
+            this.setEventHandlersForView();
+        }
+        return this.favlistView;
+    };
+
     FavlistController.prototype.setEventHandlersForView = function () {
         var _this = this;
         this.favlistView.addListener('show', function () {
@@ -1752,15 +1881,6 @@ var FavlistController = (function () {
         this.favlistView.addListener('settingPageRequest', function () {
             _this.showSettingsPage();
         });
-    };
-
-    FavlistController.prototype.getView = function () {
-        return this.favlistView;
-    };
-
-    FavlistController.prototype.start = function () {
-        this.favlistView.show();
-        this.showMylistsPage();
     };
 
     FavlistController.prototype.showMylistsPage = function () {
@@ -1784,203 +1904,93 @@ var FavlistController = (function () {
     };
     return FavlistController;
 })();
-var SubscribeController = (function () {
-    function SubscribeController(subscribeView, subscriptionService) {
-        this.subscribeView = subscribeView;
-        this.subscriptionService = subscriptionService;
-        this.setEventHandlersForView();
-    }
-    SubscribeController.prototype.getView = function () {
-        return this.subscribeView;
-    };
-
-    SubscribeController.prototype.start = function () {
-        this.subscribeView.show();
-    };
-
-    SubscribeController.prototype.setEventHandlersForView = function () {
-        var _this = this;
-        this.subscribeView.addListener('subscribeRequest', function () {
-            _this.subscriptionService.subscribe();
-        });
-        this.subscribeView.addListener('unsubscribeRequest', function () {
-            _this.subscriptionService.unsubscribe();
-        });
-    };
-    return SubscribeController;
-})();
-var util;
-(function (util) {
-    var initializers = {};
-    var instances = {};
-
-    util.DI = {
-        register: function (name, initializer) {
-            initializers[name] = initializer;
-        },
-        resolve: function (name) {
-            if (typeof instances[name] !== 'undefined') {
-                return instances[name];
+var userscript;
+(function (userscript) {
+    var UserScriptApp = (function () {
+        function UserScriptApp() {
+        }
+        UserScriptApp.prototype.start = function () {
+            try  {
+                this.route();
+            } catch (e) {
+                console.error('[NicoNicoFavlist] Error: ' + (e.message || e));
             }
-            if (typeof initializers[name] === 'undefined') {
-                throw new Error('[DI] Not registered: ' + name);
+        };
+
+        UserScriptApp.prototype.route = function () {
+            if (/rss=/.test(window.location.search)) {
+                return;
             }
-            instances[name] = initializers[name]();
-            initializers[name] = undefined;
-            delete initializers[name];
-            return instances[name];
-        }
-    };
-})(util || (util = {}));
-var NicovideoGlue;
-(function (NicovideoGlue) {
-    function getFavlistViewParent() {
-        var $parent = $('#favlistRescueContainer, #sideContents, .column.sub').eq(0);
-        if ($parent.length > 0) {
-            return $('<div />').prependTo($parent);
-        }
 
-        var $rescue = Template.load(Templates.favlist_rescue);
-        $rescue.appendTo(window.document.body);
-        $rescue.find('.favlistRescueCaption a').click(function () {
-            $rescue.toggleClass('closed');
-            return false;
-        });
-        return $rescue.find('#favlistRescueContainer');
-    }
-    NicovideoGlue.getFavlistViewParent = getFavlistViewParent;
+            var path = window.location.pathname;
+            if (/^\/mylist|^\/user/.test(path)) {
+                this.subscription();
+            } else if (/^\/$|^\/video_top/.test(path)) {
+                this.favlist();
+            }
+        };
 
-    function getSubscriveViewParent() {
-        var $parent = $('.content_312').eq(0);
-        if ($parent.length > 0) {
-            return $('<div />').css({
-                'padding': '10px',
-                'text-align': 'center'
-            }).prependTo($parent);
-        }
+        UserScriptApp.prototype.subscription = function () {
+            var controller = new SubscribeController(userscript.DI.resolve('SubscriptionService'));
+            controller.getView().appendTo(NicovideoGlue.getSubscribeViewParent());
+            controller.start();
+        };
 
-        $parent = $('#watchBtns').eq(0);
-        if ($parent.length > 0) {
-            return $('<div />').css({
-                'display': 'inline-block',
-                'margin-left': '8px'
-            }).insertAfter($parent);
-        }
+        UserScriptApp.prototype.favlist = function () {
+            var controller = new FavlistController(userscript.DI.resolve('ConfigService'), userscript.DI.resolve('MylistService'));
+            controller.getView().appendTo(NicovideoGlue.getFavlistViewParent());
+            controller.start();
+        };
+        return UserScriptApp;
+    })();
+    userscript.UserScriptApp = UserScriptApp;
+})(userscript || (userscript = {}));
+var userscript;
+(function (userscript) {
+    userscript.DI = util.DI;
 
-        $parent = Template.load(Templates.subscribe_rescue);
-        $parent.appendTo(document.body);
-        return $parent;
-    }
-    NicovideoGlue.getSubscriveViewParent = getSubscriveViewParent;
+    userscript.DI.register('Storage', function () {
+        return util.chooseStorage();
+    });
 
-    function createMylistFromPage() {
-        var mylistId = MylistId.fromURL(window.location.href);
-        var title;
+    userscript.DI.register('UrlFetcher', function () {
+        return util.chooseUrlFetcher();
+    });
 
-        var $title = $([
-            '#SYS_box_mylist_header h1',
-            '.userDetail .profile h2'
-        ].join(',')).eq(0);
+    userscript.DI.register('ConfigStorage', function () {
+        return new ConfigStorage(userscript.DI.resolve('Storage'));
+    });
 
-        if ($title.length > 0) {
-            title = $title.text();
-        } else {
-            title = window.document.title.replace(/(?:のユーザーページ)?[ ‐-]+(?:ニコニコ動画|niconico).*$/, '');
-        }
-        if (mylistId.getIdType() === MylistIdType.User) {
-            title += 'の投稿動画';
-        }
+    userscript.DI.register('MylistCollectionStorage', function () {
+        return new MylistCollectionStorage(userscript.DI.resolve('Storage'));
+    });
 
-        return new Mylist(mylistId, title);
-    }
-    NicovideoGlue.createMylistFromPage = createMylistFromPage;
-})(NicovideoGlue || (NicovideoGlue = {}));
-var NicovideoSubscriptionService = (function (_super) {
-    __extends(NicovideoSubscriptionService, _super);
-    function NicovideoSubscriptionService(mylistCollectionStorage, updateInterval) {
-        _super.call(this, NicovideoGlue.createMylistFromPage(), mylistCollectionStorage, updateInterval);
-    }
-    return NicovideoSubscriptionService;
-})(SubscriptionService);
-var NicovideoFavlistView = (function (_super) {
-    __extends(NicovideoFavlistView, _super);
-    function NicovideoFavlistView() {
-        _super.call(this);
-        this.appendTo(NicovideoGlue.getFavlistViewParent());
-    }
-    return NicovideoFavlistView;
-})(FavlistView);
-var NicovideoSubscribeView = (function (_super) {
-    __extends(NicovideoSubscribeView, _super);
-    function NicovideoSubscribeView(subscriptionService) {
-        _super.call(this, subscriptionService);
-        this.appendTo(NicovideoGlue.getSubscriveViewParent());
-    }
-    return NicovideoSubscribeView;
-})(SubscribeView);
-var DI = util.DI;
+    userscript.DI.register('MylistFeedFactory', function () {
+        return new MylistFeedFactory(userscript.DI.resolve('UrlFetcher'));
+    });
 
-DI.register('Storage', function () {
-    return util.chooseStorage();
-});
+    userscript.DI.register('UpdateInterval', function () {
+        return new UpdateInterval(userscript.DI.resolve('Storage'), userscript.DI.resolve('ConfigService'));
+    });
 
-DI.register('UrlFetcher', function () {
-    return util.chooseUrlFetcher();
-});
+    userscript.DI.register('ConfigService', function () {
+        return new ConfigService(userscript.DI.resolve('ConfigStorage'));
+    });
 
-DI.register('ConfigStorage', function () {
-    return new ConfigStorage(DI.resolve('Storage'));
-});
+    userscript.DI.register('MylistService', function () {
+        return new MylistService(userscript.DI.resolve('MylistCollectionStorage'), userscript.DI.resolve('UpdateInterval'), userscript.DI.resolve('MylistFeedFactory'));
+    });
 
-DI.register('MylistCollectionStorage', function () {
-    return new MylistCollectionStorage(DI.resolve('Storage'));
-});
+    userscript.DI.register('SubscriptionService', function () {
+        return new userscript.UserScriptSubscriptionService(userscript.DI.resolve('MylistCollectionStorage'), userscript.DI.resolve('UpdateInterval'));
+    });
 
-DI.register('MylistCollectionUpdater', function () {
-    return new MylistCollectionUpdater(DI.resolve('MylistFeedFactory'));
-});
-
-DI.register('MylistFeedFactory', function () {
-    return new MylistFeedFactory(DI.resolve('UrlFetcher'), DI.resolve('Config').getUserAgent());
-});
-
-DI.register('UpdateInterval', function () {
-    return new UpdateInterval(DI.resolve('Storage'), DI.resolve('Config'));
-});
-
-DI.register('ConfigService', function () {
-    return new ConfigService(DI.resolve('ConfigStorage'));
-});
-
-DI.register('MylistService', function () {
-    return new MylistService(DI.resolve('MylistStorage'), DI.resolve('UpdateInterval'), DI.resolve('MylistFeedFactory'));
-});
-
-DI.register('SubscriptionService', function () {
-    return new NicovideoSubscriptionService(DI.resolve('MylistCollectionStorage'), DI.resolve('UpdateInterval'));
-});
-
-DI.register('FavlistView', function () {
-    return new NicovideoFavlistView();
-});
-
-DI.register('SubscribeView', function () {
-    return new NicovideoSubscribeView(DI.resolve('SubscriptionService'));
-});
-
-DI.register('FavlistApp', function () {
-    return new FavlistApp();
-});
-
-DI.register('FavlistController', function () {
-    return new FavlistController(DI.resolve('FavlistView'), DI.resolve('ConfigService'), DI.resolve('MylistService'));
-});
-
-DI.register('SubscribeController', function () {
-    return new SubscribeController(DI.resolve('SubscribeView'), DI.resolve('SubscriptionService'));
-});
+    userscript.DI.register('FavlistApp', function () {
+        return new userscript.UserScriptApp();
+    });
+})(userscript || (userscript = {}));
 $(function () {
-    DI.resolve('FavlistApp').start();
+    userscript.DI.resolve('FavlistApp').start();
 });
 
 })(jQuery);

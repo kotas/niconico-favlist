@@ -49,6 +49,7 @@ class MylistCollectionUpdater extends util.EventEmitter implements IMylistCollec
             if (!mylist) {
                 currentAborter = null;
                 this.emitEvent('finishUpdateAll');
+                return;
             }
             if (aborted) {
                 return;

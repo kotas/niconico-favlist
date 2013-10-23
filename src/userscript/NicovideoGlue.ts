@@ -19,7 +19,7 @@ module NicovideoGlue {
         return $rescue.find('#favlistRescueContainer');
     }
 
-    export function getSubscriveViewParent(): JQuery {
+    export function getSubscribeViewParent(): JQuery {
         var $parent = $('.content_312').eq(0);
         if ($parent.length > 0) {
             return $('<div />').css({

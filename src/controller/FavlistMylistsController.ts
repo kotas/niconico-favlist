@@ -9,16 +9,17 @@ class FavlistMylistsController {
     constructor(
         private configService: IConfigService,
         private mylistService: IMylistService
-    ) {
-        this.mylistsView = new FavlistMylistsView(this.configService, this.mylistService);
-        this.setEventHandlers();
-    }
+    ) {}
 
     getView(): FavlistMylistsView {
+        if (!this.mylistsView) {
+            this.mylistsView = new FavlistMylistsView(this.configService, this.mylistService);
+            this.setEventHandlersForView();
+        }
         return this.mylistsView;
     }
 
-    private setEventHandlers() {
+    private setEventHandlersForView() {
         this.mylistsView.addListener('show', () => {
             this.mylistService.updateAllIfExpired();
         });

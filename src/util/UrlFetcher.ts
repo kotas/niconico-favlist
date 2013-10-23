@@ -38,6 +38,17 @@ module util {
         }
     }
 
+    function getUserAgent(): string {
+        var s: string = '';
+        if (typeof GM_info !== 'undefined' && GM_info.script && GM_info.script.name && GM_info.script.version) {
+            s = GM_info.script.name + '/' + GM_info.script.version + ' Greasemonkey ';
+        }
+        if (typeof window.navigator !== 'undefined' && window.navigator.userAgent) {
+            s += window.navigator.userAgent;
+        }
+        return s;
+    }
+
     export class GMUrlFetcher implements IUrlFetcher {
 
         static isAvailable(): boolean {
@@ -47,10 +58,12 @@ module util {
         constructor() {}
 
         fetch(option: IUrlFetchOption, callback: IUrlFetchCallback): IUrlFetchAborter {
+            var headers = option.headers || {};
+            headers['User-Agent'] = getUserAgent();
             return GM_xmlhttpRequest({
                 url: option.url,
                 method: option.method,
-                headers: option.headers,
+                headers: headers,
                 timeout: option.timeout,
                 onload: (response: GMXMLHttpRequestResponse) => {
                     callback(null, {
@@ -115,6 +128,7 @@ module util {
                 req.timeout = option.timeout;
             }
 
+            req.setRequestHeader('User-Agent', getUserAgent());
             req.send(null);
             return { abort: () => { req.abort(); } };
         }

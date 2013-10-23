@@ -1,22 +1,12 @@
 /// <reference path="./View.ts" />
 /// <reference path="./FavlistMylistsView.ts" />
 /// <reference path="./FavlistSettingsView.ts" />
-/// <reference path="../model/Config.ts" />
-/// <reference path="../model/MylistCollection.ts" />
-/// <reference path="../model/MylistCollectionUpdater.ts" />
-
-interface IFavlistView extends IView {
-    setMylistsView(view: FavlistMylistsView);
-    setSettingsView(view: FavlistSettingsView);
-    showMylistsPage();
-    showSettingsPage();
-}
 
 /**
  * events:
  *   - settingPageRequest()
  */
-class FavlistView extends View implements IFavlistView {
+class FavlistView extends View {
 
     private $pages: JQuery;
     private mylistsView: FavlistMylistsView;

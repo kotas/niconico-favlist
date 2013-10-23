@@ -4,22 +4,28 @@
 /// <reference path="./FavlistMylistsController.ts" />
 /// <reference path="./FavlistSettingsController.ts" />
 
-interface IFavlistController {
-    getView(): IFavlistView;
-    start();
-}
+class FavlistController {
 
-class FavlistController implements IFavlistController {
-
+    private favlistView: FavlistView;
     private mylistsController: FavlistMylistsController;
     private settingsController: FavlistSettingsController;
 
     constructor(
-        private favlistView: IFavlistView,
         private configService: IConfigService,
         private mylistService: IMylistService
-    ) {
-        this.setEventHandlersForView();
+    ) {}
+
+    start() {
+        this.getView().show();
+        this.showMylistsPage();
+    }
+
+    getView(): FavlistView {
+        if (!this.favlistView) {
+            this.favlistView = new FavlistView();
+            this.setEventHandlersForView();
+        }
+        return this.favlistView;
     }
 
     private setEventHandlersForView() {
@@ -29,15 +35,6 @@ class FavlistController implements IFavlistController {
         this.favlistView.addListener('settingPageRequest', () => {
             this.showSettingsPage();
         });
-    }
-
-    getView(): IFavlistView {
-        return this.favlistView;
-    }
-
-    start() {
-        this.favlistView.show();
-        this.showMylistsPage();
     }
 
     private showMylistsPage() {

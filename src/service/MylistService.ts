@@ -23,15 +23,17 @@ enum MylistStatus {
     Updating,
     Finished,
     Private,
+    Deleted,
     Error
 }
 
 /**
  * events:
- *   - update(mylistCollection: MylistCollection)
- *   - startUpdateAll(mylistCollection: MylistCollection)
+ *   - update()
+ *   - updateMylist(mylist: Mylist)
+ *   - startUpdateAll()
  *   - changeMylistStatus(mylist: Mylist, status: MylistUpdateStatus)
- *   - finishUpdateAll(mylistCollection: MylistCollection)
+ *   - finishUpdateAll()
  */
 class MylistService extends util.EventEmitter implements IMylistService {
 
@@ -39,12 +41,12 @@ class MylistService extends util.EventEmitter implements IMylistService {
     private updater: MylistCollectionUpdater;
 
     constructor(
-        private storage: IMylistCollectionStorage,
+        private mylistsStorage: IMylistCollectionStorage,
         private updateInterval: IUpdateInterval,
         feedFactory: IMylistFeedFactory
     ) {
         super();
-        this.mylists = this.storage.get();
+        this.mylists = this.mylistsStorage.get();
         this.updater = new MylistCollectionUpdater(feedFactory);
         this.setEventHandlersForUpdater();
     }
@@ -64,7 +66,7 @@ class MylistService extends util.EventEmitter implements IMylistService {
         });
         this.mylists.setMylists(newMylists);
         this.save();
-        this.emitEvent('updateMylists', [this.mylists]);
+        this.emitEvent('update');
     }
 
     updateAllIfExpired() {
@@ -81,15 +83,17 @@ class MylistService extends util.EventEmitter implements IMylistService {
     markMylistAllWatched(mylist: Mylist) {
         mylist.markAllVideosAsWatched();
         this.save();
+        this.emitEvent('updateMylist', [mylist]);
     }
 
     markVideoWatched(mylist: Mylist, video: Video) {
         mylist.markVideoAsWatched(video);
         this.save();
+        this.emitEvent('updateMylist', [mylist]);
     }
 
     private save() {
-        this.storage.store(this.mylists);
+        this.mylistsStorage.store(this.mylists);
     }
 
     private setEventHandlersForUpdater() {
@@ -98,7 +102,7 @@ class MylistService extends util.EventEmitter implements IMylistService {
         };
 
         this.updater.addListener('startUpdateAll', () => {
-            this.emitEvent('startUpdateAll', [this.mylists]);
+            this.emitEvent('startUpdateAll');
             this.mylists.getMylists().forEach((mylist: Mylist) => {
                 changeMylistStatus(mylist, MylistStatus.Waiting);
             });
@@ -109,16 +113,19 @@ class MylistService extends util.EventEmitter implements IMylistService {
         this.updater.addListener('failedUpdateMylist', (mylist: Mylist, error: MylistFeedFetchError) => {
             if (error.httpStatus === 403) {
                 changeMylistStatus(mylist, MylistStatus.Private);
+            } else if (error.httpStatus === 404 || error.httpStatus === 410) {
+                changeMylistStatus(mylist, MylistStatus.Deleted);
             } else {
                 changeMylistStatus(mylist, MylistStatus.Error);
             }
         });
         this.updater.addListener('finishUpdateMylist', (mylist: Mylist) => {
             changeMylistStatus(mylist, MylistStatus.Finished);
+            this.emitEvent('updateMylist', [mylist]);
         });
         this.updater.addListener('finishUpdateAll', () => {
             this.save();
-            this.emitEvent('finishUpdateAll', [this.mylists]);
+            this.emitEvent('finishUpdateAll');
         });
     }
 

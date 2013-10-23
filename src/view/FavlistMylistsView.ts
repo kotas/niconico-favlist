@@ -46,6 +46,12 @@ class FavlistMylistsView extends View {
         this.mylistService.addListener('update', () => {
             this.update();
         });
+        this.mylistService.addListener('updateMylist', (mylist: Mylist) => {
+            var mylistView = this.mylistViews[mylist.getMylistId().toString()];
+            if (mylistView) {
+                mylistView.render(mylist, this.configService.getConfig());
+            }
+        });
         this.mylistService.addListener('startUpdateAll', () => {
             this.$el.find('.favlistCheckNowButton').attr('disabled', true).addClass('disabled');
         });

@@ -5,7 +5,6 @@ interface IConfig {
     getMaxNewVideos(): number;
     isCheckedListHidden(): boolean;
     isOrderDescendant(): boolean;
-    getUserAgent(): string;
 }
 
 class Config implements IConfig {
@@ -39,19 +38,6 @@ class Config implements IConfig {
 
     isOrderDescendant(): boolean {
         return this.orderDescendant;
-    }
-
-    getUserAgent(): string {
-        var s: string;
-        if (typeof GM_info !== 'undefined' && GM_info.script && GM_info.script.name && GM_info.script.version) {
-            s = GM_info.script.name + '/' + GM_info.script.version + ' Greasemonkey';
-        } else {
-            s = 'NicoNicoFavlist';
-        }
-        if (typeof window.navigator !== 'undefined' && window.navigator.userAgent) {
-            s += ' ' + window.navigator.userAgent;
-        }
-        return s;
     }
 
 }

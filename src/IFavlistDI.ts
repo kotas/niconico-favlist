@@ -10,13 +10,7 @@
 /// <reference path="./service/ConfigService.ts" />
 /// <reference path="./service/MylistService.ts" />
 /// <reference path="./service/SubscriptionService.ts" />
-/// <reference path="./view/FavlistView.ts" />
-/// <reference path="./view/SubscribeView.ts" />
-/// <reference path="./controller/FavlistApp.ts" />
-/// <reference path="./controller/FavlistController.ts" />
-/// <reference path="./controller/SubscribeController.ts" />
-
-declare var DI: IFavlistDI;
+/// <reference path="./controller/IFavlistApp.ts" />
 
 interface IFavlistDI {
 
@@ -28,7 +22,6 @@ interface IFavlistDI {
 
     resolve(name: "ConfigStorage"): IConfigStorage;
     resolve(name: "MylistCollectionStorage"): IMylistCollectionStorage;
-    resolve(name: "MylistCollectionUpdater"): IMylistCollectionUpdater;
     resolve(name: "MylistFeedFactory"): IMylistFeedFactory;
     resolve(name: "UpdateInterval"): IUpdateInterval;
 
@@ -36,10 +29,6 @@ interface IFavlistDI {
     resolve(name: "MylistService"): IMylistService;
     resolve(name: "SubscriptionService"): ISubscriptionService;
 
-    resolve(name: "FavlistView"): IFavlistView;
-    resolve(name: "SubscribeView"): ISubscribeView;
-
     resolve(name: "FavlistApp"): IFavlistApp;
-    resolve(name: "FavlistController"): IFavlistController;
-    resolve(name: "SubscribeController"): ISubscribeController;
+
 }

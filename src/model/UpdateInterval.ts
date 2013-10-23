@@ -1,5 +1,5 @@
 /// <reference path="../util/Storage.ts" />
-/// <reference path="./Config.ts" />
+/// <reference path="../service/ConfigService.ts" />
 
 interface IUpdateInterval {
     isExpired(): boolean;
@@ -12,14 +12,14 @@ class UpdateInterval implements IUpdateInterval {
 
     constructor(
         private storage: util.IStorage,
-        private config: IConfig
-    ) {
-    }
+        private configService: IConfigService
+    ) {}
 
     isExpired(): boolean {
         var currentTime = this.getCurrentTimeInSeconds();
         var lastUpdate  = this.getLastUpdateTime();
-        return (lastUpdate === null || lastUpdate + this.config.getCheckInterval() < currentTime);
+        var interval    = this.configService.getConfig().getCheckInterval();
+        return (lastUpdate === null || lastUpdate + interval < currentTime);
     }
 
     expire(): void {

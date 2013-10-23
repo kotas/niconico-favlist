@@ -74,6 +74,7 @@ class FavlistMylistsMylistSubview extends Subview {
             case MylistStatus.Waiting:  this.showStatus('waiting'); break;
             case MylistStatus.Updating: this.showStatus('updating'); break;
             case MylistStatus.Private:  this.showStatus('private', true); break;
+            case MylistStatus.Deleted:  this.showStatus('deleted', true); break;
             case MylistStatus.Error:    this.showStatus('error', true); break;
             case MylistStatus.Finished: this.hideStatus(); break;
         }
