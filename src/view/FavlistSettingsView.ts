@@ -25,6 +25,25 @@ class FavlistSettingsView extends View {
     }
 
     private setEventHandlersForView() {
+        var escapeHandler: (eventObject: JQueryEventObject) => any;
+        this.onShow.addListener(() => {
+            if (!escapeHandler) {
+                escapeHandler = (event: JQueryEventObject) => {
+                    if ((<any>event).keyCode === 27) this.onCancel.trigger(null);
+                };
+                $(window.document).bind('keyup', escapeHandler);
+            }
+        });
+        this.onHide.addListener(() => {
+            if (escapeHandler) {
+                $(window.document).unbind('keyup', escapeHandler);
+                escapeHandler = null;
+            }
+        });
+        this.$el.find('.favlistSettingMylistSearchEdit').keyup(() => {
+            this.filterMylists(this.$el.find('.favlistSettingMylistSearchEdit').val());
+            this.updateMylistButtons();
+        });
         this.$el.find('.favlistSaveSettingsButton').click(() => {
             try {
                 var mylistSettings = this.getMylistSettings();
@@ -45,14 +64,14 @@ class FavlistSettingsView extends View {
     private setEventHandlersForConfigService() {
         this.configService.onUpdate.addListener(() => {
             if (this.isHidden()) return;
-            this.update();
+            this.updateConfigView();
         });
     }
 
     private setEventHandlersForMylistService() {
         this.mylistService.onUpdate.addListener(() => {
             if (this.isHidden()) return;
-            this.update();
+            this.updateMylistViews();
         });
         this.mylistService.onUpdateMylist.addListener((args) => {
             if (this.isHidden()) return;
@@ -61,6 +80,27 @@ class FavlistSettingsView extends View {
                 args.mylist
             );
         });
+    }
+
+    private filterMylists(filter :string) {
+        filter = filter.replace(/[ \t\u3000]+/g, "").toLowerCase();
+        this.$mylists.children().each((i, el) => {
+            var $mylist = $(el);
+            var searchString: string = $mylist.data('searchString') || '';
+            if (filter === '' || searchString.indexOf(filter) >= 0) {
+                $mylist.show();
+            } else {
+                $mylist.hide();
+            }
+        });
+    }
+
+    private makeSearchString(mylist: Mylist) {
+        return [
+            mylist.getOriginalTitle(),
+            mylist.getOverrideTitle(),
+            mylist.getURL()
+        ].join("\n").replace(/[ \t\u3000]+/g, "").toLowerCase();
     }
 
     private getMylistSettings(): IMylistSetting[] {
@@ -117,10 +157,14 @@ class FavlistSettingsView extends View {
             this.setEventHandlersForMylistView($mylist);
             this.$mylists.append($mylist);
         });
+
+        this.$el.find('.favlistSettingMylistSearchEdit').val('');
         this.updateMylistButtons();
     }
 
     private updateMylistView($mylist: JQuery, mylist: Mylist) {
+        $mylist.data('searchString', this.makeSearchString(mylist));
+        $mylist.find('.favlistMylistLink').attr('href', mylist.getURL());
         $mylist.find('.favlistMylistTitleEdit').val(mylist.getTitle()).attr('placeholder', mylist.getOriginalTitle());
     }
 
@@ -144,21 +188,20 @@ class FavlistSettingsView extends View {
             this.updateMylistButtons();
         });
         $mylist.find('.favlistMylistRemoveButton').click(() => {
-            $mylist.slideUp(() => {
-                $mylist.remove();
-                this.updateMylistButtons();
-            });
+            $mylist.remove();
+            this.updateMylistButtons();
         });
     }
 
     private updateMylistButtons() {
         var $mylists = this.$mylists.children();
         var total = $mylists.length;
+        var searching = this.$el.find('.favlistSettingMylistSearchEdit').val() !== '';
         $mylists.each((i, el) => {
             var $mylist = $(el);
-            $mylist.find('.favlistMylistMoveUpButton').attr('disabled', (i === 0));
-            $mylist.find('.favlistMylistMoveDownButton').attr('disabled', (i === total - 1));
-            $mylist.find('.favlistMylistMoveTopButton').attr('disabled', (i === 0));
+            $mylist.find('.favlistMylistMoveUpButton').attr('disabled', (i === 0) || searching);
+            $mylist.find('.favlistMylistMoveDownButton').attr('disabled', (i === total - 1) || searching);
+            $mylist.find('.favlistMylistMoveTopButton').attr('disabled', (i === 0) || searching);
         });
     }
 

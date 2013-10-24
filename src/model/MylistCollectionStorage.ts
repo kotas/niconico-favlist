@@ -25,7 +25,6 @@ class MylistCollectionStorage implements IMylistCollectionStorage {
 
     checkUpdate(): void {
         if (this.updateTime.isChanged()) {
-            console.log("[NicoNicoFavlist] MylistCollection is updated!");
             this.updateTime.fetch();
             this.onUpdate.trigger(null);
         }

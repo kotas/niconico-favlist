@@ -23,7 +23,6 @@ class ConfigStorage implements IConfigStorage {
 
     checkUpdate(): void {
         if (this.updateTime.isChanged()) {
-            console.log("[NicoNicoFavlist] Config is updated!");
             this.updateTime.fetch();
             this.onUpdate.trigger(null);
         }

@@ -1,12 +1,85 @@
+.favlistSettingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999999;
+    background: #333333;
+    opacity: 0.6;
+}
+
+.favlistSettingsDialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 600px;
+    height: auto;
+    z-index: 1000000;
+    background: #ffffff;
+    box-shadow: 3px 3px 2px rgba(0, 0, 0, 0.3);
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.favlistSettingMylistSearch {
+    margin: 20px 20px 10px 20px;
+}
+.favlistSettingMylistsOuter {
+    margin: 10px 20px 20px 20px;
+}
+.favlistConfig,
+.favlistSettingsButtons {
+    margin: 20px;
+}
+
+.favlistSettingMylistSearchEdit {
+    width: 50%;
+    border: 1px solid #999;
+    border-radius: 5px;
+    padding: 2px 10px;
+}
+
+.favlistSettingMylistsOuter {
+    height: 400px;
+    border: 1px solid #ccc;
+    overflow: auto;
+}
+.favlistSettingMylists {
+    display: table;
+    padding-bottom: 10px;
+}
+
 .favlistConfigItems {
     list-style-type: none;
 }
+.favlistConfigItems:after {
+    content: "";
+    clear: both;
+    display: block;
+}
 .favlistConfigItems li {
     margin-bottom: 10px;
+}
+.favlistConfigItems li:nth-of-type(1) {
+    float: left;
+    width: 250px;
+}
+.favlistConfigItems li:nth-of-type(2) {
+    float: left;
+    width: 250px;
+    clear: left;
 }
 .favlistConfigItems li label {
     color: #333;
 }
 .favlistConfigItems .favlistConfigText {
+    margin-left: 10px;
+}
+
+.favlistSettingsButtons {
+    text-align: right;
+}
+.favlistSettingsButtons button {
+    font-size: 14px;
     margin-left: 10px;
 }
