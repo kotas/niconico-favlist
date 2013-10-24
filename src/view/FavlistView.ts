@@ -9,6 +9,7 @@ class FavlistView extends View {
     private $pages: JQuery;
     private mylistsView: FavlistMylistsView;
     private settingsView: FavlistSettingsView;
+    private views: View[] = [];
 
     constructor() {
         super(Template.load(Templates.favlist));
@@ -18,30 +19,40 @@ class FavlistView extends View {
 
     setMylistsView(view: FavlistMylistsView) {
         this.mylistsView = view;
+        this.mylistsView.hide();
         this.mylistsView.appendTo(this.$pages);
+        this.views.push(this.mylistsView);
     }
 
     setSettingsView(view: FavlistSettingsView) {
         this.settingsView = view;
+        this.settingsView.hide();
         this.settingsView.appendTo(this.$pages);
+        this.views.push(this.settingsView);
     }
 
     showMylistsPage() {
         if (!this.mylistsView) {
             throw new Error('MylistsView is not set');
         }
-        this.$pages.children().hide();
-        this.mylistsView.show();
-        this.$el.removeClass('inSettingView');
+        this.switchView(this.mylistsView);
     }
 
     showSettingsPage() {
         if (!this.settingsView) {
             throw new Error('SettingsView is not set');
         }
-        this.$pages.children().hide();
-        this.settingsView.show();
-        this.$el.addClass('inSettingView');
+        this.switchView(this.settingsView);
+    }
+
+    private switchView(view: View) {
+        this.views.forEach((target: View) => {
+            if (target !== view && target.isVisible()) {
+                target.hide();
+            }
+        });
+        view.show();
+        this.$el.toggleClass('inSettingView', (view instanceof FavlistSettingsView));
     }
 
     private setEventHandlers() {

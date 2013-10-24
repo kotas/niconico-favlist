@@ -36,15 +36,18 @@ class FavlistMylistsView extends View {
 
     private setEventHandlersForConfigService() {
         this.configService.onUpdate.addListener(() => {
+            if (this.isHidden()) return;
             this.update();
         });
     }
 
     private setEventHandlersForMylistService() {
         this.mylistService.onUpdate.addListener(() => {
+            if (this.isHidden()) return;
             this.update();
         });
         this.mylistService.onUpdateMylist.addListener((args) => {
+            if (this.isHidden()) return;
             var mylistView = this.mylistViews[args.mylist.getMylistId().toString()];
             if (mylistView) {
                 mylistView.render(args.mylist, this.configService.getConfig());

@@ -6,6 +6,7 @@
 
 interface ISubscriptionService {
     onUpdate: util.IEvent<{ mylist: Mylist; subscribed: boolean }>;
+    checkUpdate(): void;
     isSubscribed(): boolean;
     subscribe();
     unsubscribe();
@@ -23,6 +24,11 @@ class SubscriptionService implements ISubscriptionService {
         private updateInterval: IUpdateInterval
     ) {
         this.mylists = this.mylistCollectionStorage.get();
+        this.setEventHandlersForMylistCollectionStorage();
+    }
+
+    checkUpdate(): void {
+        this.mylistCollectionStorage.checkUpdate();
     }
 
     isSubscribed(): boolean {
@@ -35,6 +41,16 @@ class SubscriptionService implements ISubscriptionService {
 
     unsubscribe() {
         this.setSubscribed(false);
+    }
+
+    private setEventHandlersForMylistCollectionStorage() {
+        this.mylistCollectionStorage.onUpdate.addListener(() => {
+            var subscribed = this.isSubscribed();
+            this.mylists = this.mylistCollectionStorage.get();
+            if (subscribed !== this.isSubscribed()) {
+                this.onUpdate.trigger(null);
+            }
+        });
     }
 
     private setSubscribed(subscribed: boolean) {

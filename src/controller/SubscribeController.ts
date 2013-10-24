@@ -11,6 +11,7 @@ class SubscribeController {
 
     start() {
         this.getView().show();
+        this.observeUpdate();
     }
 
     getView(): SubscribeView {
@@ -19,6 +20,15 @@ class SubscribeController {
             this.setEventHandlersForView();
         }
         return this.subscribeView;
+    }
+
+    private observeUpdate() {
+        var updateInteval = 5000;
+        var checkUpdate = () => {
+            this.subscriptionService.checkUpdate();
+            setTimeout(checkUpdate, updateInteval);
+        };
+        setTimeout(checkUpdate, updateInteval);
     }
 
     private setEventHandlersForView() {

@@ -17,6 +17,7 @@ class FavlistController {
 
     start() {
         this.getView().show();
+        this.observeUpdate();
     }
 
     getView(): FavlistView {
@@ -25,6 +26,16 @@ class FavlistController {
             this.setEventHandlersForView();
         }
         return this.favlistView;
+    }
+
+    private observeUpdate() {
+        var updateInteval = 5000;
+        var checkUpdate = () => {
+            this.configService.checkUpdate();
+            this.mylistService.checkUpdate();
+            setTimeout(checkUpdate, updateInteval);
+        };
+        setTimeout(checkUpdate, updateInteval);
     }
 
     private setEventHandlersForView() {

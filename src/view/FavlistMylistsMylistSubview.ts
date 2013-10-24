@@ -95,8 +95,9 @@ class FavlistMylistsMylistSubview extends Subview {
     }
 
     private hideStatus() {
-        this.$el.removeClass('hasStatus');
-        this.$el.find('.favlistMylistStatus span').hide();
+        this.$el.find('.favlistMylistStatus span:visible').fadeOut('slow', () => {
+            this.$el.removeClass('hasStatus');
+        });
     }
 
 }

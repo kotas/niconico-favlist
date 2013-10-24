@@ -1,4 +1,5 @@
 /// <reference path="../util/Storage.ts" />
+/// <reference path="../util/Event.ts" />
 /// <reference path="./MylistCollection.ts" />
 /// <reference path="./Video.ts" />
 
@@ -6,21 +7,40 @@ declare function escape(s: string): string;
 declare function unescape(s: string): string;
 
 interface IMylistCollectionStorage {
+    onUpdate: util.IEvent<void>;
+    checkUpdate(): void;
     get(): MylistCollection;
     store(mylistCollection: MylistCollection): void;
 }
 
 class MylistCollectionStorage implements IMylistCollectionStorage {
 
-    constructor(private storage: util.IStorage) {}
+    onUpdate = new util.Event<void>();
+
+    private updateTime: util.UpdateTimeStorage;
+
+    constructor(private storage: util.IStorage) {
+        this.updateTime = new util.UpdateTimeStorage(storage, 'favlistLastUpdateTime');
+    }
+
+    checkUpdate(): void {
+        if (this.updateTime.isChanged()) {
+            console.log("[NicoNicoFavlist] MylistCollection is updated!");
+            this.updateTime.fetch();
+            this.onUpdate.trigger(null);
+        }
+    }
 
     get(): MylistCollection {
         var mylists: Mylist[] = this.unserializeMylists(this.storage.get('favlist'));
-        return new MylistCollection(mylists);
+        var mylistCollection =  new MylistCollection(mylists);
+        this.updateTime.fetch();
+        return mylistCollection;
     }
 
     store(mylistCollection: MylistCollection): void {
         this.storage.set('favlist', this.serializeMylists(mylistCollection.getMylists()));
+        this.updateTime.update();
     }
 
     private unserializeMylists(serialized: string): Mylist[] {

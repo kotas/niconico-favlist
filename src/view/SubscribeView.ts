@@ -19,7 +19,7 @@ class SubscribeView extends View {
 
     private setEventHandlers() {
         this.setEventHandlersForView();
-        this.setEventHandlersForSubscription();
+        this.setEventHandlersForSubscriptionService();
     }
 
     private setEventHandlersForView() {
@@ -33,7 +33,7 @@ class SubscribeView extends View {
         });
     }
 
-    private setEventHandlersForSubscription() {
+    private setEventHandlersForSubscriptionService() {
         this.subscriptionService.onUpdate.addListener(() => {
             this.update();
         });

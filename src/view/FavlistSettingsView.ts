@@ -15,7 +15,13 @@ class FavlistSettingsView extends View {
     ) {
         super(Template.load(Templates.favlist_settings));
         this.$mylists = this.$el.find('.favlistSettingMylists');
+        this.setEventHandlers();
+    }
+
+    private setEventHandlers() {
         this.setEventHandlersForView();
+        this.setEventHandlersForConfigService();
+        this.setEventHandlersForMylistService();
     }
 
     private setEventHandlersForView() {
@@ -33,6 +39,27 @@ class FavlistSettingsView extends View {
         this.$el.find('.favlistCancelSettingsButton').click(() => {
             this.onCancel.trigger(null);
             return false;
+        });
+    }
+
+    private setEventHandlersForConfigService() {
+        this.configService.onUpdate.addListener(() => {
+            if (this.isHidden()) return;
+            this.update();
+        });
+    }
+
+    private setEventHandlersForMylistService() {
+        this.mylistService.onUpdate.addListener(() => {
+            if (this.isHidden()) return;
+            this.update();
+        });
+        this.mylistService.onUpdateMylist.addListener((args) => {
+            if (this.isHidden()) return;
+            this.updateMylistView(
+                this.$mylists.children('[data-mylistId="' + args.mylist.getMylistId().toString() + '"]'),
+                args.mylist
+            );
         });
     }
 
@@ -85,11 +112,16 @@ class FavlistSettingsView extends View {
         mylists.forEach((mylist: Mylist) => {
             var $mylist = $template.clone();
             $mylist.data('mylistId', mylist.getMylistId());
-            $mylist.find('.favlistMylistTitleEdit').val(mylist.getTitle()).attr('placeholder', mylist.getOriginalTitle());
+            $mylist.attr('data-mylistId', mylist.getMylistId().toString());
+            this.updateMylistView($mylist, mylist);
             this.setEventHandlersForMylistView($mylist);
             this.$mylists.append($mylist);
         });
         this.updateMylistButtons();
+    }
+
+    private updateMylistView($mylist: JQuery, mylist: Mylist) {
+        $mylist.find('.favlistMylistTitleEdit').val(mylist.getTitle()).attr('placeholder', mylist.getOriginalTitle());
     }
 
     private setEventHandlersForMylistView($mylist: JQuery) {
@@ -112,8 +144,10 @@ class FavlistSettingsView extends View {
             this.updateMylistButtons();
         });
         $mylist.find('.favlistMylistRemoveButton').click(() => {
-            $mylist.remove();
-            this.updateMylistButtons();
+            $mylist.slideUp(() => {
+                $mylist.remove();
+                this.updateMylistButtons();
+            });
         });
     }
 

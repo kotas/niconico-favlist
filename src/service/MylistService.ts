@@ -10,6 +10,7 @@ interface IMylistService {
     onStartUpdatingAll: util.IEvent<void>;
     onChangeMylistStatus: util.IEvent<{ mylist: Mylist; status: MylistStatus }>;
     onFinishUpdatingAll: util.IEvent<void>;
+    checkUpdate(): void;
     getMylistCollection(): MylistCollection;
     setSettings(mylistSetting: IMylistSetting[]);
     updateAllIfExpired();
@@ -50,7 +51,12 @@ class MylistService implements IMylistService {
     ) {
         this.mylists = this.mylistsStorage.get();
         this.updater = new MylistCollectionUpdater(feedFactory);
+        this.setEventHandlersForMylistsStorage();
         this.setEventHandlersForUpdater();
+    }
+
+    checkUpdate(): void {
+        this.mylistsStorage.checkUpdate();
     }
 
     getMylistCollection(): MylistCollection {
@@ -96,6 +102,13 @@ class MylistService implements IMylistService {
 
     private save() {
         this.mylistsStorage.store(this.mylists);
+    }
+
+    private setEventHandlersForMylistsStorage() {
+        this.mylistsStorage.onUpdate.addListener(() => {
+            this.mylists = this.mylistsStorage.get();
+            this.onUpdate.trigger(null);
+        });
     }
 
     private setEventHandlersForUpdater() {

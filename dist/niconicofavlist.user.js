@@ -38,7 +38,7 @@ Template.css['favlist_mylists_mylist'] = ".favlistMylistInner {\nmargin-bottom: 
 Template.css['favlist_mylists_video'] = ".favlistVideo {\nmargin: 8px 4px 0;\n}\n.favlistVideoHeader {\ndisplay: table;\nwidth: 100%;\n}\n.favlistVideoThumbnail {\ndisplay: table-cell;\nvertical-align: middle;\npadding-right: 8px;\n}\n.favlistVideoThumbnail a img {\nborder: none;\nwidth: 46px;\nheight: 34px;\n}\n.favlistVideoInfo {\ndisplay: table-cell;\nvertical-align: middle;\nwidth: 100%;\nfont-size: 11px;\n}\n.favlistVideoTitle {\nmargin-right: 4px;\n}\n.favlistVideoTimestamp {\nfont-size: 9px;\ncolor: #999;\nwhite-space: nowrap;\n}\n.favlistVideoMemo {\nmargin-top: 4px;\npadding: 4px 8px;\nborder-radius: 2px;\nbackground: #efefef;\nbox-shadow: 1px 1px 1px #ccc;\ncursor: pointer;\n}\n.favlistVideoMemo:hover {\nbackground: #f3f3f3;\n}\n.favlistVideoMemoText {\ndisplay: block;\nmax-height: 28px;\noverflow: hidden;\nfont-size: 10px;\n}\n.favlistVideoMemo.expanded .favlistVideoMemoText {\nwhite-space: pre;\nmax-height: none;\n}";
 Template.css['favlist_rescue'] = ".favlistViewRescue {\nposition: fixed;\nwidth: 360px;\nheight: 360px;\nright: 10px;\nbottom: 10px;\noverflow: auto;\nbackground-color: white;\nborder: 1px solid #cccccc;\n}\n.favlistRescueCaption {\nfont-size: 12px;\ncolor: #cc0000;\n}\n.favlistRescueOpen,\n.favlistViewRescue.closed .favlistRescueClose {\ndisplay: none;\n}\n.favlistViewRescue.closed .favlistRescueOpen {\ndisplay: inline;\n}";
 Template.css['favlist_settings'] = ".favlistConfigItems {\nlist-style-type: none;\n}\n.favlistConfigItems li {\nmargin-bottom: 10px;\n}\n.favlistConfigItems li label {\ncolor: #333;\n}\n.favlistConfigItems .favlistConfigText {\nmargin-left: 10px;\n}";
-Template.css['favlist_settings_mylist'] = ".favlistSettingMylist {\nmargin-bottom: 8px;\npadding-bottom: 8px;\nborder-bottom: 1px solid #eeeeee;\n}\n.favlistSettingMylistTitle {\nposition: relative;\nmargin-bottom: 4px;\n}\n.favlistMylistTitleEdit {\nwidth: 98%;\n}\n.favlistSettingMylistButtons button {\npadding: 0px 10px;\nfont-size: 10px;\n}\n.favlistMylistRemoveButton {\nfloat: right;\n}";
+Template.css['favlist_settings_mylist'] = ".favlistSettingMylist {\nmargin-bottom: 8px;\npadding-bottom: 8px;\nborder-bottom: 1px solid #eeeeee;\n}\n.favlistSettingMylistTitle {\nposition: relative;\nmargin-bottom: 4px;\n}\n.favlistMylistTitleEdit {\nwidth: 98%;\n}\n.favlistSettingMylistButtons button {\npadding: 0px 10px;\nfont-size: 10px;\n}\n.favlistSettingMylistButtons a {\ndisplay: inline-block;\npadding: 2px 10px;\nfont-family: sans-serif;\nfont-size: 10px;\n}\n.favlistMylistRemoveButton {\nfloat: right;\nmargin-left: 20px;\n}";
 Template.css['subscribe'] = ".favlistSubscribeView {\ndisplay: inline-block;\n}\n.favlistSubscribeView,\n.favlistSubscribeView.subscribed .favlistUnsubscribeButton {\ndisplay: inline-block;\n}\n.favlistSubscribeView.subscribed .favlistSubscribeButton,\n.favlistUnsubscribeButton {\ndisplay: none;\n}\n.favlistSubscribeView button {\npadding: 4px 10px;\ncolor: white;\nborder: none;\nborder-radius: 4px;\nwhite-space: nowrap;\nfont-size: 12px;\ntext-decoration: none;\ntext-align: center;\nbackground: #435d69;\n}\n.favlistSubscribeView button:hover {\nbackground: #4f6d7b;\n}\n.favlistSubscribeView button:active {\nbackground: #3d5560;\n}\n.favlistSubscribeButton span {\ncolor: #fc3;\n}\n.favlistUnsubscribeButton span {\ncolor: #ff6462;\n}";
 Template.css['subscribe_rescue'] = "#favlistSubscribeViewRescue {\nposition: fixed;\nleft: 10px;\nbottom: 10px;\npadding: 4px;\nbackground: #ccc;\nborder-radius: 4px;\n}";
 var util;
@@ -144,58 +144,42 @@ var util;
         return TypedStorage;
     })();
     util.TypedStorage = TypedStorage;
+
+    var UpdateTimeStorage = (function () {
+        function UpdateTimeStorage(storage, key) {
+            this.key = key;
+            this.storage = new TypedStorage(storage);
+            this.fetch();
+        }
+        UpdateTimeStorage.prototype.isChanged = function () {
+            return (this.lastUpdateTime !== this.getLastUpdateTime());
+        };
+
+        UpdateTimeStorage.prototype.fetch = function () {
+            this.lastUpdateTime = this.getLastUpdateTime();
+        };
+
+        UpdateTimeStorage.prototype.update = function () {
+            this.updateLastUpdateTime();
+        };
+
+        UpdateTimeStorage.prototype.getLastUpdateTime = function () {
+            var lastUpdateTime = this.storage.getInteger(this.key);
+            if (typeof lastUpdateTime === 'undefined') {
+                this.updateLastUpdateTime();
+                lastUpdateTime = this.lastUpdateTime;
+            }
+            return lastUpdateTime;
+        };
+
+        UpdateTimeStorage.prototype.updateLastUpdateTime = function () {
+            this.lastUpdateTime = (new Date()).getTime();
+            this.storage.setInteger(this.key, this.lastUpdateTime);
+        };
+        return UpdateTimeStorage;
+    })();
+    util.UpdateTimeStorage = UpdateTimeStorage;
 })(util || (util = {}));
-var Config = (function () {
-    function Config(checkInterval, maxNewVideos, hideCheckedList, orderDescendant) {
-        if (typeof checkInterval === "undefined") { checkInterval = 30 * 60; }
-        if (typeof maxNewVideos === "undefined") { maxNewVideos = 10; }
-        if (typeof hideCheckedList === "undefined") { hideCheckedList = false; }
-        if (typeof orderDescendant === "undefined") { orderDescendant = false; }
-        this.checkInterval = checkInterval;
-        this.maxNewVideos = maxNewVideos;
-        this.hideCheckedList = hideCheckedList;
-        this.orderDescendant = orderDescendant;
-    }
-    Config.prototype.update = function (config) {
-        this.checkInterval = config.getCheckInterval();
-        this.maxNewVideos = config.getMaxNewVideos();
-        this.hideCheckedList = config.isCheckedListHidden();
-        this.orderDescendant = config.isOrderDescendant();
-    };
-
-    Config.prototype.getCheckInterval = function () {
-        return this.checkInterval;
-    };
-
-    Config.prototype.getMaxNewVideos = function () {
-        return this.maxNewVideos;
-    };
-
-    Config.prototype.isCheckedListHidden = function () {
-        return this.hideCheckedList;
-    };
-
-    Config.prototype.isOrderDescendant = function () {
-        return this.orderDescendant;
-    };
-    return Config;
-})();
-var ConfigStorage = (function () {
-    function ConfigStorage(storage) {
-        this.storage = new util.TypedStorage(storage);
-    }
-    ConfigStorage.prototype.get = function () {
-        return new Config(this.storage.getInteger('checkInterval'), this.storage.getInteger('maxNewVideos'), this.storage.getBoolean('hideCheckedList'), this.storage.getBoolean('orderDescendant'));
-    };
-
-    ConfigStorage.prototype.store = function (config) {
-        this.storage.setInteger('checkInterval', config.getCheckInterval());
-        this.storage.setInteger('maxNewVideos', config.getMaxNewVideos());
-        this.storage.setBoolean('hideCheckedList', config.isCheckedListHidden());
-        this.storage.setBoolean('orderDescendant', config.isOrderDescendant());
-    };
-    return ConfigStorage;
-})();
 var util;
 (function (util) {
     var Event = (function () {
@@ -253,12 +237,89 @@ var util;
     })();
     util.Event = Event;
 })(util || (util = {}));
+var Config = (function () {
+    function Config(checkInterval, maxNewVideos, hideCheckedList, orderDescendant) {
+        if (typeof checkInterval === "undefined") { checkInterval = 30 * 60; }
+        if (typeof maxNewVideos === "undefined") { maxNewVideos = 10; }
+        if (typeof hideCheckedList === "undefined") { hideCheckedList = false; }
+        if (typeof orderDescendant === "undefined") { orderDescendant = false; }
+        this.checkInterval = checkInterval;
+        this.maxNewVideos = maxNewVideos;
+        this.hideCheckedList = hideCheckedList;
+        this.orderDescendant = orderDescendant;
+    }
+    Config.prototype.update = function (config) {
+        this.checkInterval = config.getCheckInterval();
+        this.maxNewVideos = config.getMaxNewVideos();
+        this.hideCheckedList = config.isCheckedListHidden();
+        this.orderDescendant = config.isOrderDescendant();
+    };
+
+    Config.prototype.getCheckInterval = function () {
+        return this.checkInterval;
+    };
+
+    Config.prototype.getMaxNewVideos = function () {
+        return this.maxNewVideos;
+    };
+
+    Config.prototype.isCheckedListHidden = function () {
+        return this.hideCheckedList;
+    };
+
+    Config.prototype.isOrderDescendant = function () {
+        return this.orderDescendant;
+    };
+    return Config;
+})();
+var ConfigStorage = (function () {
+    function ConfigStorage(storage) {
+        this.onUpdate = new util.Event();
+        this.storage = new util.TypedStorage(storage);
+        this.updateTime = new util.UpdateTimeStorage(storage, 'configLastUpdateTime');
+    }
+    ConfigStorage.prototype.checkUpdate = function () {
+        if (this.updateTime.isChanged()) {
+            console.log("[NicoNicoFavlist] Config is updated!");
+            this.updateTime.fetch();
+            this.onUpdate.trigger(null);
+        }
+    };
+
+    ConfigStorage.prototype.get = function () {
+        var config = new Config(this.storage.getInteger('checkInterval'), this.storage.getInteger('maxNewVideos'), this.storage.getBoolean('hideCheckedList'), this.storage.getBoolean('orderDescendant'));
+        this.updateTime.fetch();
+        return config;
+    };
+
+    ConfigStorage.prototype.store = function (config) {
+        this.storage.setInteger('checkInterval', config.getCheckInterval());
+        this.storage.setInteger('maxNewVideos', config.getMaxNewVideos());
+        this.storage.setBoolean('hideCheckedList', config.isCheckedListHidden());
+        this.storage.setBoolean('orderDescendant', config.isOrderDescendant());
+        this.updateTime.update();
+    };
+    return ConfigStorage;
+})();
 var ConfigService = (function () {
     function ConfigService(configStorage) {
         this.configStorage = configStorage;
         this.onUpdate = new util.Event();
         this.config = this.configStorage.get();
+        this.setEventHandlersForConfigStorage();
     }
+    ConfigService.prototype.setEventHandlersForConfigStorage = function () {
+        var _this = this;
+        this.configStorage.onUpdate.addListener(function () {
+            _this.config = _this.configStorage.get();
+            _this.onUpdate.trigger(null);
+        });
+    };
+
+    ConfigService.prototype.checkUpdate = function () {
+        this.configStorage.checkUpdate();
+    };
+
     ConfigService.prototype.getConfig = function () {
         return this.config;
     };
@@ -266,7 +327,7 @@ var ConfigService = (function () {
     ConfigService.prototype.setSettings = function (configSettings) {
         this.config.update(configSettings);
         this.configStorage.store(this.config);
-        this.onUpdate.trigger({ config: this.config });
+        this.onUpdate.trigger(null);
     };
     return ConfigService;
 })();
@@ -604,14 +665,27 @@ var MylistCollection = (function () {
 var MylistCollectionStorage = (function () {
     function MylistCollectionStorage(storage) {
         this.storage = storage;
+        this.onUpdate = new util.Event();
+        this.updateTime = new util.UpdateTimeStorage(storage, 'favlistLastUpdateTime');
     }
+    MylistCollectionStorage.prototype.checkUpdate = function () {
+        if (this.updateTime.isChanged()) {
+            console.log("[NicoNicoFavlist] MylistCollection is updated!");
+            this.updateTime.fetch();
+            this.onUpdate.trigger(null);
+        }
+    };
+
     MylistCollectionStorage.prototype.get = function () {
         var mylists = this.unserializeMylists(this.storage.get('favlist'));
-        return new MylistCollection(mylists);
+        var mylistCollection = new MylistCollection(mylists);
+        this.updateTime.fetch();
+        return mylistCollection;
     };
 
     MylistCollectionStorage.prototype.store = function (mylistCollection) {
         this.storage.set('favlist', this.serializeMylists(mylistCollection.getMylists()));
+        this.updateTime.update();
     };
 
     MylistCollectionStorage.prototype.unserializeMylists = function (serialized) {
@@ -973,8 +1047,13 @@ var MylistService = (function () {
         this.onFinishUpdatingAll = new util.Event();
         this.mylists = this.mylistsStorage.get();
         this.updater = new MylistCollectionUpdater(feedFactory);
+        this.setEventHandlersForMylistsStorage();
         this.setEventHandlersForUpdater();
     }
+    MylistService.prototype.checkUpdate = function () {
+        this.mylistsStorage.checkUpdate();
+    };
+
     MylistService.prototype.getMylistCollection = function () {
         return this.mylists;
     };
@@ -1021,6 +1100,14 @@ var MylistService = (function () {
         this.mylistsStorage.store(this.mylists);
     };
 
+    MylistService.prototype.setEventHandlersForMylistsStorage = function () {
+        var _this = this;
+        this.mylistsStorage.onUpdate.addListener(function () {
+            _this.mylists = _this.mylistsStorage.get();
+            _this.onUpdate.trigger(null);
+        });
+    };
+
     MylistService.prototype.setEventHandlersForUpdater = function () {
         var _this = this;
         this.updater.onStartUpdatingAll.addListener(function () {
@@ -1043,6 +1130,7 @@ var MylistService = (function () {
         });
         this.updater.onFinishUpdatingMylist.addListener(function (args) {
             _this.onChangeMylistStatus.trigger({ mylist: args.mylist, status: MylistStatus.Finished });
+            _this.onUpdateMylist.trigger({ mylist: args.mylist });
         });
         this.updater.onFinishUpdatingAll.addListener(function () {
             _this.save();
@@ -1058,7 +1146,12 @@ var SubscriptionService = (function () {
         this.updateInterval = updateInterval;
         this.onUpdate = new util.Event();
         this.mylists = this.mylistCollectionStorage.get();
+        this.setEventHandlersForMylistCollectionStorage();
     }
+    SubscriptionService.prototype.checkUpdate = function () {
+        this.mylistCollectionStorage.checkUpdate();
+    };
+
     SubscriptionService.prototype.isSubscribed = function () {
         return this.mylists.contains(this.mylist.getMylistId());
     };
@@ -1069,6 +1162,17 @@ var SubscriptionService = (function () {
 
     SubscriptionService.prototype.unsubscribe = function () {
         this.setSubscribed(false);
+    };
+
+    SubscriptionService.prototype.setEventHandlersForMylistCollectionStorage = function () {
+        var _this = this;
+        this.mylistCollectionStorage.onUpdate.addListener(function () {
+            var subscribed = _this.isSubscribed();
+            _this.mylists = _this.mylistCollectionStorage.get();
+            if (subscribed !== _this.isSubscribed()) {
+                _this.onUpdate.trigger(null);
+            }
+        });
     };
 
     SubscriptionService.prototype.setSubscribed = function (subscribed) {
@@ -1244,15 +1348,29 @@ var View = (function () {
     function View($el) {
         this.$el = $el;
         this.onShow = new util.Event();
+        this.onHide = new util.Event();
     }
     View.prototype.appendTo = function ($parent) {
         this.$el.appendTo($parent);
+    };
+
+    View.prototype.isVisible = function () {
+        return this.$el.is(':visible');
+    };
+
+    View.prototype.isHidden = function () {
+        return this.$el.is(':hidden');
     };
 
     View.prototype.show = function () {
         this.update();
         this.$el.show();
         this.onShow.trigger(null);
+    };
+
+    View.prototype.hide = function () {
+        this.$el.hide();
+        this.onHide.trigger(null);
     };
 
     View.prototype.update = function () {
@@ -1274,7 +1392,7 @@ var SubscribeView = (function (_super) {
 
     SubscribeView.prototype.setEventHandlers = function () {
         this.setEventHandlersForView();
-        this.setEventHandlersForSubscription();
+        this.setEventHandlersForSubscriptionService();
     };
 
     SubscribeView.prototype.setEventHandlersForView = function () {
@@ -1289,7 +1407,7 @@ var SubscribeView = (function (_super) {
         });
     };
 
-    SubscribeView.prototype.setEventHandlersForSubscription = function () {
+    SubscribeView.prototype.setEventHandlersForSubscriptionService = function () {
         var _this = this;
         this.subscriptionService.onUpdate.addListener(function () {
             _this.update();
@@ -1303,6 +1421,7 @@ var SubscribeController = (function () {
     }
     SubscribeController.prototype.start = function () {
         this.getView().show();
+        this.observeUpdate();
     };
 
     SubscribeController.prototype.getView = function () {
@@ -1311,6 +1430,16 @@ var SubscribeController = (function () {
             this.setEventHandlersForView();
         }
         return this.subscribeView;
+    };
+
+    SubscribeController.prototype.observeUpdate = function () {
+        var _this = this;
+        var updateInteval = 5000;
+        var checkUpdate = function () {
+            _this.subscriptionService.checkUpdate();
+            setTimeout(checkUpdate, updateInteval);
+        };
+        setTimeout(checkUpdate, updateInteval);
     };
 
     SubscribeController.prototype.setEventHandlersForView = function () {
@@ -1475,8 +1604,10 @@ var FavlistMylistsMylistSubview = (function (_super) {
     };
 
     FavlistMylistsMylistSubview.prototype.hideStatus = function () {
-        this.$el.removeClass('hasStatus');
-        this.$el.find('.favlistMylistStatus span').hide();
+        var _this = this;
+        this.$el.find('.favlistMylistStatus span:visible').fadeOut('slow', function () {
+            _this.$el.removeClass('hasStatus');
+        });
     };
     return FavlistMylistsMylistSubview;
 })(Subview);
@@ -1510,6 +1641,8 @@ var FavlistMylistsView = (function (_super) {
     FavlistMylistsView.prototype.setEventHandlersForConfigService = function () {
         var _this = this;
         this.configService.onUpdate.addListener(function () {
+            if (_this.isHidden())
+                return;
             _this.update();
         });
     };
@@ -1517,9 +1650,13 @@ var FavlistMylistsView = (function (_super) {
     FavlistMylistsView.prototype.setEventHandlersForMylistService = function () {
         var _this = this;
         this.mylistService.onUpdate.addListener(function () {
+            if (_this.isHidden())
+                return;
             _this.update();
         });
         this.mylistService.onUpdateMylist.addListener(function (args) {
+            if (_this.isHidden())
+                return;
             var mylistView = _this.mylistViews[args.mylist.getMylistId().toString()];
             if (mylistView) {
                 mylistView.render(args.mylist, _this.configService.getConfig());
@@ -1579,8 +1716,14 @@ var FavlistSettingsView = (function (_super) {
         this.onSave = new util.Event();
         this.onCancel = new util.Event();
         this.$mylists = this.$el.find('.favlistSettingMylists');
-        this.setEventHandlersForView();
+        this.setEventHandlers();
     }
+    FavlistSettingsView.prototype.setEventHandlers = function () {
+        this.setEventHandlersForView();
+        this.setEventHandlersForConfigService();
+        this.setEventHandlersForMylistService();
+    };
+
     FavlistSettingsView.prototype.setEventHandlersForView = function () {
         var _this = this;
         this.$el.find('.favlistSaveSettingsButton').click(function () {
@@ -1597,6 +1740,29 @@ var FavlistSettingsView = (function (_super) {
         this.$el.find('.favlistCancelSettingsButton').click(function () {
             _this.onCancel.trigger(null);
             return false;
+        });
+    };
+
+    FavlistSettingsView.prototype.setEventHandlersForConfigService = function () {
+        var _this = this;
+        this.configService.onUpdate.addListener(function () {
+            if (_this.isHidden())
+                return;
+            _this.update();
+        });
+    };
+
+    FavlistSettingsView.prototype.setEventHandlersForMylistService = function () {
+        var _this = this;
+        this.mylistService.onUpdate.addListener(function () {
+            if (_this.isHidden())
+                return;
+            _this.update();
+        });
+        this.mylistService.onUpdateMylist.addListener(function (args) {
+            if (_this.isHidden())
+                return;
+            _this.updateMylistView(_this.$mylists.children('[data-mylistId="' + args.mylist.getMylistId().toString() + '"]'), args.mylist);
         });
     };
 
@@ -1645,11 +1811,16 @@ var FavlistSettingsView = (function (_super) {
         mylists.forEach(function (mylist) {
             var $mylist = $template.clone();
             $mylist.data('mylistId', mylist.getMylistId());
-            $mylist.find('.favlistMylistTitleEdit').val(mylist.getTitle()).attr('placeholder', mylist.getOriginalTitle());
+            $mylist.attr('data-mylistId', mylist.getMylistId().toString());
+            _this.updateMylistView($mylist, mylist);
             _this.setEventHandlersForMylistView($mylist);
             _this.$mylists.append($mylist);
         });
         this.updateMylistButtons();
+    };
+
+    FavlistSettingsView.prototype.updateMylistView = function ($mylist, mylist) {
+        $mylist.find('.favlistMylistTitleEdit').val(mylist.getTitle()).attr('placeholder', mylist.getOriginalTitle());
     };
 
     FavlistSettingsView.prototype.setEventHandlersForMylistView = function ($mylist) {
@@ -1673,8 +1844,10 @@ var FavlistSettingsView = (function (_super) {
             _this.updateMylistButtons();
         });
         $mylist.find('.favlistMylistRemoveButton').click(function () {
-            $mylist.remove();
-            _this.updateMylistButtons();
+            $mylist.slideUp(function () {
+                $mylist.remove();
+                _this.updateMylistButtons();
+            });
         });
     };
 
@@ -1703,35 +1876,46 @@ var FavlistView = (function (_super) {
     function FavlistView() {
         _super.call(this, Template.load(Templates.favlist));
         this.onSettingPageRequest = new util.Event();
+        this.views = [];
         this.$pages = this.$el.find('.favlistPages');
         this.setEventHandlers();
     }
     FavlistView.prototype.setMylistsView = function (view) {
         this.mylistsView = view;
+        this.mylistsView.hide();
         this.mylistsView.appendTo(this.$pages);
+        this.views.push(this.mylistsView);
     };
 
     FavlistView.prototype.setSettingsView = function (view) {
         this.settingsView = view;
+        this.settingsView.hide();
         this.settingsView.appendTo(this.$pages);
+        this.views.push(this.settingsView);
     };
 
     FavlistView.prototype.showMylistsPage = function () {
         if (!this.mylistsView) {
             throw new Error('MylistsView is not set');
         }
-        this.$pages.children().hide();
-        this.mylistsView.show();
-        this.$el.removeClass('inSettingView');
+        this.switchView(this.mylistsView);
     };
 
     FavlistView.prototype.showSettingsPage = function () {
         if (!this.settingsView) {
             throw new Error('SettingsView is not set');
         }
-        this.$pages.children().hide();
-        this.settingsView.show();
-        this.$el.addClass('inSettingView');
+        this.switchView(this.settingsView);
+    };
+
+    FavlistView.prototype.switchView = function (view) {
+        this.views.forEach(function (target) {
+            if (target !== view && target.isVisible()) {
+                target.hide();
+            }
+        });
+        view.show();
+        this.$el.toggleClass('inSettingView', (view instanceof FavlistSettingsView));
     };
 
     FavlistView.prototype.setEventHandlers = function () {
@@ -1808,6 +1992,7 @@ var FavlistController = (function () {
     }
     FavlistController.prototype.start = function () {
         this.getView().show();
+        this.observeUpdate();
     };
 
     FavlistController.prototype.getView = function () {
@@ -1816,6 +2001,17 @@ var FavlistController = (function () {
             this.setEventHandlersForView();
         }
         return this.favlistView;
+    };
+
+    FavlistController.prototype.observeUpdate = function () {
+        var _this = this;
+        var updateInteval = 5000;
+        var checkUpdate = function () {
+            _this.configService.checkUpdate();
+            _this.mylistService.checkUpdate();
+            setTimeout(checkUpdate, updateInteval);
+        };
+        setTimeout(checkUpdate, updateInteval);
     };
 
     FavlistController.prototype.setEventHandlersForView = function () {

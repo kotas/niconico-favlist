@@ -103,4 +103,42 @@ module util {
 
     }
 
+    export class UpdateTimeStorage {
+
+        private storage: TypedStorage;
+        private lastUpdateTime: number;
+
+        constructor(storage: IStorage, private key: string) {
+            this.storage = new TypedStorage(storage);
+            this.fetch();
+        }
+
+        isChanged(): boolean {
+            return (this.lastUpdateTime !== this.getLastUpdateTime());
+        }
+
+        fetch(): void {
+            this.lastUpdateTime = this.getLastUpdateTime();
+        }
+
+        update(): void {
+            this.updateLastUpdateTime();
+        }
+
+        private getLastUpdateTime(): number {
+            var lastUpdateTime = this.storage.getInteger(this.key);
+            if (typeof lastUpdateTime === 'undefined') {
+                this.updateLastUpdateTime();
+                lastUpdateTime = this.lastUpdateTime;
+            }
+            return lastUpdateTime;
+        }
+
+        private updateLastUpdateTime(): void {
+            this.lastUpdateTime = (new Date()).getTime();
+            this.storage.setInteger(this.key, this.lastUpdateTime);
+        }
+
+    }
+
 }
