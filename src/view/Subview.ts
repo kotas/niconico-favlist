@@ -1,13 +1,11 @@
 /// <reference path="../../typings/jquery.d.ts" />
-/// <reference path="../util/EventEmitter.ts" />
 /// <reference path="./Template.ts" />
 /// <reference path="./ViewHelper.ts" />
+/// <reference path="../util/Event.ts" />
 
-class Subview extends util.EventEmitter {
+class Subview {
 
-    constructor(public $el: JQuery) {
-        super();
-    }
+    constructor(public $el: JQuery) {}
 
     appendTo($parent: JQuery) {
         this.$el.appendTo($parent);

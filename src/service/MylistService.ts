@@ -2,9 +2,14 @@
 /// <reference path="../model/MylistCollectionUpdater.ts" />
 /// <reference path="../model/MylistFeedFactory.ts" />
 /// <reference path="../model/UpdateInterval.ts" />
-/// <reference path="../util/EventEmitter.ts" />
+/// <reference path="../util/Event.ts" />
 
-interface IMylistService extends util.IEventEmitter {
+interface IMylistService {
+    onUpdate: util.IEvent<void>;
+    onUpdateMylist: util.IEvent<{ mylist: Mylist }>;
+    onStartUpdatingAll: util.IEvent<void>;
+    onChangeMylistStatus: util.IEvent<{ mylist: Mylist; status: MylistStatus }>;
+    onFinishUpdatingAll: util.IEvent<void>;
     getMylistCollection(): MylistCollection;
     setSettings(mylistSetting: IMylistSetting[]);
     updateAllIfExpired();
@@ -27,15 +32,13 @@ enum MylistStatus {
     Error
 }
 
-/**
- * events:
- *   - update()
- *   - updateMylist(mylist: Mylist)
- *   - startUpdateAll()
- *   - changeMylistStatus(mylist: Mylist, status: MylistUpdateStatus)
- *   - finishUpdateAll()
- */
-class MylistService extends util.EventEmitter implements IMylistService {
+class MylistService implements IMylistService {
+
+    onUpdate = new util.Event<void>();
+    onUpdateMylist = new util.Event<{ mylist: Mylist }>();
+    onStartUpdatingAll = new util.Event<void>();
+    onChangeMylistStatus = new util.Event<{ mylist: Mylist; status: MylistStatus }>();
+    onFinishUpdatingAll = new util.Event<void>();
 
     private mylists: MylistCollection;
     private updater: MylistCollectionUpdater;
@@ -45,7 +48,6 @@ class MylistService extends util.EventEmitter implements IMylistService {
         private updateInterval: IUpdateInterval,
         feedFactory: IMylistFeedFactory
     ) {
-        super();
         this.mylists = this.mylistsStorage.get();
         this.updater = new MylistCollectionUpdater(feedFactory);
         this.setEventHandlersForUpdater();
@@ -66,7 +68,7 @@ class MylistService extends util.EventEmitter implements IMylistService {
         });
         this.mylists.setMylists(newMylists);
         this.save();
-        this.emitEvent('update');
+        this.onUpdate.trigger(null);
     }
 
     updateAllIfExpired() {
@@ -83,13 +85,13 @@ class MylistService extends util.EventEmitter implements IMylistService {
     markMylistAllWatched(mylist: Mylist) {
         mylist.markAllVideosAsWatched();
         this.save();
-        this.emitEvent('updateMylist', [mylist]);
+        this.onUpdateMylist.trigger({ mylist: mylist });
     }
 
     markVideoWatched(mylist: Mylist, video: Video) {
         mylist.markVideoAsWatched(video);
         this.save();
-        this.emitEvent('updateMylist', [mylist]);
+        this.onUpdateMylist.trigger({ mylist: mylist });
     }
 
     private save() {
@@ -97,35 +99,31 @@ class MylistService extends util.EventEmitter implements IMylistService {
     }
 
     private setEventHandlersForUpdater() {
-        var changeMylistStatus = (mylist: Mylist, status: MylistStatus) => {
-            this.emitEvent('changeMylistStatus', [mylist, status]);
-        };
-
-        this.updater.addListener('startUpdateAll', () => {
-            this.emitEvent('startUpdateAll');
+        this.updater.onStartUpdatingAll.addListener(() => {
+            this.onStartUpdatingAll.trigger(null);
             this.mylists.getMylists().forEach((mylist: Mylist) => {
-                changeMylistStatus(mylist, MylistStatus.Waiting);
+                this.onChangeMylistStatus.trigger({ mylist: mylist, status: MylistStatus.Waiting });
             });
         });
-        this.updater.addListener('startUpdateMylist', (mylist: Mylist) => {
-            changeMylistStatus(mylist, MylistStatus.Updating);
+        this.updater.onStartUpdatingMylist.addListener((args) => {
+            this.onChangeMylistStatus.trigger({ mylist: args.mylist, status: MylistStatus.Updating });
         });
-        this.updater.addListener('failedUpdateMylist', (mylist: Mylist, error: MylistFeedFetchError) => {
-            if (error.httpStatus === 403) {
-                changeMylistStatus(mylist, MylistStatus.Private);
-            } else if (error.httpStatus === 404 || error.httpStatus === 410) {
-                changeMylistStatus(mylist, MylistStatus.Deleted);
-            } else {
-                changeMylistStatus(mylist, MylistStatus.Error);
+        this.updater.onFailedUpdatingMylist.addListener((args) => {
+            var status = MylistStatus.Error;
+            if (args.httpStatus === 403) {
+                status = MylistStatus.Private;
+            } else if (args.httpStatus === 404 || args.httpStatus === 410) {
+                status = MylistStatus.Deleted;
             }
+            this.onChangeMylistStatus.trigger({ mylist: args.mylist, status: status });
         });
-        this.updater.addListener('finishUpdateMylist', (mylist: Mylist) => {
-            changeMylistStatus(mylist, MylistStatus.Finished);
-            this.emitEvent('updateMylist', [mylist]);
+        this.updater.onFinishUpdatingMylist.addListener((args) => {
+            this.onChangeMylistStatus.trigger({ mylist: args.mylist, status: MylistStatus.Finished });
+            this.onUpdateMylist.trigger({ mylist: args.mylist });
         });
-        this.updater.addListener('finishUpdateAll', () => {
+        this.updater.onFinishUpdatingAll.addListener(() => {
             this.save();
-            this.emitEvent('finishUpdateAll');
+            this.onFinishUpdatingAll.trigger(null);
         });
     }
 

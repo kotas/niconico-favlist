@@ -1,11 +1,9 @@
 /// <reference path="./Subview.ts" />
 /// <reference path="../model/Video.ts" />
 
-/**
- * events:
- *   - videoWatch()
- */
 class FavlistMylistsVideoSubview extends Subview {
+
+    onWatchVideo = new util.Event<void>();
 
     constructor() {
         super(Template.load(Templates.favlist_mylists_video));
@@ -14,7 +12,7 @@ class FavlistMylistsVideoSubview extends Subview {
 
     private setEventHandlers() {
         this.$el.find('.favlistVideoLink').click(() => {
-            this.emitEvent('videoWatch');
+            this.onWatchVideo.trigger(null);
         });
         this.$el.find('.favlistVideoMemo').click(() => {
             this.$el.find('.favlistVideoMemo').toggleClass('expanded');

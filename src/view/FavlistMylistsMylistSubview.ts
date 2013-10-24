@@ -2,12 +2,10 @@
 /// <reference path="./FavlistMylistsVideoSubview.ts" />
 /// <reference path="../service/MylistService.ts" />
 
-/**
- * events:
- *   - mylistClearRequest()
- *   - mylistVideoWatch(video: Video)
- */
 class FavlistMylistsMylistSubview extends Subview {
+
+    onClearMylistRequest = new util.Event<void>();
+    onWatchMylistVideo = new util.Event<{ video: Video }>();
 
     private $videos: JQuery;
     private dismissStatusTimer: number;
@@ -20,7 +18,7 @@ class FavlistMylistsMylistSubview extends Subview {
 
     private setEventHandlersForView() {
         this.$el.find('.favlistMylistClearButton').click(() => {
-            this.emitEvent('mylistClearRequest');
+            this.onClearMylistRequest.trigger(null);
             return false;
         });
     }
@@ -64,8 +62,8 @@ class FavlistMylistsMylistSubview extends Subview {
     }
 
     private setEventHandlersForVideoView(video: Video, videoView: FavlistMylistsVideoSubview) {
-        videoView.addListener('videoWatch', () => {
-            this.emitEvent('mylistVideoWatch', [video]);
+        videoView.onWatchVideo.addListener(() => {
+            this.onWatchMylistVideo.trigger({ video:video });
         });
     }
 

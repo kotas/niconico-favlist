@@ -3,13 +3,11 @@
 /// <reference path="../service/ConfigService.ts" />
 /// <reference path="../service/MylistService.ts" />
 
-/**
- * events:
- *   - checkNowRequest()
- *   - mylistClearRequest(mylist: Mylist)
- *   - mylistVideoWatch(mylist: Mylist, video: Video)
- */
 class FavlistMylistsView extends View {
+
+    onUpdateAllMylistsRequest = new util.Event<void>();
+    onClearMylistRequest = new util.Event<{ mylist: Mylist }>();
+    onWatchMylistVideo = new util.Event<{ mylist: Mylist; video: Video }>();
 
     private $mylists: JQuery;
     private mylistViews: { [mylistId: string]: FavlistMylistsMylistSubview } = {};
@@ -31,37 +29,37 @@ class FavlistMylistsView extends View {
 
     private setEventHandlersForView() {
         this.$el.find('.favlistCheckNowButton').click(() => {
-            this.emitEvent('checkNowRequest');
+            this.onUpdateAllMylistsRequest.trigger(null);
             return false;
         });
     }
 
     private setEventHandlersForConfigService() {
-        this.configService.addListener('update', () => {
+        this.configService.onUpdate.addListener(() => {
             this.update();
         });
     }
 
     private setEventHandlersForMylistService() {
-        this.mylistService.addListener('update', () => {
+        this.mylistService.onUpdate.addListener(() => {
             this.update();
         });
-        this.mylistService.addListener('updateMylist', (mylist: Mylist) => {
-            var mylistView = this.mylistViews[mylist.getMylistId().toString()];
+        this.mylistService.onUpdateMylist.addListener((args) => {
+            var mylistView = this.mylistViews[args.mylist.getMylistId().toString()];
             if (mylistView) {
-                mylistView.render(mylist, this.configService.getConfig());
+                mylistView.render(args.mylist, this.configService.getConfig());
             }
         });
-        this.mylistService.addListener('startUpdateAll', () => {
+        this.mylistService.onStartUpdatingAll.addListener(() => {
             this.$el.find('.favlistCheckNowButton').attr('disabled', true).addClass('disabled');
         });
-        this.mylistService.addListener('changeMylistStatus', (mylist: Mylist, status: MylistStatus) => {
-            var mylistView = this.mylistViews[mylist.getMylistId().toString()];
+        this.mylistService.onChangeMylistStatus.addListener((args) => {
+            var mylistView = this.mylistViews[args.mylist.getMylistId().toString()];
             if (mylistView) {
-                mylistView.renderStatus(status);
+                mylistView.renderStatus(args.status);
             }
         });
-        this.mylistService.addListener('finishUpdateAll', () => {
+        this.mylistService.onFinishUpdatingAll.addListener(() => {
             this.$el.find('.favlistCheckNowButton').removeAttr('disabled').removeClass('disabled');
         });
     }
@@ -86,11 +84,11 @@ class FavlistMylistsView extends View {
     }
 
     private setEventHandlersForMylistView(mylist: Mylist, mylistView: FavlistMylistsMylistSubview) {
-        mylistView.addListener('mylistClearRequest', () => {
-            this.emitEvent('mylistClearRequest', [mylist]);
+        mylistView.onClearMylistRequest.addListener(() => {
+            this.onClearMylistRequest.trigger({ mylist: mylist });
         });
-        mylistView.addListener('mylistVideoWatch', (video: Video) => {
-            this.emitEvent('mylistVideoWatch', [mylist, video]);
+        mylistView.onWatchMylistVideo.addListener((args) => {
+            this.onWatchMylistVideo.trigger({ mylist: mylist, video: args.video });
         });
     }
 

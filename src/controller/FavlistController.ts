@@ -17,7 +17,6 @@ class FavlistController {
 
     start() {
         this.getView().show();
-        this.showMylistsPage();
     }
 
     getView(): FavlistView {
@@ -29,10 +28,10 @@ class FavlistController {
     }
 
     private setEventHandlersForView() {
-        this.favlistView.addListener('show', () => {
+        this.favlistView.onShow.addListener(() => {
             this.showMylistsPage();
         });
-        this.favlistView.addListener('settingPageRequest', () => {
+        this.favlistView.onSettingPageRequest.addListener(() => {
             this.showSettingsPage();
         });
     }
@@ -48,7 +47,7 @@ class FavlistController {
     private showSettingsPage() {
         if (!this.settingsController) {
             this.settingsController = new FavlistSettingsController(this.configService, this.mylistService);
-            this.settingsController.addListener('finish', () => this.showMylistsPage());
+            this.settingsController.onFinish.addListener(() => this.showMylistsPage());
             this.favlistView.setSettingsView(this.settingsController.getView());
         }
         this.favlistView.showSettingsPage();

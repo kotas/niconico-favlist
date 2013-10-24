@@ -2,12 +2,10 @@
 /// <reference path="../service/ConfigService.ts" />
 /// <reference path="../service/MylistService.ts" />
 
-/**
- * events:
- *   - settingSave(mylistSettings: IMylistSetting[], configSettings: IConfig)
- *   - settingCancel()
- */
 class FavlistSettingsView extends View {
+
+    onSave = new util.Event<{ mylistSettings: IMylistSetting[]; configSettings: IConfig }>();
+    onCancel = new util.Event<void>();
 
     private $mylists: JQuery;
 
@@ -17,10 +15,6 @@ class FavlistSettingsView extends View {
     ) {
         super(Template.load(Templates.favlist_settings));
         this.$mylists = this.$el.find('.favlistSettingMylists');
-        this.setEventHandlers();
-    }
-
-    private setEventHandlers() {
         this.setEventHandlersForView();
     }
 
@@ -33,11 +27,11 @@ class FavlistSettingsView extends View {
                 alert(e.message || e);
                 return false;
             }
-            this.emitEvent('settingSave', [mylistSettings, configSettings]);
+            this.onSave.trigger({ mylistSettings: mylistSettings, configSettings: configSettings });
             return false;
         });
         this.$el.find('.favlistCancelSettingsButton').click(() => {
-            this.emitEvent('settingCancel');
+            this.onCancel.trigger(null);
             return false;
         });
     }

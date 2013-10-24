@@ -145,118 +145,6 @@ var util;
     })();
     util.TypedStorage = TypedStorage;
 })(util || (util = {}));
-var util;
-(function (util) {
-    function chooseUrlFetcher() {
-        if (GMUrlFetcher.isAvailable()) {
-            return new GMUrlFetcher();
-        } else if (XHRUrlFetcher.isAvailable()) {
-            return new XHRUrlFetcher();
-        } else {
-            throw new Error('No supported URL fetcher');
-        }
-    }
-    util.chooseUrlFetcher = chooseUrlFetcher;
-
-    function getUserAgent() {
-        var s = '';
-        if (typeof GM_info !== 'undefined' && GM_info.script && GM_info.script.name && GM_info.script.version) {
-            s = GM_info.script.name + '/' + GM_info.script.version + ' Greasemonkey ';
-        }
-        if (typeof window.navigator !== 'undefined' && window.navigator.userAgent) {
-            s += window.navigator.userAgent;
-        }
-        return s;
-    }
-
-    var GMUrlFetcher = (function () {
-        function GMUrlFetcher() {
-        }
-        GMUrlFetcher.isAvailable = function () {
-            return (typeof GM_xmlhttpRequest !== 'undefined');
-        };
-
-        GMUrlFetcher.prototype.fetch = function (option, callback) {
-            var headers = option.headers || {};
-            headers['User-Agent'] = getUserAgent();
-            return GM_xmlhttpRequest({
-                url: option.url,
-                method: option.method,
-                headers: headers,
-                timeout: option.timeout,
-                onload: function (response) {
-                    callback(null, {
-                        responseHeaders: response.responseHeaders,
-                        responseText: response.responseText,
-                        status: response.status,
-                        statusText: response.statusText
-                    });
-                },
-                onerror: function () {
-                    callback(new Error('Failed to fetch URL'), null);
-                },
-                ontimeout: function () {
-                    callback(new Error('Failed to fetch URL by time out'), null);
-                },
-                onabort: function () {
-                    callback(new Error('Aborted'), null);
-                }
-            });
-        };
-        return GMUrlFetcher;
-    })();
-    util.GMUrlFetcher = GMUrlFetcher;
-
-    var XHRUrlFetcher = (function () {
-        function XHRUrlFetcher() {
-        }
-        XHRUrlFetcher.isAvailable = function () {
-            return (typeof XMLHttpRequest !== 'undefined');
-        };
-
-        XHRUrlFetcher.prototype.fetch = function (option, callback) {
-            var req = new XMLHttpRequest();
-            req.open(option.method, option.url, true);
-
-            req.onload = function () {
-                callback(null, {
-                    responseHeaders: req.getAllResponseHeaders(),
-                    responseText: req.responseText,
-                    status: req.status,
-                    statusText: req.statusText
-                });
-            };
-            req.onerror = function () {
-                callback(new Error('Failed to fetch URL'), null);
-            };
-            req.ontimeout = function () {
-                callback(new Error('Failed to fetch URL by time out'), null);
-            };
-            req.onabort = function () {
-                callback(new Error('Aborted'), null);
-            };
-
-            if (option.headers) {
-                for (var key in option.headers) {
-                    if (option.headers.hasOwnProperty(key)) {
-                        req.setRequestHeader(key, option.headers[key]);
-                    }
-                }
-            }
-            if (option.timeout) {
-                req.timeout = option.timeout;
-            }
-
-            req.setRequestHeader('User-Agent', getUserAgent());
-            req.send(null);
-            return { abort: function () {
-                    req.abort();
-                } };
-        };
-        return XHRUrlFetcher;
-    })();
-    util.XHRUrlFetcher = XHRUrlFetcher;
-})(util || (util = {}));
 var Config = (function () {
     function Config(checkInterval, maxNewVideos, hideCheckedList, orderDescendant) {
         if (typeof checkInterval === "undefined") { checkInterval = 30 * 60; }
@@ -307,6 +195,80 @@ var ConfigStorage = (function () {
         this.storage.setBoolean('orderDescendant', config.isOrderDescendant());
     };
     return ConfigStorage;
+})();
+var util;
+(function (util) {
+    var Event = (function () {
+        function Event() {
+        }
+        Event.prototype.addListener = function (listener) {
+            if (!this.listeners) {
+                this.listeners = [];
+            }
+            this.listeners.push(listener);
+        };
+
+        Event.prototype.addOnceListener = function (listener) {
+            (listener).once = true;
+            this.addListener(listener);
+        };
+
+        Event.prototype.removeListener = function (listener) {
+            if (!this.listeners)
+                return false;
+
+            var index = this.listeners.indexOf(listener);
+            if (index < 0) {
+                return false;
+            }
+
+            this.listeners.splice(index, 1);
+            return true;
+        };
+
+        Event.prototype.clearListeners = function () {
+            this.listeners = null;
+        };
+
+        Event.prototype.trigger = function (args) {
+            if (!this.listeners)
+                return;
+
+            for (var i = this.listeners.length - 1; i >= 0; i--) {
+                var listener = this.listeners[i];
+                if ((listener).once) {
+                    this.listeners.splice(i, 1);
+                }
+                listener.call(null, args);
+            }
+        };
+
+        Event.prototype.proxy = function () {
+            var _this = this;
+            return function (args) {
+                _this.trigger(args);
+            };
+        };
+        return Event;
+    })();
+    util.Event = Event;
+})(util || (util = {}));
+var ConfigService = (function () {
+    function ConfigService(configStorage) {
+        this.configStorage = configStorage;
+        this.onUpdate = new util.Event();
+        this.config = this.configStorage.get();
+    }
+    ConfigService.prototype.getConfig = function () {
+        return this.config;
+    };
+
+    ConfigService.prototype.setSettings = function (configSettings) {
+        this.config.update(configSettings);
+        this.configStorage.store(this.config);
+        this.onUpdate.trigger({ config: this.config });
+    };
+    return ConfigService;
 })();
 var MylistIdType;
 (function (MylistIdType) {
@@ -484,90 +446,12 @@ var Nicovideo;
     }
     Nicovideo.getMylistFeedURL = getMylistFeedURL;
 })(Nicovideo || (Nicovideo = {}));
-var util;
-(function (util) {
-    var EventEmitter = (function () {
-        function EventEmitter() {
-            this.listeners = {};
-            this.delegators = [];
-        }
-        EventEmitter.prototype.addListener = function (eventName, listener) {
-            (this.listeners[eventName] || (this.listeners[eventName] = [])).push(listener);
-        };
-
-        EventEmitter.prototype.addOnceListener = function (eventName, listener) {
-            (listener).once = true;
-            this.addListener(eventName, listener);
-        };
-
-        EventEmitter.prototype.removeListener = function (eventName, listener) {
-            if (!this.listeners[eventName]) {
-                return false;
-            }
-
-            var index = this.listeners[eventName].indexOf(listener);
-            if (index < 0) {
-                return false;
-            }
-
-            this.listeners[eventName].splice(index, 1);
-            if (this.listeners[eventName].length === 0) {
-                delete this.listeners[eventName];
-            }
-            return true;
-        };
-
-        EventEmitter.prototype.addEventDelegator = function (delegator) {
-            this.delegators.push(delegator);
-        };
-
-        EventEmitter.prototype.removeEventDelegator = function (delegator) {
-            var index = this.delegators.indexOf(delegator);
-            if (index >= 0) {
-                this.delegators.splice(index, 1);
-                return true;
-            } else {
-                return false;
-            }
-        };
-
-        EventEmitter.prototype.emitEvent = function (eventName, args) {
-            if (typeof args === "undefined") { args = []; }
-            var i;
-            var listeners = this.listeners[eventName];
-            if (listeners) {
-                for (i = listeners.length - 1; i >= 0; i--) {
-                    var listener = listeners[i];
-                    if ((listener).once) {
-                        this.removeListener(eventName, listener);
-                    }
-                    listener.apply(null, args);
-                }
-            }
-            if (this.delegators.length > 0) {
-                for (i = this.delegators.length - 1; i >= 0; i--) {
-                    this.delegators[i](eventName, args);
-                }
-            }
-        };
-        return EventEmitter;
-    })();
-    util.EventEmitter = EventEmitter;
-})(util || (util = {}));
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var Mylist = (function (_super) {
-    __extends(Mylist, _super);
+var Mylist = (function () {
     function Mylist(mylistId, originalTitle, overrideTitle, newVideos, watchedVideoIds) {
         if (typeof originalTitle === "undefined") { originalTitle = ''; }
         if (typeof overrideTitle === "undefined") { overrideTitle = ''; }
         if (typeof newVideos === "undefined") { newVideos = []; }
         if (typeof watchedVideoIds === "undefined") { watchedVideoIds = []; }
-        _super.call(this);
         this.mylistId = mylistId;
         this.originalTitle = originalTitle;
         this.overrideTitle = overrideTitle;
@@ -607,22 +491,14 @@ var Mylist = (function (_super) {
     };
 
     Mylist.prototype.setOriginalTitle = function (title) {
-        if (this.originalTitle !== title) {
-            this.originalTitle = title;
-            if (!this.overrideTitle) {
-                this.emitEvent('updateTitle');
-            }
-        }
+        this.originalTitle = title;
     };
 
     Mylist.prototype.setOverrideTitle = function (title) {
         if (title === this.overrideTitle) {
             title = '';
         }
-        if (this.overrideTitle !== title) {
-            this.overrideTitle = title;
-            this.emitEvent('updateTitle');
-        }
+        this.overrideTitle = title;
     };
 
     Mylist.prototype.markVideoAsWatched = function (video) {
@@ -631,7 +507,6 @@ var Mylist = (function (_super) {
             this.newVideos.splice(index, 1);
             this.watchedVideoIds.push(video.getVideoId());
         }
-        this.emitEvent('updateVideos');
     };
 
     Mylist.prototype.markAllVideosAsWatched = function () {
@@ -640,7 +515,6 @@ var Mylist = (function (_super) {
             _this.watchedVideoIds.push(video.getVideoId());
         });
         this.newVideos = [];
-        this.emitEvent('updateVideos');
     };
 
     Mylist.prototype.updateWithFeed = function (feed) {
@@ -669,15 +543,11 @@ var Mylist = (function (_super) {
                 _this.newVideos.push(video);
             }
         });
-
-        this.emitEvent('updateVideos');
     };
     return Mylist;
-})(util.EventEmitter);
-var MylistCollection = (function (_super) {
-    __extends(MylistCollection, _super);
+})();
+var MylistCollection = (function () {
     function MylistCollection(mylists) {
-        _super.call(this);
         this.mylists = mylists;
     }
     MylistCollection.prototype.getMylists = function () {
@@ -700,13 +570,10 @@ var MylistCollection = (function (_super) {
 
     MylistCollection.prototype.setMylists = function (mylists) {
         this.mylists = Array.prototype.slice.call(mylists);
-        this.emitEvent('update');
     };
 
     MylistCollection.prototype.add = function (mylist) {
         this.mylists.push(mylist);
-        this.emitEvent('addMylist', [mylist]);
-        this.emitEvent('update');
     };
 
     MylistCollection.prototype.remove = function (mylist) {
@@ -721,8 +588,6 @@ var MylistCollection = (function (_super) {
 
         var mylist = this.mylists[index];
         this.mylists.splice(index, 1);
-        this.emitEvent('removeMylist', [mylist]);
-        this.emitEvent('update');
         return true;
     };
 
@@ -735,7 +600,7 @@ var MylistCollection = (function (_super) {
         return -1;
     };
     return MylistCollection;
-})(util.EventEmitter);
+})();
 var MylistCollectionStorage = (function () {
     function MylistCollectionStorage(storage) {
         this.storage = storage;
@@ -818,24 +683,6 @@ var MylistCollectionStorage = (function () {
     };
     return MylistCollectionStorage;
 })();
-var ConfigService = (function (_super) {
-    __extends(ConfigService, _super);
-    function ConfigService(configStorage) {
-        _super.call(this);
-        this.configStorage = configStorage;
-        this.config = this.configStorage.get();
-    }
-    ConfigService.prototype.getConfig = function () {
-        return this.config;
-    };
-
-    ConfigService.prototype.setSettings = function (configSettings) {
-        this.config.update(configSettings);
-        this.configStorage.store(this.config);
-        this.emitEvent('update', [this.config]);
-    };
-    return ConfigService;
-})(util.EventEmitter);
 var UpdateInterval = (function () {
     function UpdateInterval(storage, configService) {
         this.storage = storage;
@@ -873,6 +720,118 @@ var UpdateInterval = (function () {
 })();
 var util;
 (function (util) {
+    function chooseUrlFetcher() {
+        if (GMUrlFetcher.isAvailable()) {
+            return new GMUrlFetcher();
+        } else if (XHRUrlFetcher.isAvailable()) {
+            return new XHRUrlFetcher();
+        } else {
+            throw new Error('No supported URL fetcher');
+        }
+    }
+    util.chooseUrlFetcher = chooseUrlFetcher;
+
+    function getUserAgent() {
+        var s = '';
+        if (typeof GM_info !== 'undefined' && GM_info.script && GM_info.script.name && GM_info.script.version) {
+            s = GM_info.script.name + '/' + GM_info.script.version + ' Greasemonkey ';
+        }
+        if (typeof window.navigator !== 'undefined' && window.navigator.userAgent) {
+            s += window.navigator.userAgent;
+        }
+        return s;
+    }
+
+    var GMUrlFetcher = (function () {
+        function GMUrlFetcher() {
+        }
+        GMUrlFetcher.isAvailable = function () {
+            return (typeof GM_xmlhttpRequest !== 'undefined');
+        };
+
+        GMUrlFetcher.prototype.fetch = function (option, callback) {
+            var headers = option.headers || {};
+            headers['User-Agent'] = getUserAgent();
+            return GM_xmlhttpRequest({
+                url: option.url,
+                method: option.method,
+                headers: headers,
+                timeout: option.timeout,
+                onload: function (response) {
+                    callback(null, {
+                        responseHeaders: response.responseHeaders,
+                        responseText: response.responseText,
+                        status: response.status,
+                        statusText: response.statusText
+                    });
+                },
+                onerror: function () {
+                    callback(new Error('Failed to fetch URL'), null);
+                },
+                ontimeout: function () {
+                    callback(new Error('Failed to fetch URL by time out'), null);
+                },
+                onabort: function () {
+                    callback(new Error('Aborted'), null);
+                }
+            });
+        };
+        return GMUrlFetcher;
+    })();
+    util.GMUrlFetcher = GMUrlFetcher;
+
+    var XHRUrlFetcher = (function () {
+        function XHRUrlFetcher() {
+        }
+        XHRUrlFetcher.isAvailable = function () {
+            return (typeof XMLHttpRequest !== 'undefined');
+        };
+
+        XHRUrlFetcher.prototype.fetch = function (option, callback) {
+            var req = new XMLHttpRequest();
+            req.open(option.method, option.url, true);
+
+            req.onload = function () {
+                callback(null, {
+                    responseHeaders: req.getAllResponseHeaders(),
+                    responseText: req.responseText,
+                    status: req.status,
+                    statusText: req.statusText
+                });
+            };
+            req.onerror = function () {
+                callback(new Error('Failed to fetch URL'), null);
+            };
+            req.ontimeout = function () {
+                callback(new Error('Failed to fetch URL by time out'), null);
+            };
+            req.onabort = function () {
+                callback(new Error('Aborted'), null);
+            };
+
+            if (option.headers) {
+                for (var key in option.headers) {
+                    if (option.headers.hasOwnProperty(key)) {
+                        req.setRequestHeader(key, option.headers[key]);
+                    }
+                }
+            }
+            if (option.timeout) {
+                req.timeout = option.timeout;
+            }
+
+            req.setRequestHeader('User-Agent', getUserAgent());
+            req.send(null);
+            return { abort: function () {
+                    req.abort();
+                } };
+        };
+        return XHRUrlFetcher;
+    })();
+    util.XHRUrlFetcher = XHRUrlFetcher;
+})(util || (util = {}));
+var util;
+(function (util) {
     var CustomError = (function () {
         function CustomError(name, message) {
             this.name = name;
@@ -889,6 +848,12 @@ var util;
     (CustomError).prototype = new Error();
     (CustomError).prototype.constructor = CustomError;
 })(util || (util = {}));
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
 var MylistFeedFetchError = (function (_super) {
     __extends(MylistFeedFetchError, _super);
     function MylistFeedFetchError(message, httpStatus) {
@@ -922,11 +887,15 @@ var MylistFeedFactory = (function () {
     };
     return MylistFeedFactory;
 })();
-var MylistCollectionUpdater = (function (_super) {
-    __extends(MylistCollectionUpdater, _super);
+var MylistCollectionUpdater = (function () {
     function MylistCollectionUpdater(mylistFeedFactory) {
-        _super.call(this);
         this.mylistFeedFactory = mylistFeedFactory;
+        this.onStartUpdatingAll = new util.Event();
+        this.onFinishUpdatingAll = new util.Event();
+        this.onAbortUpdatingAll = new util.Event();
+        this.onStartUpdatingMylist = new util.Event();
+        this.onFinishUpdatingMylist = new util.Event();
+        this.onFailedUpdatingMylist = new util.Event();
     }
     MylistCollectionUpdater.prototype.updateAll = function (collection) {
         var _this = this;
@@ -944,18 +913,18 @@ var MylistCollectionUpdater = (function (_super) {
                 }
                 if (!aborted) {
                     aborted = true;
-                    _this.emitEvent('abortUpdateAll');
+                    _this.onAbortUpdatingAll.trigger(null);
                 }
             }
         };
 
-        this.emitEvent('startUpdateAll');
+        this.onStartUpdatingAll.trigger(null);
 
         var updateNext = function () {
             var mylist = mylists.shift();
             if (!mylist) {
                 currentAborter = null;
-                _this.emitEvent('finishUpdateAll');
+                _this.onFinishUpdatingAll.trigger(null);
                 return;
             }
             if (aborted) {
@@ -970,19 +939,19 @@ var MylistCollectionUpdater = (function (_super) {
 
     MylistCollectionUpdater.prototype.updateMylist = function (mylist, callback) {
         var _this = this;
-        this.emitEvent('startUpdateMylist', [mylist]);
+        this.onStartUpdatingMylist.trigger({ mylist: mylist });
         return this.mylistFeedFactory.getFeedFromServer(mylist.getMylistId(), function (error, feed) {
             if (error) {
-                _this.emitEvent('failedUpdateMylist', [mylist, error]);
+                _this.onFailedUpdatingMylist.trigger({ mylist: mylist, error: error, httpStatus: error.httpStatus });
             } else {
                 mylist.updateWithFeed(feed);
-                _this.emitEvent('finishUpdateMylist', [mylist]);
+                _this.onFinishUpdatingMylist.trigger({ mylist: mylist });
             }
             callback && callback(error, mylist);
         });
     };
     return MylistCollectionUpdater;
-})(util.EventEmitter);
+})();
 var MylistStatus;
 (function (MylistStatus) {
     MylistStatus[MylistStatus["Waiting"] = 0] = "Waiting";
@@ -993,12 +962,15 @@ var MylistStatus;
     MylistStatus[MylistStatus["Error"] = 5] = "Error";
 })(MylistStatus || (MylistStatus = {}));
 
-var MylistService = (function (_super) {
-    __extends(MylistService, _super);
+var MylistService = (function () {
     function MylistService(mylistsStorage, updateInterval, feedFactory) {
-        _super.call(this);
         this.mylistsStorage = mylistsStorage;
         this.updateInterval = updateInterval;
+        this.onUpdate = new util.Event();
+        this.onUpdateMylist = new util.Event();
+        this.onStartUpdatingAll = new util.Event();
+        this.onChangeMylistStatus = new util.Event();
+        this.onFinishUpdatingAll = new util.Event();
         this.mylists = this.mylistsStorage.get();
         this.updater = new MylistCollectionUpdater(feedFactory);
         this.setEventHandlersForUpdater();
@@ -1019,7 +991,7 @@ var MylistService = (function (_super) {
         });
         this.mylists.setMylists(newMylists);
         this.save();
-        this.emitEvent('update');
+        this.onUpdate.trigger(null);
     };
 
     MylistService.prototype.updateAllIfExpired = function () {
@@ -1036,13 +1008,13 @@ var MylistService = (function (_super) {
     MylistService.prototype.markMylistAllWatched = function (mylist) {
         mylist.markAllVideosAsWatched();
         this.save();
-        this.emitEvent('updateMylist', [mylist]);
+        this.onUpdateMylist.trigger({ mylist: mylist });
     };
 
     MylistService.prototype.markVideoWatched = function (mylist, video) {
         mylist.markVideoAsWatched(video);
         this.save();
-        this.emitEvent('updateMylist', [mylist]);
+        this.onUpdateMylist.trigger({ mylist: mylist });
     };
 
     MylistService.prototype.save = function () {
@@ -1051,46 +1023,40 @@ var MylistService = (function (_super) {
 
     MylistService.prototype.setEventHandlersForUpdater = function () {
         var _this = this;
-        var changeMylistStatus = function (mylist, status) {
-            _this.emitEvent('changeMylistStatus', [mylist, status]);
-        };
-
-        this.updater.addListener('startUpdateAll', function () {
-            _this.emitEvent('startUpdateAll');
+        this.updater.onStartUpdatingAll.addListener(function () {
+            _this.onStartUpdatingAll.trigger(null);
             _this.mylists.getMylists().forEach(function (mylist) {
-                changeMylistStatus(mylist, MylistStatus.Waiting);
+                _this.onChangeMylistStatus.trigger({ mylist: mylist, status: MylistStatus.Waiting });
             });
         });
-        this.updater.addListener('startUpdateMylist', function (mylist) {
-            changeMylistStatus(mylist, MylistStatus.Updating);
+        this.updater.onStartUpdatingMylist.addListener(function (args) {
+            _this.onChangeMylistStatus.trigger({ mylist: args.mylist, status: MylistStatus.Updating });
         });
-        this.updater.addListener('failedUpdateMylist', function (mylist, error) {
-            if (error.httpStatus === 403) {
-                changeMylistStatus(mylist, MylistStatus.Private);
-            } else if (error.httpStatus === 404 || error.httpStatus === 410) {
-                changeMylistStatus(mylist, MylistStatus.Deleted);
-            } else {
-                changeMylistStatus(mylist, MylistStatus.Error);
+        this.updater.onFailedUpdatingMylist.addListener(function (args) {
+            var status = MylistStatus.Error;
+            if (args.httpStatus === 403) {
+                status = MylistStatus.Private;
+            } else if (args.httpStatus === 404 || args.httpStatus === 410) {
+                status = MylistStatus.Deleted;
             }
+            _this.onChangeMylistStatus.trigger({ mylist: args.mylist, status: status });
         });
-        this.updater.addListener('finishUpdateMylist', function (mylist) {
-            changeMylistStatus(mylist, MylistStatus.Finished);
-            _this.emitEvent('updateMylist', [mylist]);
+        this.updater.onFinishUpdatingMylist.addListener(function (args) {
+            _this.onChangeMylistStatus.trigger({ mylist: args.mylist, status: MylistStatus.Finished });
         });
-        this.updater.addListener('finishUpdateAll', function () {
+        this.updater.onFinishUpdatingAll.addListener(function () {
             _this.save();
-            _this.emitEvent('finishUpdateAll');
+            _this.onFinishUpdatingAll.trigger(null);
         });
     };
     return MylistService;
-})(util.EventEmitter);
-var SubscriptionService = (function (_super) {
-    __extends(SubscriptionService, _super);
+})();
+var SubscriptionService = (function () {
     function SubscriptionService(mylist, mylistCollectionStorage, updateInterval) {
-        _super.call(this);
         this.mylist = mylist;
         this.mylistCollectionStorage = mylistCollectionStorage;
         this.updateInterval = updateInterval;
+        this.onUpdate = new util.Event();
         this.mylists = this.mylistCollectionStorage.get();
     }
     SubscriptionService.prototype.isSubscribed = function () {
@@ -1115,34 +1081,11 @@ var SubscriptionService = (function (_super) {
             }
             this.mylistCollectionStorage.store(this.mylists);
             this.updateInterval.expire();
-            this.emitEvent('update', [subscribed]);
+            this.onUpdate.trigger({ mylist: this.mylist, subscribed: subscribed });
         }
     };
     return SubscriptionService;
-})(util.EventEmitter);
-var util;
-(function (util) {
-    var initializers = {};
-    var instances = {};
-
-    util.DI = {
-        register: function (name, initializer) {
-            initializers[name] = initializer;
-        },
-        resolve: function (name) {
-            if (typeof instances[name] !== 'undefined') {
-                return instances[name];
-            }
-            if (typeof initializers[name] === 'undefined') {
-                throw new Error('[DI] Not registered: ' + name);
-            }
-            instances[name] = initializers[name]();
-            initializers[name] = undefined;
-            delete initializers[name];
-            return instances[name];
-        }
-    };
-})(util || (util = {}));
+})();
 var Templates;
 (function (Templates) {
     Templates[Templates["favlist"] = 0] = "favlist";
@@ -1297,11 +1240,10 @@ var ViewHelper;
     }
     ViewHelper.zeroPad = zeroPad;
 })(ViewHelper || (ViewHelper = {}));
-var View = (function (_super) {
-    __extends(View, _super);
+var View = (function () {
     function View($el) {
-        _super.call(this);
         this.$el = $el;
+        this.onShow = new util.Event();
     }
     View.prototype.appendTo = function ($parent) {
         this.$el.appendTo($parent);
@@ -1310,18 +1252,20 @@ var View = (function (_super) {
     View.prototype.show = function () {
         this.update();
         this.$el.show();
-        this.emitEvent('show');
+        this.onShow.trigger(null);
     };
 
     View.prototype.update = function () {
     };
     return View;
-})(util.EventEmitter);
+})();
 var SubscribeView = (function (_super) {
     __extends(SubscribeView, _super);
     function SubscribeView(subscriptionService) {
         _super.call(this, Template.load(Templates.subscribe));
         this.subscriptionService = subscriptionService;
+        this.onSubscribeRequest = new util.Event();
+        this.onUnsubscribeRequest = new util.Event();
         this.setEventHandlers();
     }
     SubscribeView.prototype.update = function () {
@@ -1336,18 +1280,18 @@ var SubscribeView = (function (_super) {
     SubscribeView.prototype.setEventHandlersForView = function () {
         var _this = this;
         this.$el.find('.favlistSubscribeButton').click(function () {
-            _this.emitEvent('subscribeRequest');
+            _this.onSubscribeRequest.trigger(null);
             return false;
         });
         this.$el.find('.favlistUnsubscribeButton').click(function () {
-            _this.emitEvent('unsubscribeRequest');
+            _this.onUnsubscribeRequest.trigger(null);
             return false;
         });
     };
 
     SubscribeView.prototype.setEventHandlersForSubscription = function () {
         var _this = this;
-        this.subscriptionService.addListener('update', function () {
+        this.subscriptionService.onUpdate.addListener(function () {
             _this.update();
         });
     };
@@ -1371,36 +1315,35 @@ var SubscribeController = (function () {
 
     SubscribeController.prototype.setEventHandlersForView = function () {
         var _this = this;
-        this.subscribeView.addListener('subscribeRequest', function () {
+        this.subscribeView.onSubscribeRequest.addListener(function () {
             _this.subscriptionService.subscribe();
         });
-        this.subscribeView.addListener('unsubscribeRequest', function () {
+        this.subscribeView.onUnsubscribeRequest.addListener(function () {
             _this.subscriptionService.unsubscribe();
         });
     };
     return SubscribeController;
 })();
-var Subview = (function (_super) {
-    __extends(Subview, _super);
+var Subview = (function () {
     function Subview($el) {
-        _super.call(this);
         this.$el = $el;
     }
     Subview.prototype.appendTo = function ($parent) {
         this.$el.appendTo($parent);
     };
     return Subview;
-})(util.EventEmitter);
+})();
 var FavlistMylistsVideoSubview = (function (_super) {
     __extends(FavlistMylistsVideoSubview, _super);
     function FavlistMylistsVideoSubview() {
         _super.call(this, Template.load(Templates.favlist_mylists_video));
+        this.onWatchVideo = new util.Event();
         this.setEventHandlers();
     }
     FavlistMylistsVideoSubview.prototype.setEventHandlers = function () {
         var _this = this;
         this.$el.find('.favlistVideoLink').click(function () {
-            _this.emitEvent('videoWatch');
+            _this.onWatchVideo.trigger(null);
         });
         this.$el.find('.favlistVideoMemo').click(function () {
             _this.$el.find('.favlistVideoMemo').toggleClass('expanded');
@@ -1431,13 +1374,15 @@ var FavlistMylistsMylistSubview = (function (_super) {
     __extends(FavlistMylistsMylistSubview, _super);
     function FavlistMylistsMylistSubview() {
         _super.call(this, Template.load(Templates.favlist_mylists_mylist));
+        this.onClearMylistRequest = new util.Event();
+        this.onWatchMylistVideo = new util.Event();
         this.$videos = this.$el.find('.favlistMylistVideos');
         this.setEventHandlersForView();
     }
     FavlistMylistsMylistSubview.prototype.setEventHandlersForView = function () {
         var _this = this;
         this.$el.find('.favlistMylistClearButton').click(function () {
-            _this.emitEvent('mylistClearRequest');
+            _this.onClearMylistRequest.trigger(null);
             return false;
         });
     };
@@ -1483,8 +1428,8 @@ var FavlistMylistsMylistSubview = (function (_super) {
 
     FavlistMylistsMylistSubview.prototype.setEventHandlersForVideoView = function (video, videoView) {
         var _this = this;
-        videoView.addListener('videoWatch', function () {
-            _this.emitEvent('mylistVideoWatch', [video]);
+        videoView.onWatchVideo.addListener(function () {
+            _this.onWatchMylistVideo.trigger({ video: video });
         });
     };
 
@@ -1541,6 +1486,9 @@ var FavlistMylistsView = (function (_super) {
         _super.call(this, Template.load(Templates.favlist_mylists));
         this.configService = configService;
         this.mylistService = mylistService;
+        this.onUpdateAllMylistsRequest = new util.Event();
+        this.onClearMylistRequest = new util.Event();
+        this.onWatchMylistVideo = new util.Event();
         this.mylistViews = {};
         this.$mylists = this.$el.find('.favlistMylists');
         this.setEventHandlers();
@@ -1554,39 +1502,39 @@ var FavlistMylistsView = (function (_super) {
     FavlistMylistsView.prototype.setEventHandlersForView = function () {
         var _this = this;
         this.$el.find('.favlistCheckNowButton').click(function () {
-            _this.emitEvent('checkNowRequest');
+            _this.onUpdateAllMylistsRequest.trigger(null);
             return false;
         });
     };
 
     FavlistMylistsView.prototype.setEventHandlersForConfigService = function () {
         var _this = this;
-        this.configService.addListener('update', function () {
+        this.configService.onUpdate.addListener(function () {
             _this.update();
         });
     };
 
     FavlistMylistsView.prototype.setEventHandlersForMylistService = function () {
         var _this = this;
-        this.mylistService.addListener('update', function () {
+        this.mylistService.onUpdate.addListener(function () {
             _this.update();
         });
-        this.mylistService.addListener('updateMylist', function (mylist) {
-            var mylistView = _this.mylistViews[mylist.getMylistId().toString()];
+        this.mylistService.onUpdateMylist.addListener(function (args) {
+            var mylistView = _this.mylistViews[args.mylist.getMylistId().toString()];
             if (mylistView) {
-                mylistView.render(mylist, _this.configService.getConfig());
+                mylistView.render(args.mylist, _this.configService.getConfig());
             }
         });
-        this.mylistService.addListener('startUpdateAll', function () {
+        this.mylistService.onStartUpdatingAll.addListener(function () {
             _this.$el.find('.favlistCheckNowButton').attr('disabled', true).addClass('disabled');
         });
-        this.mylistService.addListener('changeMylistStatus', function (mylist, status) {
-            var mylistView = _this.mylistViews[mylist.getMylistId().toString()];
+        this.mylistService.onChangeMylistStatus.addListener(function (args) {
+            var mylistView = _this.mylistViews[args.mylist.getMylistId().toString()];
             if (mylistView) {
-                mylistView.renderStatus(status);
+                mylistView.renderStatus(args.status);
             }
         });
-        this.mylistService.addListener('finishUpdateAll', function () {
+        this.mylistService.onFinishUpdatingAll.addListener(function () {
             _this.$el.find('.favlistCheckNowButton').removeAttr('disabled').removeClass('disabled');
         });
     };
@@ -1613,11 +1561,11 @@ var FavlistMylistsView = (function (_super) {
 
     FavlistMylistsView.prototype.setEventHandlersForMylistView = function (mylist, mylistView) {
         var _this = this;
-        mylistView.addListener('mylistClearRequest', function () {
-            _this.emitEvent('mylistClearRequest', [mylist]);
+        mylistView.onClearMylistRequest.addListener(function () {
+            _this.onClearMylistRequest.trigger({ mylist: mylist });
         });
-        mylistView.addListener('mylistVideoWatch', function (video) {
-            _this.emitEvent('mylistVideoWatch', [mylist, video]);
+        mylistView.onWatchMylistVideo.addListener(function (args) {
+            _this.onWatchMylistVideo.trigger({ mylist: mylist, video: args.video });
         });
     };
     return FavlistMylistsView;
@@ -1628,13 +1576,11 @@ var FavlistSettingsView = (function (_super) {
         _super.call(this, Template.load(Templates.favlist_settings));
         this.configService = configService;
         this.mylistService = mylistService;
+        this.onSave = new util.Event();
+        this.onCancel = new util.Event();
         this.$mylists = this.$el.find('.favlistSettingMylists');
-        this.setEventHandlers();
-    }
-    FavlistSettingsView.prototype.setEventHandlers = function () {
         this.setEventHandlersForView();
-    };
-
+    }
     FavlistSettingsView.prototype.setEventHandlersForView = function () {
         var _this = this;
         this.$el.find('.favlistSaveSettingsButton').click(function () {
@@ -1645,11 +1591,11 @@ var FavlistSettingsView = (function (_super) {
                 alert(e.message || e);
                 return false;
             }
-            _this.emitEvent('settingSave', [mylistSettings, configSettings]);
+            _this.onSave.trigger({ mylistSettings: mylistSettings, configSettings: configSettings });
             return false;
         });
         this.$el.find('.favlistCancelSettingsButton').click(function () {
-            _this.emitEvent('settingCancel');
+            _this.onCancel.trigger(null);
             return false;
         });
     };
@@ -1756,6 +1702,7 @@ var FavlistView = (function (_super) {
     __extends(FavlistView, _super);
     function FavlistView() {
         _super.call(this, Template.load(Templates.favlist));
+        this.onSettingPageRequest = new util.Event();
         this.$pages = this.$el.find('.favlistPages');
         this.setEventHandlers();
     }
@@ -1790,7 +1737,7 @@ var FavlistView = (function (_super) {
     FavlistView.prototype.setEventHandlers = function () {
         var _this = this;
         this.$el.find('.favlistSettingButton').click(function () {
-            _this.emitEvent('settingPageRequest');
+            _this.onSettingPageRequest.trigger(null);
             return false;
         });
     };
@@ -1811,27 +1758,26 @@ var FavlistMylistsController = (function () {
 
     FavlistMylistsController.prototype.setEventHandlersForView = function () {
         var _this = this;
-        this.mylistsView.addListener('show', function () {
+        this.mylistsView.onShow.addListener(function () {
             _this.mylistService.updateAllIfExpired();
         });
-        this.mylistsView.addListener('checkNowRequest', function () {
+        this.mylistsView.onUpdateAllMylistsRequest.addListener(function () {
             _this.mylistService.updateAll();
         });
-        this.mylistsView.addListener('mylistClearRequest', function (mylist) {
-            _this.mylistService.markMylistAllWatched(mylist);
+        this.mylistsView.onClearMylistRequest.addListener(function (args) {
+            _this.mylistService.markMylistAllWatched(args.mylist);
         });
-        this.mylistsView.addListener('mylistVideoWatch', function (mylist, video) {
-            _this.mylistService.markVideoWatched(mylist, video);
+        this.mylistsView.onWatchMylistVideo.addListener(function (args) {
+            _this.mylistService.markVideoWatched(args.mylist, args.video);
         });
     };
     return FavlistMylistsController;
 })();
-var FavlistSettingsController = (function (_super) {
-    __extends(FavlistSettingsController, _super);
+var FavlistSettingsController = (function () {
     function FavlistSettingsController(configService, mylistService) {
-        _super.call(this);
         this.configService = configService;
         this.mylistService = mylistService;
+        this.onFinish = new util.Event();
     }
     FavlistSettingsController.prototype.getView = function () {
         if (!this.settingsView) {
@@ -1843,18 +1789,18 @@ var FavlistSettingsController = (function (_super) {
 
     FavlistSettingsController.prototype.setEventHandlersForView = function () {
         var _this = this;
-        this.settingsView.addListener('settingSave', function (mylistSettings, configSettings) {
-            _this.mylistService.setSettings(mylistSettings);
-            _this.configService.setSettings(configSettings);
-            _this.emitEvent('finish');
+        this.settingsView.onSave.addListener(function (args) {
+            _this.mylistService.setSettings(args.mylistSettings);
+            _this.configService.setSettings(args.configSettings);
+            _this.onFinish.trigger(null);
         });
 
-        this.settingsView.addListener('settingCancel', function () {
-            _this.emitEvent('finish');
+        this.settingsView.onCancel.addListener(function () {
+            _this.onFinish.trigger(null);
         });
     };
     return FavlistSettingsController;
-})(util.EventEmitter);
+})();
 var FavlistController = (function () {
     function FavlistController(configService, mylistService) {
         this.configService = configService;
@@ -1862,7 +1808,6 @@ var FavlistController = (function () {
     }
     FavlistController.prototype.start = function () {
         this.getView().show();
-        this.showMylistsPage();
     };
 
     FavlistController.prototype.getView = function () {
@@ -1875,10 +1820,10 @@ var FavlistController = (function () {
 
     FavlistController.prototype.setEventHandlersForView = function () {
         var _this = this;
-        this.favlistView.addListener('show', function () {
+        this.favlistView.onShow.addListener(function () {
             _this.showMylistsPage();
         });
-        this.favlistView.addListener('settingPageRequest', function () {
+        this.favlistView.onSettingPageRequest.addListener(function () {
             _this.showSettingsPage();
         });
     };
@@ -1895,7 +1840,7 @@ var FavlistController = (function () {
         var _this = this;
         if (!this.settingsController) {
             this.settingsController = new FavlistSettingsController(this.configService, this.mylistService);
-            this.settingsController.addListener('finish', function () {
+            this.settingsController.onFinish.addListener(function () {
                 return _this.showMylistsPage();
             });
             this.favlistView.setSettingsView(this.settingsController.getView());
@@ -1907,7 +1852,8 @@ var FavlistController = (function () {
 var userscript;
 (function (userscript) {
     var UserScriptApp = (function () {
-        function UserScriptApp() {
+        function UserScriptApp(DI) {
+            this.DI = DI;
         }
         UserScriptApp.prototype.start = function () {
             try  {
@@ -1931,13 +1877,13 @@ var userscript;
         };
 
         UserScriptApp.prototype.subscription = function () {
-            var controller = new SubscribeController(userscript.DI.resolve('SubscriptionService'));
+            var controller = new SubscribeController(this.DI.getSubscriptionService());
             controller.getView().appendTo(NicovideoGlue.getSubscribeViewParent());
             controller.start();
         };
 
         UserScriptApp.prototype.favlist = function () {
-            var controller = new FavlistController(userscript.DI.resolve('ConfigService'), userscript.DI.resolve('MylistService'));
+            var controller = new FavlistController(this.DI.getConfigService(), this.DI.getMylistService());
             controller.getView().appendTo(NicovideoGlue.getFavlistViewParent());
             controller.start();
         };
@@ -1947,50 +1893,54 @@ var userscript;
 })(userscript || (userscript = {}));
 var userscript;
 (function (userscript) {
-    userscript.DI = util.DI;
+    var DI = (function () {
+        function DI() {
+        }
+        DI.prototype.getStorage = function () {
+            return this.storage || (this.storage = util.chooseStorage());
+        };
 
-    userscript.DI.register('Storage', function () {
-        return util.chooseStorage();
-    });
+        DI.prototype.getUrlFetcher = function () {
+            return this.urlFetcher || (this.urlFetcher = util.chooseUrlFetcher());
+        };
 
-    userscript.DI.register('UrlFetcher', function () {
-        return util.chooseUrlFetcher();
-    });
+        DI.prototype.getConfigStorage = function () {
+            return this.configStorage || (this.configStorage = new ConfigStorage(this.getStorage()));
+        };
 
-    userscript.DI.register('ConfigStorage', function () {
-        return new ConfigStorage(userscript.DI.resolve('Storage'));
-    });
+        DI.prototype.getMylistCollectionStorage = function () {
+            return this.mylistCollectionStorage || (this.mylistCollectionStorage = new MylistCollectionStorage(this.getStorage()));
+        };
 
-    userscript.DI.register('MylistCollectionStorage', function () {
-        return new MylistCollectionStorage(userscript.DI.resolve('Storage'));
-    });
+        DI.prototype.getMylistFeedFactory = function () {
+            return this.mylistFeedFactory || (this.mylistFeedFactory = new MylistFeedFactory(this.getUrlFetcher()));
+        };
 
-    userscript.DI.register('MylistFeedFactory', function () {
-        return new MylistFeedFactory(userscript.DI.resolve('UrlFetcher'));
-    });
+        DI.prototype.getUpdateInterval = function () {
+            return this.updateInterval || (this.updateInterval = new UpdateInterval(this.getStorage(), this.getConfigService()));
+        };
 
-    userscript.DI.register('UpdateInterval', function () {
-        return new UpdateInterval(userscript.DI.resolve('Storage'), userscript.DI.resolve('ConfigService'));
-    });
+        DI.prototype.getConfigService = function () {
+            return this.configService || (this.configService = new ConfigService(this.getConfigStorage()));
+        };
 
-    userscript.DI.register('ConfigService', function () {
-        return new ConfigService(userscript.DI.resolve('ConfigStorage'));
-    });
+        DI.prototype.getMylistService = function () {
+            return this.mylistService || (this.mylistService = new MylistService(this.getMylistCollectionStorage(), this.getUpdateInterval(), this.getMylistFeedFactory()));
+        };
 
-    userscript.DI.register('MylistService', function () {
-        return new MylistService(userscript.DI.resolve('MylistCollectionStorage'), userscript.DI.resolve('UpdateInterval'), userscript.DI.resolve('MylistFeedFactory'));
-    });
+        DI.prototype.getSubscriptionService = function () {
+            return this.subscriptionService || (this.subscriptionService = new userscript.UserScriptSubscriptionService(this.getMylistCollectionStorage(), this.getUpdateInterval()));
+        };
 
-    userscript.DI.register('SubscriptionService', function () {
-        return new userscript.UserScriptSubscriptionService(userscript.DI.resolve('MylistCollectionStorage'), userscript.DI.resolve('UpdateInterval'));
-    });
-
-    userscript.DI.register('FavlistApp', function () {
-        return new userscript.UserScriptApp();
-    });
+        DI.prototype.getFavlistApp = function () {
+            return new userscript.UserScriptApp(this);
+        };
+        return DI;
+    })();
+    userscript.DI = DI;
 })(userscript || (userscript = {}));
 $(function () {
-    userscript.DI.resolve('FavlistApp').start();
+    (new userscript.DI()).getFavlistApp().start();
 });
 
 })(jQuery);

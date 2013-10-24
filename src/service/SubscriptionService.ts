@@ -2,19 +2,18 @@
 /// <reference path="../model/MylistCollection.ts" />
 /// <reference path="../model/MylistCollectionStorage.ts" />
 /// <reference path="../model/UpdateInterval.ts" />
-/// <reference path="../util/EventEmitter.ts" />
+/// <reference path="../util/Event.ts" />
 
-interface ISubscriptionService extends util.IEventEmitter {
+interface ISubscriptionService {
+    onUpdate: util.IEvent<{ mylist: Mylist; subscribed: boolean }>;
     isSubscribed(): boolean;
     subscribe();
     unsubscribe();
 }
 
-/**
- * events:
- *   - update(subscribed: boolean)
- */
-class SubscriptionService extends util.EventEmitter implements ISubscriptionService {
+class SubscriptionService implements ISubscriptionService {
+
+    onUpdate = new util.Event<{ mylist: Mylist; subscribed: boolean }>();
 
     private mylists: MylistCollection;
 
@@ -23,7 +22,6 @@ class SubscriptionService extends util.EventEmitter implements ISubscriptionServ
         private mylistCollectionStorage: IMylistCollectionStorage,
         private updateInterval: IUpdateInterval
     ) {
-        super();
         this.mylists = this.mylistCollectionStorage.get();
     }
 
@@ -49,7 +47,7 @@ class SubscriptionService extends util.EventEmitter implements ISubscriptionServ
             }
             this.mylistCollectionStorage.store(this.mylists);
             this.updateInterval.expire();
-            this.emitEvent('update', [subscribed]);
+            this.onUpdate.trigger({ mylist: this.mylist, subscribed: subscribed });
         }
     }
 

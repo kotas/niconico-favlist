@@ -1,17 +1,8 @@
 /// <reference path="./Mylist.ts" />
-/// <reference path="../util/EventEmitter.ts" />
 
-/**
- * events:
- *   - addMylist(mylist: Mylist)
- *   - removeMylist(mylist: Mylist)
- *   - update()
- */
-class MylistCollection extends util.EventEmitter {
+class MylistCollection {
 
-    constructor(private mylists: Mylist[]) {
-        super();
-    }
+    constructor(private mylists: Mylist[]) {}
 
     getMylists(): Mylist[] {
         return this.mylists;
@@ -33,13 +24,10 @@ class MylistCollection extends util.EventEmitter {
 
     setMylists(mylists: Mylist[]): void {
         this.mylists = Array.prototype.slice.call(mylists);
-        this.emitEvent('update');
     }
 
     add(mylist: Mylist): void {
         this.mylists.push(mylist);
-        this.emitEvent('addMylist', [mylist]);
-        this.emitEvent('update');
     }
 
     remove(mylist: Mylist): boolean {
@@ -54,8 +42,6 @@ class MylistCollection extends util.EventEmitter {
 
         var mylist = this.mylists[index];
         this.mylists.splice(index, 1);
-        this.emitEvent('removeMylist', [mylist]);
-        this.emitEvent('update');
         return true;
     }
 

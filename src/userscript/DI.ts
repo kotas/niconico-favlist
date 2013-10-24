@@ -1,60 +1,92 @@
 /// <reference path="../IFavlistDI.ts" />
-/// <reference path="../util/DI.ts" />
+/// <reference path="../util/Storage.ts" />
+/// <reference path="../util/UrlFetcher.ts" />
+/// <reference path="../model/ConfigStorage.ts" />
+/// <reference path="../model/MylistCollectionStorage.ts" />
+/// <reference path="../model/MylistFeedFactory.ts" />
+/// <reference path="../model/UpdateInterval.ts" />
 /// <reference path="../userscript/UserScriptSubscriptionService.ts" />
 /// <reference path="../userscript/UserScriptApp.ts" />
 
 module userscript {
 
-    export var DI: IFavlistDI = util.DI;
+    export class DI implements IFavlistDI {
 
-    DI.register('Storage', (): util.IStorage => {
-        return util.chooseStorage();
-    });
+        private storage: util.IStorage;
+        private urlFetcher: util.IUrlFetcher;
 
-    DI.register('UrlFetcher', (): util.IUrlFetcher => {
-        return util.chooseUrlFetcher();
-    });
+        private configStorage: IConfigStorage;
+        private mylistCollectionStorage: IMylistCollectionStorage;
+        private mylistFeedFactory: IMylistFeedFactory;
+        private updateInterval: IUpdateInterval;
 
+        private configService: IConfigService;
+        private mylistService: IMylistService;
+        private subscriptionService: ISubscriptionService;
 
-    DI.register('ConfigStorage', (): IConfigStorage => {
-        return new ConfigStorage(DI.resolve('Storage'));
-    });
+        private favlistApp: IFavlistApp;
 
-    DI.register('MylistCollectionStorage', (): IMylistCollectionStorage => {
-        return new MylistCollectionStorage(DI.resolve('Storage'));
-    });
+        private getStorage(): util.IStorage {
+            return this.storage || (this.storage = util.chooseStorage());
+        }
 
-    DI.register('MylistFeedFactory', (): IMylistFeedFactory => {
-        return new MylistFeedFactory(DI.resolve('UrlFetcher'));
-    });
+        private getUrlFetcher(): util.IUrlFetcher {
+            return this.urlFetcher || (this.urlFetcher = util.chooseUrlFetcher());
+        }
 
-    DI.register('UpdateInterval', (): IUpdateInterval => {
-        return new UpdateInterval(DI.resolve('Storage'), DI.resolve('ConfigService'));
-    });
+        private getConfigStorage(): IConfigStorage {
+            return this.configStorage || (
+                this.configStorage = new ConfigStorage(this.getStorage())
+            );
+        }
 
+        private getMylistCollectionStorage(): IMylistCollectionStorage {
+            return this.mylistCollectionStorage || (
+                this.mylistCollectionStorage = new MylistCollectionStorage(this.getStorage())
+            );
+        }
 
-    DI.register('ConfigService', (): IConfigService => {
-        return new ConfigService(DI.resolve('ConfigStorage'));
-    });
+        private getMylistFeedFactory(): IMylistFeedFactory {
+            return this.mylistFeedFactory || (
+                this.mylistFeedFactory = new MylistFeedFactory(this.getUrlFetcher())
+            );
+        }
 
-    DI.register('MylistService', (): IMylistService => {
-        return new MylistService(
-            DI.resolve('MylistCollectionStorage'),
-            DI.resolve('UpdateInterval'),
-            DI.resolve('MylistFeedFactory')
-        );
-    });
+        private getUpdateInterval(): IUpdateInterval {
+            return this.updateInterval || (
+                this.updateInterval = new UpdateInterval(this.getStorage(), this.getConfigService())
+            );
+        }
 
-    DI.register('SubscriptionService', (): ISubscriptionService => {
-        return new UserScriptSubscriptionService(
-            DI.resolve('MylistCollectionStorage'),
-            DI.resolve('UpdateInterval')
-        );
-    });
+        getConfigService(): IConfigService {
+            return this.configService || (
+                this.configService = new ConfigService(this.getConfigStorage())
+            );
+        }
 
+        getMylistService(): IMylistService {
+            return this.mylistService || (
+                this.mylistService = new MylistService(
+                    this.getMylistCollectionStorage(),
+                    this.getUpdateInterval(),
+                    this.getMylistFeedFactory()
+                )
+            );
+        }
 
-    DI.register('FavlistApp', (): IFavlistApp => {
-        return new UserScriptApp();
-    });
+        getSubscriptionService(): ISubscriptionService {
+            return this.subscriptionService || (
+                this.subscriptionService = new UserScriptSubscriptionService(
+                    this.getMylistCollectionStorage(),
+                    this.getUpdateInterval()
+                )
+            );
+        }
+
+        getFavlistApp(): IFavlistApp {
+            return new UserScriptApp(this);
+        }
+
+    }
 
 }

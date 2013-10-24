@@ -1,19 +1,13 @@
 /// <reference path="../../typings/jquery.d.ts" />
-/// <reference path="../util/EventEmitter.ts" />
 /// <reference path="./Template.ts" />
 /// <reference path="./ViewHelper.ts" />
+/// <reference path="../util/Event.ts" />
 
-interface IView extends util.IEventEmitter {
-    appendTo($parent: JQuery);
-    show();
-    update();
-}
+class View {
 
-class View extends util.EventEmitter implements IView {
+    onShow = new util.Event<void>();
 
-    constructor(public $el: JQuery) {
-        super();
-    }
+    constructor(public $el: JQuery) {}
 
     appendTo($parent: JQuery) {
         this.$el.appendTo($parent);
@@ -22,7 +16,7 @@ class View extends util.EventEmitter implements IView {
     show() {
         this.update();
         this.$el.show();
-        this.emitEvent('show');
+        this.onShow.trigger(null);
     }
 
     update() {

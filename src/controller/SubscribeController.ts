@@ -22,10 +22,10 @@ class SubscribeController {
     }
 
     private setEventHandlersForView() {
-        this.subscribeView.addListener('subscribeRequest', () => {
+        this.subscribeView.onSubscribeRequest.addListener(() => {
             this.subscriptionService.subscribe();
         });
-        this.subscribeView.addListener('unsubscribeRequest', () => {
+        this.subscribeView.onUnsubscribeRequest.addListener(() => {
             this.subscriptionService.unsubscribe();
         });
     }

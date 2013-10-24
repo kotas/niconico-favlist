@@ -2,11 +2,9 @@
 /// <reference path="./FavlistMylistsView.ts" />
 /// <reference path="./FavlistSettingsView.ts" />
 
-/**
- * events:
- *   - settingPageRequest()
- */
 class FavlistView extends View {
+
+    onSettingPageRequest = new util.Event<void>();
 
     private $pages: JQuery;
     private mylistsView: FavlistMylistsView;
@@ -48,7 +46,7 @@ class FavlistView extends View {
 
     private setEventHandlers() {
         this.$el.find('.favlistSettingButton').click(() => {
-            this.emitEvent('settingPageRequest');
+            this.onSettingPageRequest.trigger(null);
             return false;
         });
     }

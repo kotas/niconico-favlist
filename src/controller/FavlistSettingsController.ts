@@ -1,22 +1,18 @@
 /// <reference path="../view/FavlistSettingsView.ts" />
 /// <reference path="../service/ConfigService.ts" />
 /// <reference path="../service/MylistService.ts" />
-/// <reference path="../util/EventEmitter.ts" />
+/// <reference path="../util/Event.ts" />
 
-/**
- * events:
- *   - finish()
- */
-class FavlistSettingsController extends util.EventEmitter {
+class FavlistSettingsController {
+
+    onFinish = new util.Event<void>();
 
     private settingsView: FavlistSettingsView;
 
     constructor(
         private configService: IConfigService,
         private mylistService: IMylistService
-    ) {
-        super();
-    }
+    ) {}
 
     getView(): FavlistSettingsView {
         if (!this.settingsView) {
@@ -27,14 +23,14 @@ class FavlistSettingsController extends util.EventEmitter {
     }
 
     private setEventHandlersForView() {
-        this.settingsView.addListener('settingSave', (mylistSettings: IMylistSetting[], configSettings: IConfig) => {
-            this.mylistService.setSettings(mylistSettings);
-            this.configService.setSettings(configSettings);
-            this.emitEvent('finish');
+        this.settingsView.onSave.addListener((args) => {
+            this.mylistService.setSettings(args.mylistSettings);
+            this.configService.setSettings(args.configSettings);
+            this.onFinish.trigger(null);
         });
 
-        this.settingsView.addListener('settingCancel', () => {
-            this.emitEvent('finish');
+        this.settingsView.onCancel.addListener(() => {
+            this.onFinish.trigger(null);
         });
     }
 

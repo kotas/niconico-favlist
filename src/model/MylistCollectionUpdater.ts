@@ -1,26 +1,28 @@
 /// <reference path="./UpdateInterval.ts" />
 /// <reference path="./MylistFeedFactory.ts" />
 /// <reference path="./MylistCollection.ts" />
-/// <reference path="../util/EventEmitter.ts" />
+/// <reference path="../util/Event.ts" />
 
-interface IMylistCollectionUpdater extends util.IEventEmitter {
+interface IMylistCollectionUpdater {
+    onStartUpdatingAll: util.IEvent<void>;
+    onFinishUpdatingAll: util.IEvent<void>;
+    onAbortUpdatingAll: util.IEvent<void>;
+    onStartUpdatingMylist: util.IEvent<{mylist: Mylist}>;
+    onFinishUpdatingMylist: util.Event<{mylist: Mylist}>;
+    onFailedUpdatingMylist: util.Event<{mylist: Mylist; error: Error; httpStatus?: number}>;
     updateAll(collection: MylistCollection): util.IUrlFetchAborter;
 }
 
-/**
- * events:
- *   - startUpdateAll()
- *   - startUpdateMylist(mylist: Mylist)
- *   - failedUpdateMylist(mylist: Mylist, error: MylistFeedFetchError)
- *   - finishUpdateMylist(mylist: Mylist)
- *   - abortUpdateAll()
- *   - finishUpdateAll()
- */
-class MylistCollectionUpdater extends util.EventEmitter implements IMylistCollectionUpdater {
+class MylistCollectionUpdater implements IMylistCollectionUpdater {
 
-    constructor(private mylistFeedFactory: IMylistFeedFactory) {
-        super();
-    }
+    onStartUpdatingAll = new util.Event<void>();
+    onFinishUpdatingAll = new util.Event<void>();
+    onAbortUpdatingAll = new util.Event<void>();
+    onStartUpdatingMylist = new util.Event<{mylist: Mylist}>();
+    onFinishUpdatingMylist = new util.Event<{mylist: Mylist}>();
+    onFailedUpdatingMylist = new util.Event<{mylist: Mylist; error: Error; httpStatus?: number}>();
+
+    constructor(private mylistFeedFactory: IMylistFeedFactory) {}
 
     updateAll(collection: MylistCollection): util.IUrlFetchAborter {
         var mylists = Array.prototype.slice.call(collection.getMylists());
@@ -37,18 +39,18 @@ class MylistCollectionUpdater extends util.EventEmitter implements IMylistCollec
                 }
                 if (!aborted) {
                     aborted = true;
-                    this.emitEvent('abortUpdateAll');
+                    this.onAbortUpdatingAll.trigger(null);
                 }
             }
         };
 
-        this.emitEvent('startUpdateAll');
+        this.onStartUpdatingAll.trigger(null);
 
         var updateNext = () => {
             var mylist: Mylist = mylists.shift();
             if (!mylist) {
                 currentAborter = null;
-                this.emitEvent('finishUpdateAll');
+                this.onFinishUpdatingAll.trigger(null);
                 return;
             }
             if (aborted) {
@@ -62,15 +64,15 @@ class MylistCollectionUpdater extends util.EventEmitter implements IMylistCollec
     }
 
     private updateMylist(mylist: Mylist, callback?: (error: MylistFeedFetchError, mylist: Mylist) => any): util.IUrlFetchAborter {
-        this.emitEvent('startUpdateMylist', [mylist]);
+        this.onStartUpdatingMylist.trigger({ mylist: mylist });
         return this.mylistFeedFactory.getFeedFromServer(
             mylist.getMylistId(),
             (error: MylistFeedFetchError, feed: MylistFeed) => {
                 if (error) {
-                    this.emitEvent('failedUpdateMylist', [mylist, error]);
+                    this.onFailedUpdatingMylist.trigger({ mylist: mylist, error: error, httpStatus: error.httpStatus });
                 } else {
                     mylist.updateWithFeed(feed);
-                    this.emitEvent('finishUpdateMylist', [mylist]);
+                    this.onFinishUpdatingMylist.trigger({ mylist: mylist });
                 }
                 callback && callback(error, mylist);
             }

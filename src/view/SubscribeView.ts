@@ -1,12 +1,10 @@
 /// <reference path="./View.ts" />
 /// <reference path="../service/SubscriptionService.ts" />
 
-/**
- * events:
- *   - subscribeRequest()
- *   - unsubscribeRequest()
- */
 class SubscribeView extends View {
+
+    onSubscribeRequest = new util.Event<void>();
+    onUnsubscribeRequest = new util.Event<void>();
 
     constructor(
         private subscriptionService: ISubscriptionService
@@ -26,17 +24,17 @@ class SubscribeView extends View {
 
     private setEventHandlersForView() {
         this.$el.find('.favlistSubscribeButton').click(() => {
-            this.emitEvent('subscribeRequest');
+            this.onSubscribeRequest.trigger(null);
             return false;
         });
         this.$el.find('.favlistUnsubscribeButton').click(() => {
-            this.emitEvent('unsubscribeRequest');
+            this.onUnsubscribeRequest.trigger(null);
             return false;
         });
     }
 
     private setEventHandlersForSubscription() {
-        this.subscriptionService.addListener('update', () => {
+        this.subscriptionService.onUpdate.addListener(() => {
             this.update();
         });
     }

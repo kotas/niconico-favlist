@@ -20,17 +20,17 @@ class FavlistMylistsController {
     }
 
     private setEventHandlersForView() {
-        this.mylistsView.addListener('show', () => {
+        this.mylistsView.onShow.addListener(() => {
             this.mylistService.updateAllIfExpired();
         });
-        this.mylistsView.addListener('checkNowRequest', () => {
+        this.mylistsView.onUpdateAllMylistsRequest.addListener(() => {
             this.mylistService.updateAll();
         });
-        this.mylistsView.addListener('mylistClearRequest', (mylist: Mylist) => {
-            this.mylistService.markMylistAllWatched(mylist);
+        this.mylistsView.onClearMylistRequest.addListener((args) => {
+            this.mylistService.markMylistAllWatched(args.mylist);
         });
-        this.mylistsView.addListener('mylistVideoWatch', (mylist: Mylist, video: Video) => {
-            this.mylistService.markVideoWatched(mylist, video);
+        this.mylistsView.onWatchMylistVideo.addListener((args) => {
+            this.mylistService.markVideoWatched(args.mylist, args.video);
         });
     }
 

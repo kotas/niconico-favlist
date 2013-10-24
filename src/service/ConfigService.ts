@@ -1,23 +1,19 @@
 /// <reference path="../model/ConfigStorage.ts" />
-/// <reference path="../util/EventEmitter.ts" />
+/// <reference path="../util/Event.ts" />
 
-interface IConfigService extends util.IEventEmitter {
+interface IConfigService {
+    onUpdate: util.IEvent<{ config: IConfig }>;
     getConfig(): IConfig;
     setSettings(configSettings: IConfig);
 }
 
-/**
- * events:
- *   - update(config: IConfig)
- */
-class ConfigService extends util.EventEmitter implements IConfigService {
+class ConfigService implements IConfigService {
+
+    onUpdate = new util.Event<{ config: IConfig }>();
 
     private config: IConfig;
 
-    constructor(
-        private configStorage: IConfigStorage
-    ) {
-        super();
+    constructor(private configStorage: IConfigStorage) {
         this.config = this.configStorage.get();
     }
 
@@ -28,7 +24,7 @@ class ConfigService extends util.EventEmitter implements IConfigService {
     setSettings(configSettings: IConfig) {
         this.config.update(configSettings);
         this.configStorage.store(this.config);
-        this.emitEvent('update', [this.config]);
+        this.onUpdate.trigger({ config: this.config });
     }
 
 }

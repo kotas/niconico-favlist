@@ -1,12 +1,14 @@
+/// <reference path="../IFavlistDI.ts" />
 /// <reference path="../controller/IFavlistApp.ts" />
 /// <reference path="../controller/SubscribeController.ts" />
 /// <reference path="../controller/FavlistController.ts" />
 /// <reference path="./NicovideoGlue.ts" />
-/// <reference path="./DI.ts" />
 
 module userscript {
 
     export class UserScriptApp implements IFavlistApp {
+
+        constructor(private DI: IFavlistDI) {}
 
         start() {
             try {
@@ -30,13 +32,13 @@ module userscript {
         }
 
         private subscription() {
-            var controller = new SubscribeController(DI.resolve('SubscriptionService'));
+            var controller = new SubscribeController(this.DI.getSubscriptionService());
             controller.getView().appendTo(NicovideoGlue.getSubscribeViewParent());
             controller.start();
         }
 
         private favlist() {
-            var controller = new FavlistController(DI.resolve('ConfigService'), DI.resolve('MylistService'));
+            var controller = new FavlistController(this.DI.getConfigService(), this.DI.getMylistService());
             controller.getView().appendTo(NicovideoGlue.getFavlistViewParent());
             controller.start();
         }

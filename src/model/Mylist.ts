@@ -2,14 +2,8 @@
 /// <reference path="./Video.ts" />
 /// <reference path="./MylistFeed.ts" />
 /// <reference path="./Nicovideo.ts" />
-/// <reference path="../util/EventEmitter.ts" />
 
-/**
- * events:
- *   - updateTitle()
- *   - updateVideos()
- */
-class Mylist extends util.EventEmitter {
+class Mylist {
 
     constructor(
         private mylistId: MylistId,
@@ -18,7 +12,6 @@ class Mylist extends util.EventEmitter {
         private newVideos: Video[] = [],
         private watchedVideoIds: string[] = []
     ) {
-        super();
     }
 
     getMylistId(): MylistId {
@@ -54,22 +47,14 @@ class Mylist extends util.EventEmitter {
     }
 
     setOriginalTitle(title: string): void {
-        if (this.originalTitle !== title) {
-            this.originalTitle = title;
-            if (!this.overrideTitle) {
-                this.emitEvent('updateTitle');
-            }
-        }
+        this.originalTitle = title;
     }
 
     setOverrideTitle(title: string): void {
         if (title === this.overrideTitle) {
             title = '';
         }
-        if (this.overrideTitle !== title) {
-            this.overrideTitle = title;
-            this.emitEvent('updateTitle');
-        }
+        this.overrideTitle = title;
     }
 
     markVideoAsWatched(video: Video): void {
@@ -78,7 +63,6 @@ class Mylist extends util.EventEmitter {
             this.newVideos.splice(index, 1);
             this.watchedVideoIds.push(video.getVideoId());
         }
-        this.emitEvent('updateVideos');
     }
 
     markAllVideosAsWatched(): void {
@@ -86,7 +70,6 @@ class Mylist extends util.EventEmitter {
             this.watchedVideoIds.push(video.getVideoId());
         });
         this.newVideos = [];
-        this.emitEvent('updateVideos');
     }
 
     updateWithFeed(feed: MylistFeed): void {
@@ -121,8 +104,6 @@ class Mylist extends util.EventEmitter {
                 this.newVideos.push(video);
             }
         });
-
-        this.emitEvent('updateVideos');
     }
 
 }
