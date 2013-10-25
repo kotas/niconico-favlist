@@ -22,7 +22,6 @@ module.exports = (grunt) ->
         src:  ['src/userscript/main.ts']
         dest: 'compiled/userscript.js'
         options:
-          noImplicitAny: true
           comments: false
 
     concat:
