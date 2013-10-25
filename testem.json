@@ -11,7 +11,8 @@
     "bower_components/sinon/index.js",
     "compiled/templates.js",
     "compiled/compiled.js",
-    "compiled/test/**/*.js"
+    "compiled/test/spec_helper.js",
+    "compiled/test/specs/**/*.js"
   ],
   "launch_in_ci": ["PhantomJS"]
 }

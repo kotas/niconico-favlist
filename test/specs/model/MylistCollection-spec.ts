@@ -1,4 +1,4 @@
-/// <reference path="../spec_helper.ts" />
+/// <reference path="../../spec_helper.ts" />
 
 describe('MylistCollection', () => {
 
