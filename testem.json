@@ -1,5 +1,6 @@
 {
   "framework": "mocha+chai",
+  "timeout": 60,
   "before_tests": "grunt compile",
   "src_files": [
     "src/**/*.ts",
@@ -11,5 +12,6 @@
     "compiled/templates.js",
     "compiled/compiled.js",
     "compiled/test/**/*.js"
-  ]
+  ],
+  "launch_in_ci": ["PhantomJS"]
 }
