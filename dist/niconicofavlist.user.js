@@ -27,19 +27,19 @@ Template.html['favlist'] = "<div class=\"favlistView\">\n<div class=\"favlistHea
 Template.html['favlist_mylists'] = "<div class=\"favlistMylistsView\">\n<div class=\"favlistNoMylist\">\n<div class=\"favlistNoMylistTitle\">マイリストが登録されていません</div>\n<div class=\"favlistNoMylistDescription\">チェックしたいマイリストのページで「favlist に登録」してください！</div>\n</div>\n<div class=\"favlistMylists\">\n</div>\n<div class=\"favlistMylistsButtons\">\n<button class=\"favlistCheckNowButton\">今すぐ更新</button>\n</div>\n</div>";
 Template.html['favlist_mylists_mylist'] = "<div class=\"favlistMylist\">\n<div class=\"favlistMylistInner\">\n<div class=\"favlistMylistHeader\">\n<div class=\"favlistMylistTitleLabel\">\n<span class=\"favlistMylistNewCountLabel\">\n(<span class=\"favlistMylistNewCount\"></span>)\n</span>\n<a href=\"#\" class=\"favlistMylistTitle favlistMylistLink\"></a>\n</div>\n<div class=\"favlistMylistButtons\">\n<button class=\"favlistMylistClearButton\">クリア</button>\n</div>\n<div class=\"favlistMylistStatus\">\n<span class=\"waiting\">待機中</span>\n<span class=\"updating\">更新中</span>\n<span class=\"private\">非公開</span>\n<span class=\"deleted\">削除された</span>\n<span class=\"error\">更新失敗</span>\n</div>\n</div>\n<div class=\"favlistMylistVideos\">\n</div>\n</div>\n</div>";
 Template.html['favlist_mylists_video'] = "<div class=\"favlistVideo\">\n<div class=\"favlistVideoHeader\">\n<div class=\"favlistVideoThumbnail\">\n<a href=\"\" title=\"\" class=\"favlistVideoLink\"><img src=\"\" /></a>\n</div>\n<div class=\"favlistVideoInfo\">\n<a href=\"\" title=\"\" class=\"favlistVideoLink favlistVideoTitle\"></a>\n<span class=\"favlistVideoTimestamp\"></span>\n</div>\n</div>\n<div class=\"favlistVideoMemo\">\n<div class=\"favlistVideoMemoText\"></div>\n</div>\n</div>";
-Template.html['favlist_rescue'] = "<div class=\"favlistViewRescue\">\n<div class=\"favlistRescueCaption\">\nレスキューモードで実行中 (\n<a href=\"#\" class=\"favlistRescueClose\">Favlist を閉じる</a>\n<a href=\"#\" class=\"favlistRescueOpen\">Favlist を開く</a>\n)\n</div>\n<div id=\"favlistRescueContainer\"></div>\n</div>";
-Template.html['favlist_settings'] = "<div class=\"favlistSettingsView\">\n<div class=\"favlistSettingOverlay\"></div>\n<div class=\"favlistSettingsDialog\">\n<div class=\"favlistSettingMylistSearch\">\n<input class=\"favlistSettingMylistSearchEdit\" type=\"search\" value=\"\" placeholder=\"マイリストを検索 (タイトル または URL)\" />\n</div>\n<div class=\"favlistSettingMylistsOuter\">\n<div class=\"favlistSettingMylists\">\n</div>\n</div>\n<form class=\"favlistConfig\" action=\"javascript:void(0);\">\n<ul class=\"favlistConfigItems\">\n<li><label>更新チェック間隔 <input type=\"text\" class=\"favlistConfigText favlistConfigCheckInterval\" value=\"\" size=\"6\" /> 秒</label></li>\n<li><label>新着動画の表示数 <input type=\"text\" class=\"favlistConfigText favlistConfigMaxNewVideos\" value=\"\" size=\"6\" /> 件まで</label></li>\n<li><label><input type=\"checkbox\" class=\"favlistConfigCheckbox favlistConfigHideCheckedList\" value=\"1\" /> 新着がないマイリストを隠す</label></li>\n<li><label><input type=\"checkbox\" class=\"favlistConfigCheckbox favlistConfigOrderDescendant\" value=\"1\" /> 動画を新しい順に並べる</label></li>\n</ul>\n</form>\n<div class=\"favlistSettingsButtons\">\n<button class=\"favlistButtonSave favlistSaveSettingsButton\">設定を保存</button>\n<button class=\"favlistCancelSettingsButton\">キャンセル</button>\n</div>\n</div>\n</div>";
+Template.html['favlist_rescue'] = "<div class=\"favlistViewRescue\">\n<div class=\"favlistRescueCaption\">\nレスキューモードで実行中 (\n<a href=\"#\" class=\"favlistRescueClose\">Favlist を閉じる</a>\n<a href=\"#\" class=\"favlistRescueOpen\">Favlist を開く</a>\n)\n</div>\n<div class=\"favlistRescueContainer\"></div>\n</div>";
+Template.html['favlist_settings'] = "<div class=\"favlistSettingsView\">\n<div class=\"favlistSettingOverlay\"></div>\n<div class=\"favlistSettingsDialog\">\n<div class=\"favlistSettingMylistSearch\">\n<label>\n<span>検索</span>\n<input class=\"favlistSettingMylistSearchEdit\" type=\"search\" value=\"\" placeholder=\"マイリスト名 または URL\" />\n</label>\n</div>\n<div class=\"favlistSettingMylistsOuter\">\n<div class=\"favlistSettingMylists\">\n</div>\n</div>\n<form class=\"favlistConfig\" action=\"javascript:void(0);\">\n<ul class=\"favlistConfigItems\">\n<li><label>更新チェック間隔 <input type=\"text\" class=\"favlistConfigText favlistConfigCheckInterval\" value=\"\" size=\"6\" /> 秒</label></li>\n<li><label>新着動画の表示数 <input type=\"text\" class=\"favlistConfigText favlistConfigMaxNewVideos\" value=\"\" size=\"6\" /> 件まで</label></li>\n<li><label><input type=\"checkbox\" class=\"favlistConfigCheckbox favlistConfigHideCheckedList\" value=\"1\" /> 新着がないマイリストを隠す</label></li>\n<li><label><input type=\"checkbox\" class=\"favlistConfigCheckbox favlistConfigOrderDescendant\" value=\"1\" /> 動画を新しい順に並べる</label></li>\n</ul>\n</form>\n<div class=\"favlistSettingsButtons\">\n<button class=\"favlistButtonSave favlistSaveSettingsButton\">設定を保存</button>\n<button class=\"favlistCancelSettingsButton\">キャンセル</button>\n</div>\n</div>\n</div>";
 Template.html['favlist_settings_mylist'] = "<div class=\"favlistSettingMylist\">\n<div class=\"favlistSettingMylistLink\">\n<a class=\"favlistMylistLink\" href=\"\" title=\"別ウィンドウで開く\" target=\"_blank\">開く</a>\n</div>\n<div class=\"favlistSettingMylistTitle\">\n<input class=\"favlistMylistTitleEdit\" type=\"text\" value=\"\" />\n</div>\n<div class=\"favlistSettingMylistButtons\">\n<div class=\"favlistSettingMylistMoveButtons\"><!--\n--><button class=\"favlistMylistMoveUpButton\" title=\"1つ上に移動\">▲</button><!--\n--><button class=\"favlistMylistMoveDownButton\" title=\"1つ下に移動\">▼</button><!--\n--><button class=\"favlistMylistMoveTopButton\" title=\"一番上に移動\">↑</button><!--\n--></div>\n<button class=\"favlistMylistRemoveButton favlistButtonDelete\" title=\"favlist への登録を解除\">削除</button>\n</div>\n</div>";
 Template.html['subscribe'] = "<div class=\"favlistSubscribeView\">\n<button class=\"favlistSubscribeButton\"><span>★</span> favlist に登録</button>\n<button class=\"favlistUnsubscribeButton\"><span>×</span> favlist の登録を解除</button>\n</div>";
 Template.html['subscribe_rescue'] = "<div id=\"favlistSubscribeViewRescue\">\n</div>";
 Template.css['favlist'] = ".favlistView {\nbackground: white;\nfont-size: 12px;\nline-height: 1.2em;\nmargin-bottom: 8px;\nborder-radius: 2px;\nbox-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);\nwidth: 100%;\n}\n.favlistHeader {\ndisplay: table;\nwidth: 100%;\nheight: 30px;\n}\n.favlistHeaderTitle {\ndisplay: table-cell;\npadding: 5px 10px;\nbackground: #ccc;\ncolor: #333;\nfont-size: 13px;\nfont-weight: bold;\nvertical-align: middle;\n}\n.favlistSettingButton {\ndisplay: table-cell;\nbackground: #336666;\nwidth: 4em;\ntext-align: center;\ncolor: #ffffff !important;\ntext-decoration: none;\nwhite-space: nowrap;\nvertical-align: middle;\n}\n.favlistSettingButton:hover {\nbackground: #669999;\ntext-decoration: underline;\n}\n.inSettingView .favlistSettingButton {\ndisplay: none;\n}\na.favlistMylistLink, a.favlistMylistLink:link,\na.favlistVideoLink, a.favlistVideoLink:link {\ncolor: #006699 !important;\n}\na.favlistMylistLink:visited, a.favlistVideoLink:visited {\ncolor: #005584 !important;\n}\na.favlistMylistLink:hover, a.favlistVideoLink:hover {\ncolor: #0584C3 !important;\n}\na.favlistMylistLink:active, a.favlistVideoLink:active {\ncolor: #52aeea !important;\n}\n.favlistView button {\ndisplay: inline-block;\npadding: 2px 10px;\nbackground: #666666;\nfont-family: sans-serif;\ncolor: white;\nborder: none;\nborder-radius: 4px;\nwhite-space: nowrap;\n}\n.favlistView button.disabled,\n.favlistView button[disabled] {\ncursor: not-allowed;\npointer-events: none;\nopacity: .2;\n}\n.favlistView button:hover {\nbackground: #777777;\n}\n.favlistView button:active {\nbackground: #555555;\n}\n.favlistView button.favlistButtonSave {\nbackground: #339933;\n}\n.favlistView button.favlistButtonSave:hover {\nbackground: #55BB55;\n}\n.favlistView button.favlistButtonSave:active {\nbackground: #228822;\n}\n.favlistView button.favlistButtonDelete {\nbackground: #8b433b;\n}\n.favlistView button.favlistButtonDelete:hover {\nbackground: #9e4c43;\n}\n.favlistView button.favlistButtonDelete:active {\nbackground: #703830;\n}";
-Template.css['favlist_mylists'] = ".favlistMylistsView {\npadding: 10px;\nposition: relative;\n}\n.favlistNoMylist {\ndisplay: none;\n}\n.noMylist .favlistNoMylist {\ndisplay: block;\n}\n.favlistNoMylistTitle {\npadding: 30px;\ntext-align: center;\ncolor: #cccccc;\n}\n.noMylist .favlistMylists {\ndisplay: none;\n}\n.noMylist .favlistButtons {\ndisplay: none;\n}\n.favlistMylistsButtons button {\nmargin-right: 4px;\n}";
+Template.css['favlist_mylists'] = ".favlistMylistsView {\npadding: 10px;\nposition: relative;\n}\n.favlistNoMylist {\ndisplay: none;\n}\n.noMylist .favlistNoMylist {\ndisplay: block;\n}\n.favlistNoMylistTitle {\npadding: 30px;\ntext-align: center;\ncolor: #cccccc;\n}\n.noMylist .favlistMylists {\ndisplay: none;\n}\n.noMylist .favlistMylistsButtons {\ndisplay: none;\n}\n.favlistMylistsButtons button {\nmargin-right: 4px;\n}";
 Template.css['favlist_mylists_mylist'] = ".favlistMylistInner {\nmargin-bottom: 8px;\npadding-bottom: 8px;\nborder-bottom: 1px solid #eeeeee;\n}\n.checkedMylistHidden .favlistMylistInner {\ndisplay: none;\n}\n.checkedMylistHidden .hasNewVideo .favlistMylistInner,\n.checkedMylistHidden .hasStatus .favlistMylistInner {\ndisplay: block;\n}\n.favlistMylistHeader {\ndisplay: table;\nwidth: 100%;\n}\n.favlistMylistTitleLabel {\ndisplay: table-cell;\nwidth: 100%;\nmax-width: 1px;\noverflow: hidden;\ntext-overflow: ellipsis;\nwhite-space: nowrap;\nvertical-align: middle;\n}\n.favlistMylist.hasNewVideo .favlistMylistTitleLabel {\nfont-weight: bold;\n}\n.favlistMylistNewCountLabel {\ndisplay: none;\ncolor: #C00;\nwhite-space: nowrap;\n}\n.favlistMylist.hasNewVideo .favlistMylistNewCountLabel {\ndisplay: inline;\n}\n.favlistMylistButtons {\ndisplay: table-cell;\npadding-left: 8px;\n}\n.favlistMylistButtons button {\nfont-size: 10px;\n}\n.favlistMylist.hasStatus .favlistMylistButtons {\ndisplay: none;\n}\n.favlistMylistStatus {\ndisplay: none;\n}\n.favlistMylist.hasStatus .favlistMylistStatus {\ndisplay: table-cell;\npadding-left: 8px;\n}\n.favlistMylistStatus span {\ndisplay: inline-block;\npadding: 2px 10px;\nborder-radius: 10px;\nbackground: black;\nfont-size: 10px;\ncolor: white;\nwhite-space: nowrap;\n}\n.favlistMylistStatus span.waiting {\ncolor: #999;\nbackground: #efefef;\n}\n.favlistMylistStatus span.updating {\nbackground: #36689d;\n}\n.favlistMylistStatus span.private,\n.favlistMylistStatus span.deleted,\n.favlistMylistStatus span.error {\nbackground: #900;\n}";
 Template.css['favlist_mylists_video'] = ".favlistVideo {\nmargin: 8px 4px 0;\n}\n.favlistVideoHeader {\ndisplay: table;\nwidth: 100%;\n}\n.favlistVideoThumbnail {\ndisplay: table-cell;\nvertical-align: middle;\npadding-right: 8px;\n}\n.favlistVideoThumbnail a img {\nborder: none;\nwidth: 46px;\nheight: 34px;\n}\n.favlistVideoInfo {\ndisplay: table-cell;\nvertical-align: middle;\nwidth: 100%;\nfont-size: 11px;\n}\n.favlistVideoTitle {\nmargin-right: 4px;\n}\n.favlistVideoTimestamp {\nfont-size: 9px;\ncolor: #999;\nwhite-space: nowrap;\n}\n.favlistVideoMemo {\nmargin-top: 4px;\npadding: 4px 8px;\nborder-radius: 2px;\nbackground: #efefef;\nbox-shadow: 1px 1px 1px #ccc;\ncursor: pointer;\n}\n.favlistVideoMemo:hover {\nbackground: #f3f3f3;\n}\n.favlistVideoMemoText {\ndisplay: block;\nmax-height: 28px;\noverflow: hidden;\nfont-size: 10px;\n}\n.favlistVideoMemo.expanded .favlistVideoMemoText {\nwhite-space: pre;\nmax-height: none;\n}";
-Template.css['favlist_rescue'] = ".favlistViewRescue {\nposition: fixed;\nwidth: 360px;\nheight: 360px;\nright: 10px;\nbottom: 10px;\noverflow: auto;\nbackground-color: white;\nborder: 1px solid #cccccc;\n}\n.favlistRescueCaption {\nfont-size: 12px;\ncolor: #cc0000;\n}\n.favlistRescueOpen,\n.favlistViewRescue.closed .favlistRescueClose {\ndisplay: none;\n}\n.favlistViewRescue.closed .favlistRescueOpen {\ndisplay: inline;\n}";
-Template.css['favlist_settings'] = ".favlistSettingOverlay {\nposition: fixed;\ntop: 0;\nleft: 0;\nwidth: 100%;\nheight: 100%;\nz-index: 999999;\nbackground: #333333;\nopacity: 0.6;\n}\n.favlistSettingsDialog {\nposition: fixed;\ntop: 50%;\nleft: 50%;\nwidth: 600px;\nheight: auto;\nz-index: 1000000;\nbackground: #ffffff;\nbox-shadow: 3px 3px 2px rgba(0, 0, 0, 0.3);\ntransform: translateX(-50%) translateY(-50%);\n}\n.favlistSettingMylistSearch {\nmargin: 20px 20px 10px 20px;\n}\n.favlistSettingMylistsOuter {\nmargin: 10px 20px 20px 20px;\n}\n.favlistConfig,\n.favlistSettingsButtons {\nmargin: 20px;\n}\n.favlistSettingMylistSearchEdit {\nwidth: 50%;\nborder: 1px solid #999;\nborder-radius: 5px;\npadding: 2px 10px;\n}\n.favlistSettingMylistsOuter {\nheight: 400px;\nborder: 1px solid #ccc;\noverflow: auto;\n}\n.favlistSettingMylists {\ndisplay: table;\npadding-bottom: 10px;\n}\n.favlistConfigItems {\nlist-style-type: none;\n}\n.favlistConfigItems:after {\ncontent: \"\";\nclear: both;\ndisplay: block;\n}\n.favlistConfigItems li {\nmargin-bottom: 10px;\n}\n.favlistConfigItems li:nth-of-type(1) {\nfloat: left;\nwidth: 250px;\n}\n.favlistConfigItems li:nth-of-type(2) {\nfloat: left;\nwidth: 250px;\nclear: left;\n}\n.favlistConfigItems li label {\ncolor: #333;\n}\n.favlistConfigItems .favlistConfigText {\nmargin-left: 10px;\n}\n.favlistSettingsButtons {\ntext-align: right;\n}\n.favlistSettingsButtons button {\nfont-size: 14px;\nmargin-left: 10px;\n}";
+Template.css['favlist_rescue'] = ".favlistViewRescue {\nposition: fixed;\nwidth: 360px;\nmax-height: 300px;\nright: 10px;\nbottom: 10px;\noverflow: auto;\nbackground-color: white;\nborder: 1px solid #cccccc;\n}\n.favlistViewRescue.closed .favlistRescueContainer {\ndisplay: none;\n}\n.favlistRescueCaption {\npadding: 2px 4px;\nfont-size: 12px;\ncolor: #cc0000;\ntext-align: center;\n}\n.favlistRescueOpen,\n.favlistViewRescue.closed .favlistRescueClose {\ndisplay: none;\n}\n.favlistViewRescue.closed .favlistRescueOpen {\ndisplay: inline;\n}";
+Template.css['favlist_settings'] = ".favlistSettingOverlay {\nposition: fixed;\ntop: 0;\nleft: 0;\nwidth: 100%;\nheight: 100%;\nz-index: 999999;\nbackground: #333333;\nopacity: 0.6;\n}\n.favlistSettingsDialog {\nposition: fixed;\ntop: 50%;\nleft: 50%;\nwidth: 600px;\nheight: auto;\nz-index: 1000000;\nbackground: #ffffff;\nbox-shadow: 3px 3px 2px rgba(0, 0, 0, 0.3);\ntransform: translateX(-50%) translateY(-50%);\n-webkit-transform: translateX(-50%) translateY(-50%);\n}\n.favlistSettingMylistSearch {\nmargin: 20px 20px 10px 20px;\n}\n.favlistSettingMylistsOuter {\nmargin: 10px 20px 20px 20px;\n}\n.favlistConfig,\n.favlistSettingsButtons {\nmargin: 20px;\n}\n.favlistSettingMylistSearch {\ntext-align: right;\ncolor: #333;\n}\n.favlistSettingMylistSearch span {\nvertical-align: middle;\n}\n.favlistSettingMylistSearchEdit {\nvertical-align: middle;\nwidth: 50%;\nborder: 1px solid #999;\nborder-radius: 5px;\npadding: 2px 5px;\nmargin-left: 5px;\ncolor: #000;\n}\n.favlistSettingMylistsOuter {\nheight: 400px;\nborder: 1px solid #ccc;\noverflow: auto;\n}\n.favlistSettingMylists {\ndisplay: table;\npadding-bottom: 10px;\n}\n.favlistConfigItems {\nlist-style-type: none;\n}\n.favlistConfigItems:after {\ncontent: \"\";\nclear: both;\ndisplay: block;\n}\n.favlistConfigItems li {\nmargin-bottom: 10px;\n}\n.favlistConfigItems li:nth-of-type(1) {\nfloat: left;\nwidth: 250px;\n}\n.favlistConfigItems li:nth-of-type(2) {\nfloat: left;\nwidth: 250px;\nclear: left;\n}\n.favlistConfigItems li label {\ncolor: #333;\n}\n.favlistConfigItems .favlistConfigText {\nmargin-left: 10px;\n}\n.favlistSettingsButtons {\ntext-align: right;\n}\n.favlistSettingsButtons button {\nfont-size: 14px;\nmargin-left: 10px;\n}";
 Template.css['favlist_settings_mylist'] = ".favlistSettingMylist {\ndisplay: table-row;\nposition: relative;\n}\n.favlistSettingMylistLink,\n.favlistSettingMylistTitle,\n.favlistSettingMylistButtons {\ndisplay: table-cell;\npadding: 10px 0 0 10px;\nvertical-align: middle;\nwhite-space: nowrap;\n}\n.favlistSettingMylistLink a {\ndisplay: block;\n}\n.favlistSettingMylistTitle {\nwidth: 100%;\n}\n.favlistMylistTitleEdit {\nwidth: 100%;\n}\n.favlistSettingMylistButtons {\npadding-right: 10px;\n}\n.favlistSettingMylistButtons button {\nfont-size: 10px;\nvertical-align: middle;\n}\n.favlistSettingMylistMoveButtons {\ndisplay: inline;\n}\n.favlistSettingMylistMoveButtons button {\npadding: 2px 3px;\nbackground: none;\nfont-family: sans-serif;\ncolor: #666;\n}\n.favlistSettingMylistMoveButtons button.disabled,\n.favlistSettingMylistMoveButtons button[disabled] {\nvisibility: hidden;\n}\n.favlistSettingMylistMoveButtons button:hover {\nbackground: #37992b;\ncolor: #fff;\n}\n.favlistSettingMylistMoveButtons button:active {\nbackground: #0e4d17;\ncolor: #fff;\n}\n.favlistMylistRemoveButton {\npadding: 2px 5px;\nmargin-left: 10px;\n}";
-Template.css['subscribe'] = ".favlistSubscribeView {\ndisplay: inline-block;\n}\n.favlistSubscribeView,\n.favlistSubscribeView.subscribed .favlistUnsubscribeButton {\ndisplay: inline-block;\n}\n.favlistSubscribeView.subscribed .favlistSubscribeButton,\n.favlistUnsubscribeButton {\ndisplay: none;\n}\n.favlistSubscribeView button {\npadding: 4px 10px;\ncolor: white;\nborder: none;\nborder-radius: 4px;\nwhite-space: nowrap;\nfont-size: 12px;\ntext-decoration: none;\ntext-align: center;\nbackground: #435d69;\n}\n.favlistSubscribeView button:hover {\nbackground: #4f6d7b;\n}\n.favlistSubscribeView button:active {\nbackground: #3d5560;\n}\n.favlistSubscribeButton span {\ncolor: #fc3;\n}\n.favlistUnsubscribeButton span {\ncolor: #ff6462;\n}";
+Template.css['subscribe'] = ".favlistSubscribeView {\ndisplay: inline-block;\n}\n.favlistSubscribeView,\n.favlistSubscribeView.subscribed .favlistUnsubscribeButton {\ndisplay: inline-block;\n}\n.favlistSubscribeView.subscribed .favlistSubscribeButton,\n.favlistUnsubscribeButton {\ndisplay: none;\n}\n.favlistSubscribeView button {\npadding: 4px 10px;\ncolor: white;\nborder: none;\nborder-radius: 4px;\nwhite-space: nowrap;\nfont-size: 12px;\nfont-family: sans-serif;\ntext-decoration: none;\ntext-align: center;\ntext-shadow: 0 1px 1px #161e24;\nbackground: #435d69;\n}\n.favlistSubscribeView button:hover {\nbackground: #4f6d7b;\n}\n.favlistSubscribeView button:active {\nbackground: #3d5560;\n}\n.favlistSubscribeButton span {\ncolor: #fc3;\n}\n.favlistUnsubscribeButton span {\ncolor: #ff6462;\n}\n/* for user profile page */\n.profile .favlistSubscribeView button {\npadding: 1px 10px;\nmargin-bottom: 8px;\n}";
 Template.css['subscribe_rescue'] = "#favlistSubscribeViewRescue {\nposition: fixed;\nleft: 10px;\nbottom: 10px;\npadding: 4px;\nbackground: #ccc;\nborder-radius: 4px;\n}";
 var util;
 (function (util) {
@@ -106,13 +106,20 @@ var util;
         TypedStorage.prototype.getString = function (key, defaultValue) {
             var value = this.storage.get(key, defaultValue);
             if (typeof value !== 'undefined') {
-                value = String(value);
+                if (value === null) {
+                    value = '';
+                } else {
+                    value = String(value);
+                }
             }
             return value;
         };
 
         TypedStorage.prototype.setString = function (key, value) {
-            this.storage.set(key, value);
+            if (typeof value === 'undefined' || value === null) {
+                value = '';
+            }
+            this.storage.set(key, String(value));
         };
 
         TypedStorage.prototype.getInteger = function (key, defaultValue) {
@@ -126,11 +133,17 @@ var util;
         };
 
         TypedStorage.prototype.setInteger = function (key, value) {
+            if (typeof value !== 'number') {
+                value = parseInt(value) || 0;
+            }
             this.storage.set(key, value.toString());
         };
 
         TypedStorage.prototype.getBoolean = function (key, defaultValue) {
             var value = this.storage.get(key);
+            if (value === true || value === false) {
+                return value;
+            }
             if (typeof value !== 'undefined') {
                 return (String(value) !== '0');
             } else {
@@ -149,7 +162,6 @@ var util;
         function UpdateTimeStorage(storage, key) {
             this.key = key;
             this.storage = new TypedStorage(storage);
-            this.fetch();
         }
         UpdateTimeStorage.prototype.isChanged = function () {
             return (this.lastUpdateTime !== this.getLastUpdateTime());
@@ -164,12 +176,7 @@ var util;
         };
 
         UpdateTimeStorage.prototype.getLastUpdateTime = function () {
-            var lastUpdateTime = this.storage.getInteger(this.key);
-            if (typeof lastUpdateTime === 'undefined') {
-                this.updateLastUpdateTime();
-                lastUpdateTime = this.lastUpdateTime;
-            }
-            return lastUpdateTime;
+            return this.storage.getInteger(this.key);
         };
 
         UpdateTimeStorage.prototype.updateLastUpdateTime = function () {
@@ -430,10 +437,35 @@ var Video = (function () {
     };
     return Video;
 })();
+var MylistFeed = (function () {
+    function MylistFeed(xml) {
+        this.xml = xml;
+    }
+    MylistFeed.prototype.getTitle = function () {
+        var matched = this.xml.match(/<title>(?:マイリスト )?(.+?)‐ニコニコ動画.*?<\/title>/);
+        return matched ? matched[1] : '';
+    };
+
+    MylistFeed.prototype.getVideos = function () {
+        var videos = [];
+        var re_entry = /<entry>([\S\s]*?)<\/entry>/g;
+        var matched;
+        while (matched = re_entry.exec(this.xml)) {
+            videos.push(new MylistFeedEntry(matched[1]).toVideo());
+        }
+        return videos;
+    };
+    return MylistFeed;
+})();
+
 var MylistFeedEntry = (function () {
     function MylistFeedEntry(xml) {
         this.xml = xml;
     }
+    MylistFeedEntry.prototype.toVideo = function () {
+        return new Video(this.getVideoId(), this.getTitle(), this.getURL(), this.getThumbnail(), this.getMemo(), this.getTimestamp());
+    };
+
     MylistFeedEntry.prototype.getTitle = function () {
         return this.scrape(/<title>(.*?)<\/title>/);
     };
@@ -465,32 +497,6 @@ var MylistFeedEntry = (function () {
         return matches ? matches[1] : null;
     };
     return MylistFeedEntry;
-})();
-
-var MylistFeed = (function () {
-    function MylistFeed(url, xml) {
-        this.url = url;
-        this.xml = xml;
-    }
-    MylistFeed.prototype.getURL = function () {
-        return this.url;
-    };
-
-    MylistFeed.prototype.getTitle = function () {
-        var matched = this.xml.match(/<title>(?:マイリスト )?(.+?)‐ニコニコ動画.*?<\/title>/);
-        return matched ? matched[1] : '';
-    };
-
-    MylistFeed.prototype.getEntries = function () {
-        var entries = [];
-        var re_entry = /<entry>([\S\s]*?)<\/entry>/g;
-        var matched;
-        while (matched = re_entry.exec(this.xml)) {
-            entries.push(new MylistFeedEntry(matched[1]));
-        }
-        return entries;
-    };
-    return MylistFeed;
 })();
 var Nicovideo;
 (function (Nicovideo) {
@@ -575,15 +581,6 @@ var Mylist = (function () {
             _this.watchedVideoIds.push(video.getVideoId());
         });
         this.newVideos = [];
-    };
-
-    Mylist.prototype.updateWithFeed = function (feed) {
-        if (feed.getTitle()) {
-            this.setOriginalTitle(feed.getTitle());
-        }
-        this.updateVideos(feed.getEntries().map(function (entry) {
-            return new Video(entry.getVideoId(), entry.getTitle(), entry.getURL(), entry.getThumbnail(), entry.getMemo(), entry.getTimestamp());
-        }));
     };
 
     Mylist.prototype.updateVideos = function (videos) {
@@ -951,7 +948,7 @@ var MylistFeedFactory = (function () {
             }
 
             if (response.status === 200) {
-                callback(null, new MylistFeed(options.url, response.responseText));
+                callback(null, new MylistFeed(response.responseText));
             } else {
                 callback(new MylistFeedFetchError('Failed to fetch URL: ' + response.statusText, response.status), null);
             }
@@ -969,10 +966,11 @@ var MylistCollectionUpdater = (function () {
         this.onFinishUpdatingMylist = new util.Event();
         this.onFailedUpdatingMylist = new util.Event();
     }
-    MylistCollectionUpdater.prototype.updateAll = function (collection) {
+    MylistCollectionUpdater.prototype.updateAll = function (collection, callback) {
         var _this = this;
         var mylists = Array.prototype.slice.call(collection.getMylists());
         if (mylists.length === 0) {
+            callback && setTimeout(callback, 0);
             return null;
         }
 
@@ -986,6 +984,7 @@ var MylistCollectionUpdater = (function () {
                 if (!aborted) {
                     aborted = true;
                     _this.onAbortUpdatingAll.trigger(null);
+                    callback && setTimeout(callback, 0);
                 }
             }
         };
@@ -993,13 +992,15 @@ var MylistCollectionUpdater = (function () {
         this.onStartUpdatingAll.trigger(null);
 
         var updateNext = function () {
+            if (aborted) {
+                return;
+            }
+
             var mylist = mylists.shift();
             if (!mylist) {
                 currentAborter = null;
                 _this.onFinishUpdatingAll.trigger(null);
-                return;
-            }
-            if (aborted) {
+                callback && setTimeout(callback, 0);
                 return;
             }
             currentAborter = _this.updateMylist(mylist, updateNext);
@@ -1016,7 +1017,8 @@ var MylistCollectionUpdater = (function () {
             if (error) {
                 _this.onFailedUpdatingMylist.trigger({ mylist: mylist, error: error, httpStatus: error.httpStatus });
             } else {
-                mylist.updateWithFeed(feed);
+                mylist.setOriginalTitle(feed.getTitle());
+                mylist.updateVideos(feed.getVideos());
                 _this.onFinishUpdatingMylist.trigger({ mylist: mylist });
             }
             callback && callback(error, mylist);
@@ -1245,7 +1247,7 @@ var NicovideoGlue;
             $rescue.toggleClass('closed');
             return false;
         });
-        return $rescue.find('#favlistRescueContainer');
+        return $rescue.find('.favlistRescueContainer');
     }
     NicovideoGlue.getFavlistViewParent = getFavlistViewParent;
 

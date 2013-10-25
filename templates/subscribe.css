@@ -18,8 +18,10 @@
     border-radius: 4px;
     white-space: nowrap;
     font-size: 12px;
+    font-family: sans-serif;
     text-decoration: none;
     text-align: center;
+    text-shadow: 0 1px 1px #161e24;
     background: #435d69;
 }
 .favlistSubscribeView button:hover {
@@ -35,4 +37,10 @@
 
 .favlistUnsubscribeButton span {
     color: #ff6462;
+}
+
+/* for user profile page */
+.profile .favlistSubscribeView button {
+    padding: 1px 10px;
+    margin-bottom: 8px;
 }

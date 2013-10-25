@@ -1,17 +1,22 @@
 .favlistViewRescue {
     position: fixed;
     width: 360px;
-    height: 360px;
+    max-height: 300px;
     right: 10px;
     bottom: 10px;
     overflow: auto;
     background-color: white;
     border: 1px solid #cccccc;
 }
+.favlistViewRescue.closed .favlistRescueContainer {
+    display: none;
+}
 
 .favlistRescueCaption {
+    padding: 2px 4px;
     font-size: 12px;
     color: #cc0000;
+    text-align: center;
 }
 
 .favlistRescueOpen,

@@ -42,6 +42,7 @@ module.exports = (grunt) ->
         files:
           'dist/niconicofavlist.user.js': [
             'etc/userscript/intro.txt'
+            'compiled/templates.js'
             'compiled/userscript.js'
             'etc/userscript/outro.txt'
           ]

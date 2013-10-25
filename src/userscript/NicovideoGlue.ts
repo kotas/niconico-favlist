@@ -16,7 +16,7 @@ module NicovideoGlue {
             $rescue.toggleClass('closed');
             return false;
         });
-        return $rescue.find('#favlistRescueContainer');
+        return $rescue.find('.favlistRescueContainer');
     }
 
     export function getSubscribeViewParent(): JQuery {
