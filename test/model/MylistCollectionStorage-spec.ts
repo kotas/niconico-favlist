@@ -35,6 +35,7 @@ describe('MylistCollectionStorage', () => {
                 mcStorage.store(collection);
 
                 var stored = mcStorage.get();
+                expect(stored).to.not.equal(collection);
                 expect(stored).to.eql(collection);
             });
         });

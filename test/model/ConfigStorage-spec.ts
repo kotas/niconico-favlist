@@ -33,6 +33,7 @@ describe('ConfigStorage', () => {
                 configStorage.store(config);
 
                 var storedConfig = configStorage.get();
+                expect(storedConfig).to.not.equal(config);
                 expect(storedConfig).to.eql(config);
             });
         });

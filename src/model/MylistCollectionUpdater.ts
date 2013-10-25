@@ -10,7 +10,7 @@ interface IMylistCollectionUpdater {
     onStartUpdatingMylist: util.IEvent<{mylist: Mylist}>;
     onFinishUpdatingMylist: util.Event<{mylist: Mylist}>;
     onFailedUpdatingMylist: util.Event<{mylist: Mylist; error: Error; httpStatus?: number}>;
-    updateAll(collection: MylistCollection): util.IUrlFetchAborter;
+    updateAll(collection: MylistCollection, callback?: () => void): util.IUrlFetchAborter;
 }
 
 class MylistCollectionUpdater implements IMylistCollectionUpdater {
@@ -24,9 +24,10 @@ class MylistCollectionUpdater implements IMylistCollectionUpdater {
 
     constructor(private mylistFeedFactory: IMylistFeedFactory) {}
 
-    updateAll(collection: MylistCollection): util.IUrlFetchAborter {
+    updateAll(collection: MylistCollection, callback?: () => void): util.IUrlFetchAborter {
         var mylists = Array.prototype.slice.call(collection.getMylists());
         if (mylists.length === 0) {
+            callback && setTimeout(callback, 0);
             return null;
         }
 
@@ -40,6 +41,7 @@ class MylistCollectionUpdater implements IMylistCollectionUpdater {
                 if (!aborted) {
                     aborted = true;
                     this.onAbortUpdatingAll.trigger(null);
+                    callback && setTimeout(callback, 0);
                 }
             }
         };
@@ -47,13 +49,15 @@ class MylistCollectionUpdater implements IMylistCollectionUpdater {
         this.onStartUpdatingAll.trigger(null);
 
         var updateNext = () => {
+            if (aborted) {
+                return;
+            }
+
             var mylist: Mylist = mylists.shift();
             if (!mylist) {
                 currentAborter = null;
                 this.onFinishUpdatingAll.trigger(null);
-                return;
-            }
-            if (aborted) {
+                callback && setTimeout(callback, 0);
                 return;
             }
             currentAborter = this.updateMylist(mylist, updateNext);
