@@ -1,13 +1,14 @@
 /// <reference path="../spec_helper.ts" />
-/// <reference path="../../src/util/Event.ts" />
 
 describe('util.Event', () => {
 
     var event: util.Event<any>;
     var listener: SinonSpy;
+    var listener2: SinonSpy;
     beforeEach(() => {
         event = new util.Event<any>();
         listener = sinon.spy();
+        listener2 = sinon.spy();
     });
 
     describe('#trigger', () => {
@@ -26,32 +27,27 @@ describe('util.Event', () => {
             it('notifies the listener each time', () => {
                 event.trigger(null);
                 event.trigger(null);
-                expect(listener.callCount).to.equal(2);
+                expect(listener.calledTwice).to.be.true;
             });
 
             it('passes a parameter to the listener', () => {
                 event.trigger(123);
-                expect(listener.callArg(0)).to.equal(123);
+                expect(listener.calledWith(123)).to.be.true;
             });
 
         });
 
         context('when many listeners are added', () => {
 
-            var listener2: SinonSpy;
-            var listener3: SinonSpy;
-
             beforeEach(() => {
                 event.addListener(listener);
-                event.addListener(listener2 = sinon.spy());
-                event.addListener(listener3 = sinon.spy());
+                event.addListener(listener2);
             });
 
             it('notifies all of them', () => {
                 event.trigger(null);
                 expect(listener.called).to.be.true;
                 expect(listener2.called).to.be.true;
-                expect(listener3.called).to.be.true;
             });
 
         });
@@ -70,30 +66,38 @@ describe('util.Event', () => {
 
         });
 
-        context('when listener is removed', () => {
+        context('when one of listeners is removed', () => {
 
             beforeEach(() => {
                 event.addListener(listener);
+                event.addListener(listener2);
                 event.removeListener(listener);
             });
 
-            it('never notifies the listener', () => {
+            it('never notifies the removed listener', () => {
                 event.trigger(null);
                 expect(listener.called).to.be.false;
+            });
+
+            it('notifies the listener not removed', () => {
+                event.trigger(null);
+                expect(listener2.called).to.be.true;
             });
 
         });
 
-        context('when listener is cleared', () => {
+        context('when all listeners get cleared', () => {
 
             beforeEach(() => {
                 event.addListener(listener);
+                event.addListener(listener2);
                 event.clearListeners();
             });
 
-            it('never notifies the listener', () => {
+            it('never notifies cleared listeners', () => {
                 event.trigger(null);
                 expect(listener.called).to.be.false;
+                expect(listener2.called).to.be.false;
             });
 
         });
@@ -118,7 +122,7 @@ describe('util.Event', () => {
 
             it('proxies parameter to the listener', () => {
                 proxy(456);
-                expect(listener.callArg(0)).to.equal(456);
+                expect(listener.calledWith(456)).to.be.true;
             });
 
         });

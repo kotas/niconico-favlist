@@ -6,9 +6,10 @@
     "test/**/*.ts"
   ],
   "serve_files": [
-    "bower_components/sinon/lib/sinon.js",
+    "bower_components/jquery/jquery.js",
+    "bower_components/sinon/index.js",
     "compiled/templates.js",
-    "compiled/src/**.js",
-    "compiled/test/**.js"
+    "compiled/compiled.js",
+    "compiled/test/**/*.js"
   ]
 }

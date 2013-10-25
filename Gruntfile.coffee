@@ -10,15 +10,20 @@ module.exports = (grunt) ->
 
     typescript:
       compile:
-        src: ['src/**/*.ts', 'test/**/*.ts']
-        dest: 'compiled'
-        options:
-          target: 'es3'
-      release:
-        src:  ['compiled/templates.ts', 'src/userscript/main.ts']
+        src:  ['src/**/*.ts', '!src/userscript/main.ts']
         dest: 'compiled/compiled.js'
         options:
-          target: 'es3'
+          sourcemap: true
+          declaration: true
+      test:
+        src:  ['test/**/*.ts']
+        dest: 'compiled'
+      userscript:
+        src:  ['src/userscript/main.ts']
+        dest: 'compiled/userscript.js'
+        options:
+          noImplicitAny: true
+          comments: false
 
     concat:
       templates:
@@ -34,12 +39,11 @@ module.exports = (grunt) ->
             else
               "Template.html['#{name}'] = #{content};"
 
-      dist:
+      userscript:
         files:
           'dist/niconicofavlist.user.js': [
             'etc/userscript/intro.txt'
-            'compiled/templates.js'
-            'compiled/compiled.js'
+            'compiled/userscript.js'
             'etc/userscript/outro.txt'
           ]
           'dist/niconicofavlist.meta.js': []
@@ -54,6 +58,6 @@ module.exports = (grunt) ->
       files: ['src/**/*.ts', 'test/**/*.ts', 'templates/**/*.html', 'templates/**/*.css']
       tasks: ['release']
 
-  grunt.registerTask 'compile', ['concat:templates', 'typescript:compile']
-  grunt.registerTask 'release', ['concat:templates', 'typescript:release', 'concat:dist']
+  grunt.registerTask 'compile', ['concat:templates', 'typescript:compile', 'typescript:test']
+  grunt.registerTask 'release', ['concat:templates', 'typescript:userscript', 'concat:userscript']
   grunt.registerTask 'default', ['compile']

@@ -1,0 +1,8 @@
+{
+  "name": "NicoNicoFavlist",
+  "private": true,
+  "devDependencies": {
+    "jquery": "~1.10.2",
+    "sinon": "http://sinonjs.org/releases/sinon-1.7.3.js"
+  }
+}
