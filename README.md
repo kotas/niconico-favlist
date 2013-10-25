@@ -23,16 +23,16 @@ $ grunt release
 
 ## Test
 
-Run tests using [testem](https://github.com/airportyh/testem):
+Run tests using [Karma](http://karma-runner.github.io/):
 
 ```
-$ npm test
+$ grunt test
 ```
 
-To start test server:
+To start test watcher:
 
 ```
-$ npm start
+$ grunt server
 ```
 
 ## Contributions

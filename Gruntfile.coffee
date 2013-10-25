@@ -4,6 +4,13 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-concat'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-watch'
+  grunt.loadNpmTasks 'grunt-karma'
+
+  grunt.registerTask 'default', ['test']
+  grunt.registerTask 'release', ['concat:templates', 'typescript:userscript', 'concat:userscript']
+  grunt.registerTask 'compile', ['typescript:compile', 'typescript:test']
+  grunt.registerTask 'test',    ['compile', 'karma:ci']
+  grunt.registerTask 'server',  ['karma:server:start', 'watch:karma']
 
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
@@ -55,9 +62,19 @@ module.exports = (grunt) ->
         src: ['compiled']
 
     watch:
-      files: ['src/**/*.ts', 'test/**/*.ts', 'templates/**/*.html', 'templates/**/*.css']
-      tasks: ['release']
+      release:
+        files: ['src/**/*.ts', 'test/**/*.ts', 'templates/**/*.html', 'templates/**/*.css']
+        tasks: ['release']
+      karma:
+        files: ['src/**/*.ts', 'test/**/*.ts']
+        tasks: ['compile', 'karma:server:run']
 
-  grunt.registerTask 'compile', ['concat:templates', 'typescript:compile', 'typescript:test']
-  grunt.registerTask 'release', ['concat:templates', 'typescript:userscript', 'concat:userscript']
-  grunt.registerTask 'default', ['compile']
+    karma:
+      server:
+        configFile: 'karma.conf.coffee'
+        background: true
+      ci:
+        configFile: 'karma.conf.coffee'
+        singleRun: true
+        browsers: ['PhantomJS']
+        reporters: ['dots']
