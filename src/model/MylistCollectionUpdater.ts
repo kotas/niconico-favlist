@@ -67,11 +67,12 @@ class MylistCollectionUpdater implements IMylistCollectionUpdater {
         this.onStartUpdatingMylist.trigger({ mylist: mylist });
         return this.mylistFeedFactory.getFeedFromServer(
             mylist.getMylistId(),
-            (error: MylistFeedFetchError, feed: MylistFeed) => {
+            (error: MylistFeedFetchError, feed: IMylistFeed) => {
                 if (error) {
                     this.onFailedUpdatingMylist.trigger({ mylist: mylist, error: error, httpStatus: error.httpStatus });
                 } else {
-                    mylist.updateWithFeed(feed);
+                    mylist.setOriginalTitle(feed.getTitle());
+                    mylist.updateVideos(feed.getVideos());
                     this.onFinishUpdatingMylist.trigger({ mylist: mylist });
                 }
                 callback && callback(error, mylist);

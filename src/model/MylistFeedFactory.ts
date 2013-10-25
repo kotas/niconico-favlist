@@ -11,14 +11,14 @@ class MylistFeedFetchError extends util.CustomError {
 }
 
 interface IMylistFeedFactory {
-    getFeedFromServer(mylistId: MylistId, callback: (error: MylistFeedFetchError, feed: MylistFeed) => any): util.IUrlFetchAborter;
+    getFeedFromServer(mylistId: MylistId, callback: (error: MylistFeedFetchError, feed: IMylistFeed) => any): util.IUrlFetchAborter;
 }
 
 class MylistFeedFactory {
 
     constructor(private fetcher: util.IUrlFetcher) {}
 
-    getFeedFromServer(mylistId: MylistId, callback: (error: MylistFeedFetchError, feed: MylistFeed) => any): util.IUrlFetchAborter {
+    getFeedFromServer(mylistId: MylistId, callback: (error: MylistFeedFetchError, feed: IMylistFeed) => any): util.IUrlFetchAborter {
         var options: util.IUrlFetchOption = {
             method:  'GET',
             url:     Nicovideo.getMylistFeedURL(mylistId)
@@ -30,7 +30,7 @@ class MylistFeedFactory {
             }
 
             if (response.status === 200) {
-                callback(null, new MylistFeed(options.url, response.responseText));
+                callback(null, new MylistFeed(response.responseText));
             } else {
                 callback(new MylistFeedFetchError('Failed to fetch URL: ' + response.statusText, response.status), null);
             }

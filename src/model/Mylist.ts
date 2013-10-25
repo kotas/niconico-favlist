@@ -72,22 +72,6 @@ class Mylist {
         this.newVideos = [];
     }
 
-    updateWithFeed(feed: MylistFeed): void {
-        if (feed.getTitle()) {
-            this.setOriginalTitle(feed.getTitle());
-        }
-        this.updateVideos(feed.getEntries().map((entry: MylistFeedEntry): Video => {
-            return new Video(
-                entry.getVideoId(),
-                entry.getTitle(),
-                entry.getURL(),
-                entry.getThumbnail(),
-                entry.getMemo(),
-                entry.getTimestamp()
-            );
-        }));
-    }
-
     updateVideos(videos: Video[]): void {
         var prevWatchedVideoIdMap: Object = {};
         this.watchedVideoIds.forEach((videoId: string) => {

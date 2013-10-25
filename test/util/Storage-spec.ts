@@ -2,18 +2,14 @@
 
 describe('util.TypedStorage', () => {
 
-    var storageStub: { get: SinonStub; set: SinonStub };
+    var mockStorage: helper.IMockStorage;
     var typedStorage: util.TypedStorage;
     beforeEach(() => {
-        storageStub = { get: sinon.stub(), set: sinon.stub() };
-        typedStorage = new util.TypedStorage(storageStub);
+        mockStorage = helper.getMockStorage();
+        typedStorage = new util.TypedStorage(mockStorage);
     });
 
     context('with not existing key without default value', () => {
-
-        beforeEach(() => {
-            storageStub.get.returns(undefined);
-        });
 
         describe('#get', () => {
             it('returns undefined', () => {
@@ -42,10 +38,6 @@ describe('util.TypedStorage', () => {
     });
 
     context('with not existing key with default value', () => {
-
-        beforeEach(() => {
-            storageStub.get.returnsArg(1);
-        });
 
         describe('#get', () => {
             it('returns the default value', () => {
@@ -76,7 +68,7 @@ describe('util.TypedStorage', () => {
     context('with key of null value', () => {
 
         beforeEach(() => {
-            storageStub.get.returns(null);
+            mockStorage.set('test', null);
         });
 
         describe('#get', () => {
@@ -108,7 +100,7 @@ describe('util.TypedStorage', () => {
     context('with key of string value', () => {
 
         beforeEach(() => {
-            storageStub.get.returns('hello');
+            mockStorage.set('test', 'hello');
         });
 
         describe('#get', () => {
@@ -129,7 +121,7 @@ describe('util.TypedStorage', () => {
             });
 
             it('returns the value as a number', () => {
-                storageStub.get.returns('456');
+                mockStorage.set('test', '456');
                 expect(typedStorage.getInteger('test', 123)).to.equal(456);
             });
         });
@@ -140,7 +132,7 @@ describe('util.TypedStorage', () => {
             });
 
             it('returns false for a string "0"', () => {
-                storageStub.get.returns('0');
+                mockStorage.set('test', '0');
                 expect(typedStorage.getBoolean('test')).to.equal(false);
             });
         });
@@ -150,7 +142,7 @@ describe('util.TypedStorage', () => {
     context('with key of number value', () => {
 
         beforeEach(() => {
-            storageStub.get.returns(123);
+            mockStorage.set('test', 123);
         });
 
         describe('#get', () => {
@@ -177,7 +169,7 @@ describe('util.TypedStorage', () => {
             });
 
             it('returns false for zero', () => {
-                storageStub.get.returns(0);
+                mockStorage.set('test', 0);
                 expect(typedStorage.getBoolean('test')).to.equal(false);
             });
         });
@@ -187,34 +179,38 @@ describe('util.TypedStorage', () => {
     context('with key of boolean value', () => {
 
         beforeEach(() => {
-            storageStub.get.returns(123);
+            mockStorage.set('test', true);
         });
 
         describe('#get', () => {
-            it('returns the number value as-is', () => {
-                expect(typedStorage.get('test')).to.equal(123);
+            it('returns the boolean value as-is', () => {
+                expect(typedStorage.get('test')).to.equal(true);
             });
         });
 
         describe('#getString', () => {
-            it('returns the number value as string', () => {
-                expect(typedStorage.getString('test')).to.equal('123');
+            it('returns "true" for true', () => {
+                expect(typedStorage.getString('test')).to.equal('true');
+            });
+            it('returns "false" for false', () => {
+                mockStorage.set('test', false);
+                expect(typedStorage.getString('test')).to.equal('false');
             });
         });
 
         describe('#getInteger', () => {
-            it('returns the number value as-is', () => {
-                expect(typedStorage.getInteger('test')).to.equal(123);
+            it('returns default value for boolean', () => {
+                expect(typedStorage.getInteger('test', 123)).to.equal(123);
             });
         });
 
         describe('#getBoolean', () => {
-            it('returns true for non-zero', () => {
+            it('returns true as-is', () => {
                 expect(typedStorage.getBoolean('test')).to.equal(true);
             });
 
-            it('returns false for zero', () => {
-                storageStub.get.returns(0);
+            it('returns false as-is', () => {
+                mockStorage.set('test', false);
                 expect(typedStorage.getBoolean('test')).to.equal(false);
             });
         });
@@ -226,21 +222,21 @@ describe('util.TypedStorage', () => {
         describe('#set', () => {
             it('stores null', () => {
                 typedStorage.set('test', null);
-                expect(storageStub.set.calledWith('test', null)).to.be.true;
+                expect(mockStorage.set.calledWith('test', null)).to.be.true;
             });
         });
 
         describe('#setString', () => {
             it('stores an empty string', () => {
                 typedStorage.setString('test', null);
-                expect(storageStub.set.calledWith('test', '')).to.be.true;
+                expect(mockStorage.set.calledWith('test', '')).to.be.true;
             });
         });
 
         describe('#setInteger', () => {
             it('stores "0"', () => {
                 typedStorage.setInteger('test', null);
-                expect(storageStub.set.calledWith('test', '0')).to.be.true;
+                expect(mockStorage.set.calledWith('test', '0')).to.be.true;
             });
         });
 
@@ -251,14 +247,14 @@ describe('util.TypedStorage', () => {
         describe('#set', () => {
             it('stores the string as-is', () => {
                 typedStorage.set('test', 'hello');
-                expect(storageStub.set.calledWith('test', 'hello')).to.be.true;
+                expect(mockStorage.set.calledWith('test', 'hello')).to.be.true;
             });
         });
 
         describe('#setString', () => {
             it('stores the string as-is', () => {
                 typedStorage.setString('test', 'hello');
-                expect(storageStub.set.calledWith('test', 'hello')).to.be.true;
+                expect(mockStorage.set.calledWith('test', 'hello')).to.be.true;
             });
         });
 
@@ -269,14 +265,14 @@ describe('util.TypedStorage', () => {
         describe('#set', () => {
             it('stores the number as-is', () => {
                 typedStorage.set('test', 123);
-                expect(storageStub.set.calledWith('test', 123)).to.be.true;
+                expect(mockStorage.set.calledWith('test', 123)).to.be.true;
             });
         });
 
         describe('#setInteger', () => {
             it('stores the number as a string', () => {
                 typedStorage.setInteger('test', 123);
-                expect(storageStub.set.calledWith('test', '123')).to.be.true;
+                expect(mockStorage.set.calledWith('test', '123')).to.be.true;
             });
         });
 
@@ -287,19 +283,19 @@ describe('util.TypedStorage', () => {
         describe('#set', () => {
             it('stores the boolean value as-is', () => {
                 typedStorage.set('test', true);
-                expect(storageStub.set.calledWith('test', true)).to.be.true;
+                expect(mockStorage.set.calledWith('test', true)).to.be.true;
             });
         });
 
         describe('#setBoolean', () => {
             it('stores "1" for true', () => {
                 typedStorage.setBoolean('test', true);
-                expect(storageStub.set.calledWith('test', '1')).to.be.true;
+                expect(mockStorage.set.calledWith('test', '1')).to.be.true;
             });
 
             it('stores "0" for false', () => {
                 typedStorage.setBoolean('test', false);
-                expect(storageStub.set.calledWith('test', '0')).to.be.true;
+                expect(mockStorage.set.calledWith('test', '0')).to.be.true;
             });
         });
 
@@ -314,19 +310,15 @@ describe('util.UpdateTimeStorage', () => {
     var past = now - 60;
     var clock: SinonFakeTimers;
 
-    var key = 'updateTime';
-    var storageStub: { get: SinonStub; set: (key: string, value: any) => void };
+    var mockStorage: helper.IMockStorage;
     var utStorage: util.UpdateTimeStorage;
     var anotherUtStorage: util.UpdateTimeStorage;
 
     beforeEach(() => {
         clock = sinon.useFakeTimers(now);
-        storageStub = {
-            get: sinon.stub(),
-            set: (key, value) => { storageStub.get.withArgs(key).returns(value); }
-        };
-        utStorage = new util.UpdateTimeStorage(storageStub, key);
-        anotherUtStorage = new util.UpdateTimeStorage(storageStub, key);
+        mockStorage = helper.getMockStorage();
+        utStorage = new util.UpdateTimeStorage(mockStorage, 'updateTime');
+        anotherUtStorage = new util.UpdateTimeStorage(mockStorage, 'updateTime');
     });
     afterEach(() => {
         clock.restore();
@@ -336,10 +328,6 @@ describe('util.UpdateTimeStorage', () => {
     var expectChanged    = () => { expect(utStorage.isChanged()).to.be.true };
 
     context('with no update time in storage', () => {
-
-        beforeEach(() => {
-            storageStub.get.withArgs('updateTime').returns(undefined);
-        });
 
         context('at first', () => {
             it('is not changed', expectNotChanged);
@@ -387,7 +375,7 @@ describe('util.UpdateTimeStorage', () => {
     context('with past update time in storage', () => {
 
         beforeEach(() => {
-            storageStub.get.withArgs('updateTime').returns(past);
+            mockStorage.set('updateTime', past);
         });
 
         context('at first', () => {

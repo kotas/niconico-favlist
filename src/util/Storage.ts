@@ -100,6 +100,9 @@ module util {
 
         getBoolean(key: string, defaultValue?: boolean): boolean {
             var value = this.storage.get(key);
+            if (value === true || value === false ) {
+                return value;
+            }
             if (typeof value !== 'undefined') {
                 return (String(value) !== '0');
             } else {
