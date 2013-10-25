@@ -1,5 +1,7 @@
 # NicoNicoFavlist
 
+[![Build Status](https://travis-ci.org/kotas/niconico-favlist.png?branch=master)](https://travis-ci.org/kotas/niconico-favlist)
+
 ## Set up
 
 Requires Node.js v0.10.*
