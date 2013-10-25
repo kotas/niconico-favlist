@@ -65,13 +65,20 @@ module util {
         getString(key: string, defaultValue?: string): string {
             var value = this.storage.get(key, defaultValue);
             if (typeof value !== 'undefined') {
-                value = String(value);
+                if (value === null) {
+                    value = '';
+                } else {
+                    value = String(value);
+                }
             }
             return value;
         }
 
         setString(key: string, value: string): void {
-            this.storage.set(key, value);
+            if (typeof value === 'undefined' || value === null) {
+                value = '';
+            }
+            this.storage.set(key, String(value));
         }
 
         getInteger(key: string, defaultValue?: number): number {
@@ -85,6 +92,9 @@ module util {
         }
 
         setInteger(key: string, value: number): void {
+            if (typeof value !== 'number') {
+                value = parseInt(<any>value) || 0;
+            }
             this.storage.set(key, value.toString());
         }
 
@@ -110,7 +120,6 @@ module util {
 
         constructor(storage: IStorage, private key: string) {
             this.storage = new TypedStorage(storage);
-            this.fetch();
         }
 
         isChanged(): boolean {
@@ -126,12 +135,7 @@ module util {
         }
 
         private getLastUpdateTime(): number {
-            var lastUpdateTime = this.storage.getInteger(this.key);
-            if (typeof lastUpdateTime === 'undefined') {
-                this.updateLastUpdateTime();
-                lastUpdateTime = this.lastUpdateTime;
-            }
-            return lastUpdateTime;
+            return this.storage.getInteger(this.key);
         }
 
         private updateLastUpdateTime(): void {
