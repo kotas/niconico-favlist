@@ -19,7 +19,7 @@
     "grunt-contrib-watch": "~0.5.3",
     "grunt-karma": "~0.6.2",
     "mocha": "~1.13.0",
-    "karma": "~0.10.2",
+    "karma": "0.10.2",
     "karma-mocha": "~0.1.0",
     "karma-chai": "0.0.2",
     "karma-phantomjs-launcher": "~0.1.0",
