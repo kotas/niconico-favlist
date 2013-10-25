@@ -1,23 +1,40 @@
 # NicoNicoFavlist
 
-まだ開発中です＞＜
-
 ## Set up
 
-    # Install grunt
-    $ npm install -g grunt-cli
+Requires Node.js v0.10.*
 
-    # Install dependencies
-    $ npm install
+```
+# Install grunt and bower
+$ npm install -g grunt-cli bower
+
+# Install dependencies
+$ npm install
+$ bower install
+```
 
 ## Compile
 
-Compile all typescript files into `compiled` directory:
-
-    $ grunt compile
-
 Compile and assemble them into `dist/niconicofavlist.user.js`:
 
-    $ grunt release
+```
+$ grunt release
+```
 
+## Test
 
+Run tests using [testem](https://github.com/airportyh/testem):
+
+```
+$ npm test
+```
+
+To start test server:
+
+```
+$ npm start
+```
+
+## Contributions
+
+Waiting for your pull request!
