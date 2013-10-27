@@ -1307,6 +1307,50 @@ var userscript;
     })(SubscriptionService);
     userscript.UserScriptSubscriptionService = UserScriptSubscriptionService;
 })(userscript || (userscript = {}));
+var userscript;
+(function (userscript) {
+    var DI = (function () {
+        function DI() {
+        }
+        DI.prototype.getStorage = function () {
+            return this.storage || (this.storage = util.chooseStorage());
+        };
+
+        DI.prototype.getUrlFetcher = function () {
+            return this.urlFetcher || (this.urlFetcher = util.chooseUrlFetcher());
+        };
+
+        DI.prototype.getConfigStorage = function () {
+            return this.configStorage || (this.configStorage = new ConfigStorage(this.getStorage()));
+        };
+
+        DI.prototype.getMylistCollectionStorage = function () {
+            return this.mylistCollectionStorage || (this.mylistCollectionStorage = new MylistCollectionStorage(this.getStorage()));
+        };
+
+        DI.prototype.getMylistFeedFactory = function () {
+            return this.mylistFeedFactory || (this.mylistFeedFactory = new MylistFeedFactory(this.getUrlFetcher()));
+        };
+
+        DI.prototype.getUpdateInterval = function () {
+            return this.updateInterval || (this.updateInterval = new UpdateInterval(this.getStorage(), this.getConfigService()));
+        };
+
+        DI.prototype.getConfigService = function () {
+            return this.configService || (this.configService = new ConfigService(this.getConfigStorage()));
+        };
+
+        DI.prototype.getMylistService = function () {
+            return this.mylistService || (this.mylistService = new MylistService(this.getMylistCollectionStorage(), this.getUpdateInterval(), this.getMylistFeedFactory()));
+        };
+
+        DI.prototype.getSubscriptionService = function () {
+            return this.subscriptionService || (this.subscriptionService = new userscript.UserScriptSubscriptionService(this.getMylistCollectionStorage(), this.getUpdateInterval()));
+        };
+        return DI;
+    })();
+    userscript.DI = DI;
+})(userscript || (userscript = {}));
 var ViewHelper;
 (function (ViewHelper) {
     function formatTimestamp(timestamp) {
@@ -2120,56 +2164,9 @@ var userscript;
     })();
     userscript.UserScriptApp = UserScriptApp;
 })(userscript || (userscript = {}));
-var userscript;
-(function (userscript) {
-    var DI = (function () {
-        function DI() {
-        }
-        DI.prototype.getStorage = function () {
-            return this.storage || (this.storage = util.chooseStorage());
-        };
-
-        DI.prototype.getUrlFetcher = function () {
-            return this.urlFetcher || (this.urlFetcher = util.chooseUrlFetcher());
-        };
-
-        DI.prototype.getConfigStorage = function () {
-            return this.configStorage || (this.configStorage = new ConfigStorage(this.getStorage()));
-        };
-
-        DI.prototype.getMylistCollectionStorage = function () {
-            return this.mylistCollectionStorage || (this.mylistCollectionStorage = new MylistCollectionStorage(this.getStorage()));
-        };
-
-        DI.prototype.getMylistFeedFactory = function () {
-            return this.mylistFeedFactory || (this.mylistFeedFactory = new MylistFeedFactory(this.getUrlFetcher()));
-        };
-
-        DI.prototype.getUpdateInterval = function () {
-            return this.updateInterval || (this.updateInterval = new UpdateInterval(this.getStorage(), this.getConfigService()));
-        };
-
-        DI.prototype.getConfigService = function () {
-            return this.configService || (this.configService = new ConfigService(this.getConfigStorage()));
-        };
-
-        DI.prototype.getMylistService = function () {
-            return this.mylistService || (this.mylistService = new MylistService(this.getMylistCollectionStorage(), this.getUpdateInterval(), this.getMylistFeedFactory()));
-        };
-
-        DI.prototype.getSubscriptionService = function () {
-            return this.subscriptionService || (this.subscriptionService = new userscript.UserScriptSubscriptionService(this.getMylistCollectionStorage(), this.getUpdateInterval()));
-        };
-
-        DI.prototype.getFavlistApp = function () {
-            return new userscript.UserScriptApp(this);
-        };
-        return DI;
-    })();
-    userscript.DI = DI;
-})(userscript || (userscript = {}));
 $(function () {
-    (new userscript.DI()).getFavlistApp().start();
+    var app = new userscript.UserScriptApp(new userscript.DI());
+    app.start();
 });
 
 })(jQuery);

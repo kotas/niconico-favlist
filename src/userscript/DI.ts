@@ -6,7 +6,6 @@
 /// <reference path="../model/MylistFeedFactory.ts" />
 /// <reference path="../model/UpdateInterval.ts" />
 /// <reference path="../userscript/UserScriptSubscriptionService.ts" />
-/// <reference path="../userscript/UserScriptApp.ts" />
 
 module userscript {
 
@@ -23,8 +22,6 @@ module userscript {
         private configService: IConfigService;
         private mylistService: IMylistService;
         private subscriptionService: ISubscriptionService;
-
-        private favlistApp: IFavlistApp;
 
         private getStorage(): util.IStorage {
             return this.storage || (this.storage = util.chooseStorage());
@@ -81,10 +78,6 @@ module userscript {
                     this.getUpdateInterval()
                 )
             );
-        }
-
-        getFavlistApp(): IFavlistApp {
-            return new UserScriptApp(this);
         }
 
     }

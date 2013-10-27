@@ -1,3 +1,0 @@
-interface IFavlistApp {
-    start();
-}

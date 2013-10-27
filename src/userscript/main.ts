@@ -1,5 +1,7 @@
 /// <reference path="./DI.ts" />
+/// <reference path="./UserScriptApp.ts" />
 
 $(function () {
-    (new userscript.DI()).getFavlistApp().start();
+    var app = new userscript.UserScriptApp(new userscript.DI());
+    app.start();
 });

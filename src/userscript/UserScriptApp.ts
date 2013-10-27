@@ -1,12 +1,11 @@
 /// <reference path="../IFavlistDI.ts" />
-/// <reference path="../controller/IFavlistApp.ts" />
 /// <reference path="../controller/SubscribeController.ts" />
 /// <reference path="../controller/FavlistController.ts" />
 /// <reference path="./NicovideoGlue.ts" />
 
 module userscript {
 
-    export class UserScriptApp implements IFavlistApp {
+    export class UserScriptApp {
 
         constructor(private DI: IFavlistDI) {}
 
