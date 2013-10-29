@@ -5,7 +5,7 @@ interface IConfigService {
     onUpdate: util.IEvent<void>;
     checkUpdate(): void;
     getConfig(): IConfig;
-    setSettings(configSettings: IConfig);
+    setConfig(config: IConfig): void;
 }
 
 class ConfigService implements IConfigService {
@@ -34,8 +34,8 @@ class ConfigService implements IConfigService {
         return this.config;
     }
 
-    setSettings(configSettings: IConfig) {
-        this.config.update(configSettings);
+    setConfig(config: IConfig) {
+        this.config.update(config);
         this.configStorage.store(this.config);
         this.onUpdate.trigger(null);
     }

@@ -29,7 +29,7 @@
     margin: 10px 20px 20px 20px;
 }
 .favlistConfig,
-.favlistSettingsButtons {
+.favlistSettingsFooter {
     margin: 20px;
 }
 
@@ -87,10 +87,40 @@
     margin-left: 10px;
 }
 
+.favlistSettingsLinks {
+    float: left;
+    padding-top: 12px;
+}
+.favlistSettingsLinks a {
+    font-size: 12px;
+    margin-right: 10px;
+}
+
 .favlistSettingsButtons {
     text-align: right;
 }
 .favlistSettingsButtons button {
-    font-size: 14px;
     margin-left: 10px;
+    font-size: 14px;
+}
+
+
+.favlistSettingsEditorPage {
+    display: none;
+}
+
+.favlistSettingsEditorPage.importing .favlistExportMode,
+.favlistSettingsEditorPage.exporting .favlistImportMode {
+    display: none;
+}
+
+.favlistSettingsEditorHeader,
+.favlistSettingsEditorForm,
+.favlistSettingsEditorFooter {
+    margin: 20px;
+}
+
+.favlistSettingsEditorForm textarea {
+    height: 400px;
+    width: 100%;
 }

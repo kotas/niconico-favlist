@@ -46,6 +46,10 @@ class Mylist {
         return Nicovideo.getMylistURL(this.mylistId);
     }
 
+    getFeedURL(): string {
+        return Nicovideo.getMylistFeedURL(this.mylistId);
+    }
+
     setOriginalTitle(title: string): void {
         this.originalTitle = title;
     }

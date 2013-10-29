@@ -1,3 +1,4 @@
+/// <reference path="../IFavlistDI.ts" />
 /// <reference path="../view/FavlistMylistsView.ts" />
 /// <reference path="../service/ConfigService.ts" />
 /// <reference path="../service/MylistService.ts" />
@@ -5,11 +6,8 @@
 class FavlistMylistsController {
 
     private mylistsView: FavlistMylistsView;
-
-    constructor(
-        private configService: IConfigService,
-        private mylistService: IMylistService
-    ) {}
+    private configService: IConfigService = DI.getConfigService();
+    private mylistService: IMylistService = DI.getMylistService();
 
     getView(): FavlistMylistsView {
         if (!this.mylistsView) {

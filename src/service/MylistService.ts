@@ -12,16 +12,11 @@ interface IMylistService {
     onFinishUpdatingAll: util.IEvent<void>;
     checkUpdate(): void;
     getMylistCollection(): MylistCollection;
-    setSettings(mylistSetting: IMylistSetting[]);
+    setMylists(mylists: Mylist[]): void;
     updateAllIfExpired();
     updateAll();
     markMylistAllWatched(mylist: Mylist);
     markVideoWatched(mylist: Mylist, video: Video);
-}
-
-interface IMylistSetting {
-    mylistId: MylistId;
-    title: string;
 }
 
 enum MylistStatus {
@@ -63,16 +58,8 @@ class MylistService implements IMylistService {
         return this.mylists;
     }
 
-    setSettings(mylistSetting: IMylistSetting[]) {
-        var newMylists: Mylist[] = [];
-        mylistSetting.forEach((mylistSetting: IMylistSetting) => {
-            var mylist: Mylist = this.mylists.get(mylistSetting.mylistId);
-            if (mylist) {
-                mylist.setOverrideTitle(mylistSetting.title);
-                newMylists.push(mylist);
-            }
-        });
-        this.mylists.setMylists(newMylists);
+    setMylists(mylists: Mylist[]): void {
+        this.mylists.setMylists(mylists);
         this.save();
         this.onUpdate.trigger(null);
     }

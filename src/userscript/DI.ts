@@ -21,6 +21,7 @@ module userscript {
 
         private configService: IConfigService;
         private mylistService: IMylistService;
+        private settingsService: ISettingsService;
         private subscriptionService: ISubscriptionService;
 
         private getStorage(): util.IStorage {
@@ -67,6 +68,15 @@ module userscript {
                     this.getMylistCollectionStorage(),
                     this.getUpdateInterval(),
                     this.getMylistFeedFactory()
+                )
+            );
+        }
+
+        getSettingsService(): ISettingsService {
+            return this.settingsService || (
+                this.settingsService = new SettingsService(
+                    this.getConfigService(),
+                    this.getMylistService()
                 )
             );
         }

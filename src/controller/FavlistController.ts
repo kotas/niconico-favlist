@@ -1,3 +1,4 @@
+/// <reference path="../IFavlistDI.ts" />
 /// <reference path="../view/FavlistView.ts" />
 /// <reference path="../service/ConfigService.ts" />
 /// <reference path="../service/MylistService.ts" />
@@ -9,11 +10,8 @@ class FavlistController {
     private favlistView: FavlistView;
     private mylistsController: FavlistMylistsController;
     private settingsController: FavlistSettingsController;
-
-    constructor(
-        private configService: IConfigService,
-        private mylistService: IMylistService
-    ) {}
+    private configService: IConfigService = DI.getConfigService();
+    private mylistService: IMylistService = DI.getMylistService();
 
     start() {
         this.getView().show();
@@ -49,7 +47,7 @@ class FavlistController {
 
     private showMylistsPage() {
         if (!this.mylistsController) {
-            this.mylistsController = new FavlistMylistsController(this.configService, this.mylistService);
+            this.mylistsController = new FavlistMylistsController();
             this.favlistView.setMylistsView(this.mylistsController.getView());
         }
         this.favlistView.showMylistsPage();
@@ -57,7 +55,7 @@ class FavlistController {
 
     private showSettingsPage() {
         if (!this.settingsController) {
-            this.settingsController = new FavlistSettingsController(this.configService, this.mylistService);
+            this.settingsController = new FavlistSettingsController();
             this.settingsController.onFinish.addListener(() => this.showMylistsPage());
             this.favlistView.setSettingsView(this.settingsController.getView());
         }

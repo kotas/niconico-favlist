@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           NicoNicoFavlist
-// @version        1.3.0
+// @version        1.3.1
 // @author         Kota Saito <kotas.nico@gmail.com>
 // @copyright      2007-2013 Kota Saito
 // @description    Get your favorite mylists checked twenty-four-seven!
@@ -28,7 +28,7 @@ Template.html['favlist_mylists'] = "<div class=\"favlistMylistsView\">\n<div cla
 Template.html['favlist_mylists_mylist'] = "<div class=\"favlistMylist\">\n<div class=\"favlistMylistInner\">\n<div class=\"favlistMylistHeader\">\n<div class=\"favlistMylistTitleLabel\">\n<span class=\"favlistMylistNewCountLabel\">\n(<span class=\"favlistMylistNewCount\"></span>)\n</span>\n<a href=\"#\" class=\"favlistMylistTitle favlistMylistLink\"></a>\n</div>\n<div class=\"favlistMylistButtons\">\n<button class=\"favlistMylistClearButton\">クリア</button>\n</div>\n<div class=\"favlistMylistStatus\">\n<span class=\"waiting\">待機中</span>\n<span class=\"updating\">更新中</span>\n<span class=\"private\">非公開</span>\n<span class=\"deleted\">削除された</span>\n<span class=\"error\">更新失敗</span>\n</div>\n</div>\n<div class=\"favlistMylistVideos\">\n</div>\n</div>\n</div>";
 Template.html['favlist_mylists_video'] = "<div class=\"favlistVideo\">\n<div class=\"favlistVideoHeader\">\n<div class=\"favlistVideoThumbnail\">\n<a href=\"\" title=\"\" class=\"favlistVideoLink\"><img src=\"\" /></a>\n</div>\n<div class=\"favlistVideoInfo\">\n<a href=\"\" title=\"\" class=\"favlistVideoLink favlistVideoTitle\"></a>\n<span class=\"favlistVideoTimestamp\"></span>\n</div>\n</div>\n<div class=\"favlistVideoMemo\">\n<div class=\"favlistVideoMemoText\"></div>\n</div>\n</div>";
 Template.html['favlist_rescue'] = "<div class=\"favlistViewRescue\">\n<div class=\"favlistRescueCaption\">\nレスキューモードで実行中 (\n<a href=\"#\" class=\"favlistRescueClose\">Favlist を閉じる</a>\n<a href=\"#\" class=\"favlistRescueOpen\">Favlist を開く</a>\n)\n</div>\n<div class=\"favlistRescueContainer\"></div>\n</div>";
-Template.html['favlist_settings'] = "<div class=\"favlistSettingsView\">\n<div class=\"favlistSettingOverlay\"></div>\n<div class=\"favlistSettingsDialog\">\n<div class=\"favlistSettingMylistSearch\">\n<label>\n<span>検索</span>\n<input class=\"favlistSettingMylistSearchEdit\" type=\"search\" value=\"\" placeholder=\"マイリスト名 または URL\" />\n</label>\n</div>\n<div class=\"favlistSettingMylistsOuter\">\n<div class=\"favlistSettingMylists\">\n</div>\n</div>\n<form class=\"favlistConfig\" action=\"javascript:void(0);\">\n<ul class=\"favlistConfigItems\">\n<li><label>更新チェック間隔 <input type=\"text\" class=\"favlistConfigText favlistConfigCheckInterval\" value=\"\" size=\"6\" /> 秒</label></li>\n<li><label>新着動画の表示数 <input type=\"text\" class=\"favlistConfigText favlistConfigMaxNewVideos\" value=\"\" size=\"6\" /> 件まで</label></li>\n<li><label><input type=\"checkbox\" class=\"favlistConfigCheckbox favlistConfigHideCheckedList\" value=\"1\" /> 新着がないマイリストを隠す</label></li>\n<li><label><input type=\"checkbox\" class=\"favlistConfigCheckbox favlistConfigOrderDescendant\" value=\"1\" /> 動画を新しい順に並べる</label></li>\n</ul>\n</form>\n<div class=\"favlistSettingsButtons\">\n<button class=\"favlistButtonSave favlistSaveSettingsButton\">設定を保存</button>\n<button class=\"favlistCancelSettingsButton\">キャンセル</button>\n</div>\n</div>\n</div>";
+Template.html['favlist_settings'] = "<div class=\"favlistSettingsView\">\n<div class=\"favlistSettingOverlay\"></div>\n<div class=\"favlistSettingsDialog\">\n<div class=\"favlistSettingsMainPage\">\n<div class=\"favlistSettingMylistSearch\">\n<label>\n<span>検索</span>\n<input class=\"favlistSettingMylistSearchEdit\" type=\"search\" value=\"\" placeholder=\"マイリスト名 または URL\" />\n</label>\n</div>\n<div class=\"favlistSettingMylistsOuter\">\n<div class=\"favlistSettingMylists\">\n</div>\n</div>\n<form class=\"favlistConfig\" action=\"javascript:void(0);\">\n<ul class=\"favlistConfigItems\">\n<li><label>更新チェック間隔 <input type=\"text\" class=\"favlistConfigText favlistConfigCheckInterval\" value=\"\" size=\"6\" /> 秒</label></li>\n<li><label>新着動画の表示数 <input type=\"text\" class=\"favlistConfigText favlistConfigMaxNewVideos\" value=\"\" size=\"6\" /> 件まで</label></li>\n<li><label><input type=\"checkbox\" class=\"favlistConfigCheckbox favlistConfigHideCheckedList\" value=\"1\" /> 新着がないマイリストを隠す</label></li>\n<li><label><input type=\"checkbox\" class=\"favlistConfigCheckbox favlistConfigOrderDescendant\" value=\"1\" /> 動画を新しい順に並べる</label></li>\n</ul>\n</form>\n<div class=\"favlistSettingsFooter\">\n<div class=\"favlistSettingsLinks\">\n<a href=\"#\" class=\"favlistSettingsImportLink\" title=\"エクスポートされたテキスト形式の設定をインポート\">インポート</a>\n<a href=\"#\" class=\"favlistSettingsExportLink\" title=\"テキスト形式で設定をエクスポート\">エクスポート</a>\n<a href=\"#\" class=\"favlistSettingsOPMLExportLink\" title=\"RSSリーダーなどで利用できる OPML 形式でマイリスト一覧をダウンロード\">OPML</a>\n</div>\n<div class=\"favlistSettingsButtons\">\n<button class=\"favlistButtonSave favlistSaveSettingsButton\">設定を保存</button>\n<button class=\"favlistCancelSettingsButton\">キャンセル</button>\n</div>\n</div>\n</div>\n<div class=\"favlistSettingsEditorPage\">\n<div class=\"favlistSettingsEditorHeader\">\n<span class=\"favlistImportMode\">下のテキストボックスに、エクスポートされた設定を貼り付けると設定を反映できます。</span>\n<span class=\"favlistExportMode\">下のテキストをコピーして、他のブラウザでインポートすると設定をコピーできます。</span>\n</div>\n<div class=\"favlistSettingsEditorForm\">\n<textarea class=\"favlistImportMode favlistSettingsImportEditor\"></textarea>\n<textarea class=\"favlistExportMode favlistSettingsExportEditor\" readonly></textarea>\n</div>\n<div class=\"favlistSettingsEditorFooter\">\n<div class=\"favlistSettingsButtons favlistImportMode\">\n<button class=\"favlistButtonSave favlistImportApplyButton\">反映</button>\n<button class=\"favlistImportCancelButton\">キャンセル</button>\n</div>\n<div class=\"favlistSettingsLinks favlistExportMode\">\n<a href=\"#\" class=\"favlistSettingsDownloadExportLink\" download=\"favlist.dat\" title=\"エクスポート内容をダウンロード\">ダウンロード</a>\n</div>\n<div class=\"favlistSettingsButtons favlistExportMode\">\n<button class=\"favlistExportCloseButton\">閉じる</button>\n</div>\n</div>\n</div>\n</div>\n</div>";
 Template.html['favlist_settings_mylist'] = "<div class=\"favlistSettingMylist\">\n<div class=\"favlistSettingMylistLink\">\n<a class=\"favlistMylistLink\" href=\"\" title=\"別ウィンドウで開く\" target=\"_blank\">開く</a>\n</div>\n<div class=\"favlistSettingMylistTitle\">\n<input class=\"favlistMylistTitleEdit\" type=\"text\" value=\"\" />\n</div>\n<div class=\"favlistSettingMylistButtons\">\n<div class=\"favlistSettingMylistMoveButtons\"><!--\n--><button class=\"favlistMylistMoveUpButton\" title=\"1つ上に移動\">▲</button><!--\n--><button class=\"favlistMylistMoveDownButton\" title=\"1つ下に移動\">▼</button><!--\n--><button class=\"favlistMylistMoveTopButton\" title=\"一番上に移動\">↑</button><!--\n--></div>\n<button class=\"favlistMylistRemoveButton favlistButtonDelete\" title=\"favlist への登録を解除\">削除</button>\n</div>\n</div>";
 Template.html['subscribe'] = "<div class=\"favlistSubscribeView\">\n<button class=\"favlistSubscribeButton\"><span>★</span> favlist に登録</button>\n<button class=\"favlistUnsubscribeButton\"><span>×</span> favlist の登録を解除</button>\n</div>";
 Template.html['subscribe_rescue'] = "<div id=\"favlistSubscribeViewRescue\">\n</div>";
@@ -37,7 +37,7 @@ Template.css['favlist_mylists'] = ".favlistMylistsView {\npadding: 10px;\npositi
 Template.css['favlist_mylists_mylist'] = ".favlistMylistInner {\nmargin-bottom: 8px;\npadding-bottom: 8px;\nborder-bottom: 1px solid #eeeeee;\n}\n.checkedMylistHidden .favlistMylistInner {\ndisplay: none;\n}\n.checkedMylistHidden .hasNewVideo .favlistMylistInner,\n.checkedMylistHidden .hasStatus .favlistMylistInner {\ndisplay: block;\n}\n.favlistMylistHeader {\ndisplay: table;\nwidth: 100%;\n}\n.favlistMylistTitleLabel {\ndisplay: table-cell;\nwidth: 100%;\nmax-width: 1px;\noverflow: hidden;\ntext-overflow: ellipsis;\nwhite-space: nowrap;\nvertical-align: middle;\n}\n.favlistMylist.hasNewVideo .favlistMylistTitleLabel {\nfont-weight: bold;\n}\n.favlistMylistNewCountLabel {\ndisplay: none;\ncolor: #C00;\nwhite-space: nowrap;\n}\n.favlistMylist.hasNewVideo .favlistMylistNewCountLabel {\ndisplay: inline;\n}\n.favlistMylistButtons {\ndisplay: table-cell;\npadding-left: 8px;\n}\n.favlistMylistButtons button {\nfont-size: 10px;\n}\n.favlistMylist.hasStatus .favlistMylistButtons {\ndisplay: none;\n}\n.favlistMylistStatus {\ndisplay: none;\n}\n.favlistMylist.hasStatus .favlistMylistStatus {\ndisplay: table-cell;\npadding-left: 8px;\n}\n.favlistMylistStatus span {\ndisplay: inline-block;\npadding: 2px 10px;\nborder-radius: 10px;\nbackground: black;\nfont-size: 10px;\ncolor: white;\nwhite-space: nowrap;\n}\n.favlistMylistStatus span.waiting {\ncolor: #999;\nbackground: #efefef;\n}\n.favlistMylistStatus span.updating {\nbackground: #36689d;\n}\n.favlistMylistStatus span.private,\n.favlistMylistStatus span.deleted,\n.favlistMylistStatus span.error {\nbackground: #900;\n}";
 Template.css['favlist_mylists_video'] = ".favlistVideo {\nmargin: 8px 4px 0;\n}\n.favlistVideoHeader {\ndisplay: table;\nwidth: 100%;\n}\n.favlistVideoThumbnail {\ndisplay: table-cell;\nvertical-align: middle;\npadding-right: 8px;\n}\n.favlistVideoThumbnail a img {\nborder: none;\nwidth: 46px;\nheight: 34px;\n}\n.favlistVideoInfo {\ndisplay: table-cell;\nvertical-align: middle;\nwidth: 100%;\nfont-size: 11px;\n}\n.favlistVideoTitle {\nmargin-right: 4px;\n}\n.favlistVideoTimestamp {\nfont-size: 9px;\ncolor: #999;\nwhite-space: nowrap;\n}\n.favlistVideoMemo {\nmargin-top: 4px;\npadding: 4px 8px;\nborder-radius: 2px;\nbackground: #efefef;\nbox-shadow: 1px 1px 1px #ccc;\ncursor: pointer;\n}\n.favlistVideoMemo:hover {\nbackground: #f3f3f3;\n}\n.favlistVideoMemoText {\ndisplay: block;\nmax-height: 28px;\noverflow: hidden;\nfont-size: 10px;\n}\n.favlistVideoMemo.expanded .favlistVideoMemoText {\nwhite-space: pre;\nmax-height: none;\n}";
 Template.css['favlist_rescue'] = ".favlistViewRescue {\nposition: fixed;\nwidth: 360px;\nmax-height: 300px;\nright: 10px;\nbottom: 10px;\noverflow: auto;\nbackground-color: white;\nborder: 1px solid #cccccc;\n}\n.favlistViewRescue.closed .favlistRescueContainer {\ndisplay: none;\n}\n.favlistRescueCaption {\npadding: 2px 4px;\nfont-size: 12px;\ncolor: #cc0000;\ntext-align: center;\n}\n.favlistRescueOpen,\n.favlistViewRescue.closed .favlistRescueClose {\ndisplay: none;\n}\n.favlistViewRescue.closed .favlistRescueOpen {\ndisplay: inline;\n}";
-Template.css['favlist_settings'] = ".favlistSettingOverlay {\nposition: fixed;\ntop: 0;\nleft: 0;\nwidth: 100%;\nheight: 100%;\nz-index: 999999;\nbackground: #333333;\nopacity: 0.6;\n}\n.favlistSettingsDialog {\nposition: fixed;\ntop: 50%;\nleft: 50%;\nwidth: 600px;\nheight: auto;\nz-index: 1000000;\nbackground: #ffffff;\nbox-shadow: 3px 3px 2px rgba(0, 0, 0, 0.3);\ntransform: translateX(-50%) translateY(-50%);\n-webkit-transform: translateX(-50%) translateY(-50%);\n}\n.favlistSettingMylistSearch {\nmargin: 20px 20px 10px 20px;\n}\n.favlistSettingMylistsOuter {\nmargin: 10px 20px 20px 20px;\n}\n.favlistConfig,\n.favlistSettingsButtons {\nmargin: 20px;\n}\n.favlistSettingMylistSearch {\ntext-align: right;\ncolor: #333;\n}\n.favlistSettingMylistSearch span {\nvertical-align: middle;\n}\n.favlistSettingMylistSearchEdit {\nvertical-align: middle;\nwidth: 50%;\nborder: 1px solid #999;\nborder-radius: 5px;\npadding: 2px 5px;\nmargin-left: 5px;\ncolor: #000;\n}\n.favlistSettingMylistsOuter {\nheight: 400px;\nborder: 1px solid #ccc;\noverflow: auto;\n}\n.favlistSettingMylists {\ndisplay: table;\npadding-bottom: 10px;\n}\n.favlistConfigItems {\nlist-style-type: none;\n}\n.favlistConfigItems:after {\ncontent: \"\";\nclear: both;\ndisplay: block;\n}\n.favlistConfigItems li {\nmargin-bottom: 10px;\n}\n.favlistConfigItems li:nth-of-type(1) {\nfloat: left;\nwidth: 250px;\n}\n.favlistConfigItems li:nth-of-type(2) {\nfloat: left;\nwidth: 250px;\nclear: left;\n}\n.favlistConfigItems li label {\ncolor: #333;\n}\n.favlistConfigItems .favlistConfigText {\nmargin-left: 10px;\n}\n.favlistSettingsButtons {\ntext-align: right;\n}\n.favlistSettingsButtons button {\nfont-size: 14px;\nmargin-left: 10px;\n}";
+Template.css['favlist_settings'] = ".favlistSettingOverlay {\nposition: fixed;\ntop: 0;\nleft: 0;\nwidth: 100%;\nheight: 100%;\nz-index: 999999;\nbackground: #333333;\nopacity: 0.6;\n}\n.favlistSettingsDialog {\nposition: fixed;\ntop: 50%;\nleft: 50%;\nwidth: 600px;\nheight: auto;\nz-index: 1000000;\nbackground: #ffffff;\nbox-shadow: 3px 3px 2px rgba(0, 0, 0, 0.3);\ntransform: translateX(-50%) translateY(-50%);\n-webkit-transform: translateX(-50%) translateY(-50%);\n}\n.favlistSettingMylistSearch {\nmargin: 20px 20px 10px 20px;\n}\n.favlistSettingMylistsOuter {\nmargin: 10px 20px 20px 20px;\n}\n.favlistConfig,\n.favlistSettingsFooter {\nmargin: 20px;\n}\n.favlistSettingMylistSearch {\ntext-align: right;\ncolor: #333;\n}\n.favlistSettingMylistSearch span {\nvertical-align: middle;\n}\n.favlistSettingMylistSearchEdit {\nvertical-align: middle;\nwidth: 50%;\nborder: 1px solid #999;\nborder-radius: 5px;\npadding: 2px 5px;\nmargin-left: 5px;\ncolor: #000;\n}\n.favlistSettingMylistsOuter {\nheight: 400px;\nborder: 1px solid #ccc;\noverflow: auto;\n}\n.favlistSettingMylists {\ndisplay: table;\npadding-bottom: 10px;\n}\n.favlistConfigItems {\nlist-style-type: none;\n}\n.favlistConfigItems:after {\ncontent: \"\";\nclear: both;\ndisplay: block;\n}\n.favlistConfigItems li {\nmargin-bottom: 10px;\n}\n.favlistConfigItems li:nth-of-type(1) {\nfloat: left;\nwidth: 250px;\n}\n.favlistConfigItems li:nth-of-type(2) {\nfloat: left;\nwidth: 250px;\nclear: left;\n}\n.favlistConfigItems li label {\ncolor: #333;\n}\n.favlistConfigItems .favlistConfigText {\nmargin-left: 10px;\n}\n.favlistSettingsLinks {\nfloat: left;\npadding-top: 12px;\n}\n.favlistSettingsLinks a {\nfont-size: 12px;\nmargin-right: 10px;\n}\n.favlistSettingsButtons {\ntext-align: right;\n}\n.favlistSettingsButtons button {\nmargin-left: 10px;\nfont-size: 14px;\n}\n.favlistSettingsEditorPage {\ndisplay: none;\n}\n.favlistSettingsEditorPage.importing .favlistExportMode,\n.favlistSettingsEditorPage.exporting .favlistImportMode {\ndisplay: none;\n}\n.favlistSettingsEditorHeader,\n.favlistSettingsEditorForm,\n.favlistSettingsEditorFooter {\nmargin: 20px;\n}\n.favlistSettingsEditorForm textarea {\nheight: 400px;\nwidth: 100%;\n}";
 Template.css['favlist_settings_mylist'] = ".favlistSettingMylist {\ndisplay: table-row;\nposition: relative;\n}\n.favlistSettingMylistLink,\n.favlistSettingMylistTitle,\n.favlistSettingMylistButtons {\ndisplay: table-cell;\npadding: 10px 0 0 10px;\nvertical-align: middle;\nwhite-space: nowrap;\n}\n.favlistSettingMylistLink a {\ndisplay: block;\n}\n.favlistSettingMylistTitle {\nwidth: 100%;\n}\n.favlistMylistTitleEdit {\nwidth: 100%;\n}\n.favlistSettingMylistButtons {\npadding-right: 10px;\n}\n.favlistSettingMylistButtons button {\nfont-size: 10px;\nvertical-align: middle;\n}\n.favlistSettingMylistMoveButtons {\ndisplay: inline;\n}\n.favlistSettingMylistMoveButtons button {\npadding: 2px 3px;\nbackground: none;\nfont-family: sans-serif;\ncolor: #666;\n}\n.favlistSettingMylistMoveButtons button.disabled,\n.favlistSettingMylistMoveButtons button[disabled] {\nvisibility: hidden;\n}\n.favlistSettingMylistMoveButtons button:hover {\nbackground: #37992b;\ncolor: #fff;\n}\n.favlistSettingMylistMoveButtons button:active {\nbackground: #0e4d17;\ncolor: #fff;\n}\n.favlistMylistRemoveButton {\npadding: 2px 5px;\nmargin-left: 10px;\n}";
 Template.css['subscribe'] = ".favlistSubscribeView {\ndisplay: inline-block;\n}\n.favlistSubscribeView,\n.favlistSubscribeView.subscribed .favlistUnsubscribeButton {\ndisplay: inline-block;\n}\n.favlistSubscribeView.subscribed .favlistSubscribeButton,\n.favlistUnsubscribeButton {\ndisplay: none;\n}\n.favlistSubscribeView button {\npadding: 4px 10px;\ncolor: white;\nborder: none;\nborder-radius: 4px;\nwhite-space: nowrap;\nfont-size: 12px;\nfont-family: sans-serif;\ntext-decoration: none;\ntext-align: center;\ntext-shadow: 0 1px 1px #161e24;\nbackground: #435d69;\n}\n.favlistSubscribeView button:hover {\nbackground: #4f6d7b;\n}\n.favlistSubscribeView button:active {\nbackground: #3d5560;\n}\n.favlistSubscribeButton span {\ncolor: #fc3;\n}\n.favlistUnsubscribeButton span {\ncolor: #ff6462;\n}\n/* for user profile page */\n.profile .favlistSubscribeView button {\npadding: 1px 10px;\nmargin-bottom: 8px;\n}";
 Template.css['subscribe_rescue'] = "#favlistSubscribeViewRescue {\nposition: fixed;\nleft: 10px;\nbottom: 10px;\npadding: 4px;\nbackground: #ccc;\nborder-radius: 4px;\n}";
@@ -250,32 +250,54 @@ var Config = (function () {
         if (typeof maxNewVideos === "undefined") { maxNewVideos = 10; }
         if (typeof hideCheckedList === "undefined") { hideCheckedList = false; }
         if (typeof orderDescendant === "undefined") { orderDescendant = false; }
-        this.checkInterval = checkInterval;
-        this.maxNewVideos = maxNewVideos;
-        this.hideCheckedList = hideCheckedList;
-        this.orderDescendant = orderDescendant;
+        this.setCheckInterval(checkInterval);
+        this.setMaxNewVideos(maxNewVideos);
+        this.setCheckedListHidden(hideCheckedList);
+        this.setOrderDescendant(orderDescendant);
     }
     Config.prototype.update = function (config) {
-        this.checkInterval = config.getCheckInterval();
-        this.maxNewVideos = config.getMaxNewVideos();
-        this.hideCheckedList = config.isCheckedListHidden();
-        this.orderDescendant = config.isOrderDescendant();
+        this.setCheckInterval(config.getCheckInterval());
+        this.setMaxNewVideos(config.getMaxNewVideos());
+        this.setCheckedListHidden(config.isCheckedListHidden());
+        this.setOrderDescendant(config.isOrderDescendant());
     };
 
     Config.prototype.getCheckInterval = function () {
         return this.checkInterval;
     };
 
+    Config.prototype.setCheckInterval = function (value) {
+        if (isNaN(value) || value < 0) {
+            throw new Error('更新チェック間隔が正の整数ではありません');
+        }
+        this.checkInterval = value;
+    };
+
     Config.prototype.getMaxNewVideos = function () {
         return this.maxNewVideos;
+    };
+
+    Config.prototype.setMaxNewVideos = function (value) {
+        if (isNaN(value) || value < 0) {
+            throw new Error('新着動画の表示数が正の整数ではありません');
+        }
+        this.maxNewVideos = value;
     };
 
     Config.prototype.isCheckedListHidden = function () {
         return this.hideCheckedList;
     };
 
+    Config.prototype.setCheckedListHidden = function (value) {
+        this.hideCheckedList = value;
+    };
+
     Config.prototype.isOrderDescendant = function () {
         return this.orderDescendant;
+    };
+
+    Config.prototype.setOrderDescendant = function (value) {
+        this.orderDescendant = value;
     };
     return Config;
 })();
@@ -330,8 +352,8 @@ var ConfigService = (function () {
         return this.config;
     };
 
-    ConfigService.prototype.setSettings = function (configSettings) {
-        this.config.update(configSettings);
+    ConfigService.prototype.setConfig = function (config) {
+        this.config.update(config);
         this.configStorage.store(this.config);
         this.onUpdate.trigger(null);
     };
@@ -508,9 +530,14 @@ var Nicovideo;
     Nicovideo.getMylistURL = getMylistURL;
 
     function getMylistFeedURL(mylistId) {
-        return getMylistURL(mylistId) + '?rss=atom&nodescription=1&noinfo=1';
+        return getMylistURL(mylistId) + '?rss=2.0';
     }
     Nicovideo.getMylistFeedURL = getMylistFeedURL;
+
+    function getMylistSimpleFeedURL(mylistId) {
+        return getMylistURL(mylistId) + '?rss=atom&nodescription=1&noinfo=1';
+    }
+    Nicovideo.getMylistSimpleFeedURL = getMylistSimpleFeedURL;
 })(Nicovideo || (Nicovideo = {}));
 var Mylist = (function () {
     function Mylist(mylistId, originalTitle, overrideTitle, newVideos, watchedVideoIds) {
@@ -554,6 +581,10 @@ var Mylist = (function () {
 
     Mylist.prototype.getURL = function () {
         return Nicovideo.getMylistURL(this.mylistId);
+    };
+
+    Mylist.prototype.getFeedURL = function () {
+        return Nicovideo.getMylistFeedURL(this.mylistId);
     };
 
     Mylist.prototype.setOriginalTitle = function (title) {
@@ -658,46 +689,26 @@ var MylistCollection = (function () {
     };
     return MylistCollection;
 })();
-var MylistCollectionStorage = (function () {
-    function MylistCollectionStorage(storage) {
-        this.storage = storage;
-        this.onUpdate = new util.Event();
-        this.updateTime = new util.UpdateTimeStorage(storage, 'favlistLastUpdateTime');
+var MylistCollectionSerializer = (function () {
+    function MylistCollectionSerializer() {
     }
-    MylistCollectionStorage.prototype.checkUpdate = function () {
-        if (this.updateTime.isChanged()) {
-            this.updateTime.fetch();
-            this.onUpdate.trigger(null);
-        }
-    };
-
-    MylistCollectionStorage.prototype.get = function () {
-        var mylists = this.unserializeMylists(this.storage.get('favlist'));
-        var mylistCollection = new MylistCollection(mylists);
-        this.updateTime.fetch();
-        return mylistCollection;
-    };
-
-    MylistCollectionStorage.prototype.store = function (mylistCollection) {
-        this.storage.set('favlist', this.serializeMylists(mylistCollection.getMylists()));
-        this.updateTime.update();
-    };
-
-    MylistCollectionStorage.prototype.unserializeMylists = function (serialized) {
+    MylistCollectionSerializer.prototype.unserialize = function (serialized) {
         var _this = this;
-        return serialized ? serialized.split('#').map(function (s) {
+        var mylists = serialized ? serialized.split('#').map(function (s) {
             return _this.unserializeMylist(s);
         }) : [];
+        return new MylistCollection(mylists);
     };
 
-    MylistCollectionStorage.prototype.serializeMylists = function (mylists) {
+    MylistCollectionSerializer.prototype.serialize = function (mylistCollection) {
         var _this = this;
+        var mylists = mylistCollection.getMylists();
         return mylists.map(function (mylist) {
             return _this.serializeMylist(mylist);
         }).join('#');
     };
 
-    MylistCollectionStorage.prototype.unserializeMylist = function (serialized) {
+    MylistCollectionSerializer.prototype.unserializeMylist = function (serialized) {
         var _this = this;
         var data = serialized.split(';');
 
@@ -712,7 +723,7 @@ var MylistCollectionStorage = (function () {
         return new Mylist(mylistId, title, displayTitle, newVideos, checkedVideoIds);
     };
 
-    MylistCollectionStorage.prototype.serializeMylist = function (mylist) {
+    MylistCollectionSerializer.prototype.serializeMylist = function (mylist) {
         var _this = this;
         return [
             '0',
@@ -727,7 +738,7 @@ var MylistCollectionStorage = (function () {
         ].join(';');
     };
 
-    MylistCollectionStorage.prototype.unserializeVideo = function (serialized) {
+    MylistCollectionSerializer.prototype.unserializeVideo = function (serialized) {
         var data = serialized.split('&');
 
         var videoId = unescape(data[0] || '');
@@ -740,7 +751,7 @@ var MylistCollectionStorage = (function () {
         return new Video(videoId, title, url, thumbnail, memo, timestamp);
     };
 
-    MylistCollectionStorage.prototype.serializeVideo = function (video) {
+    MylistCollectionSerializer.prototype.serializeVideo = function (video) {
         return [
             escape(video.getVideoId() || ''),
             escape(video.getTitle() || ''),
@@ -749,6 +760,34 @@ var MylistCollectionStorage = (function () {
             escape(video.getMemo() || ''),
             escape(video.getTimestamp().toString())
         ].join('&');
+    };
+    return MylistCollectionSerializer;
+})();
+var MylistCollectionStorage = (function () {
+    function MylistCollectionStorage(storage) {
+        this.storage = storage;
+        this.onUpdate = new util.Event();
+        this.updateTime = new util.UpdateTimeStorage(storage, 'favlistLastUpdateTime');
+        this.serializer = new MylistCollectionSerializer();
+    }
+    MylistCollectionStorage.prototype.checkUpdate = function () {
+        if (this.updateTime.isChanged()) {
+            this.updateTime.fetch();
+            this.onUpdate.trigger(null);
+        }
+    };
+
+    MylistCollectionStorage.prototype.get = function () {
+        var serialized = this.storage.get('favlist');
+        var mylistCollection = this.serializer.unserialize(serialized);
+        this.updateTime.fetch();
+        return mylistCollection;
+    };
+
+    MylistCollectionStorage.prototype.store = function (mylistCollection) {
+        var serialized = this.serializer.serialize(mylistCollection);
+        this.storage.set('favlist', serialized);
+        this.updateTime.update();
     };
     return MylistCollectionStorage;
 })();
@@ -939,7 +978,7 @@ var MylistFeedFactory = (function () {
     MylistFeedFactory.prototype.getFeedFromServer = function (mylistId, callback) {
         var options = {
             method: 'GET',
-            url: Nicovideo.getMylistFeedURL(mylistId)
+            url: Nicovideo.getMylistSimpleFeedURL(mylistId)
         };
         return this.fetcher.fetch(options, function (error, response) {
             if (error) {
@@ -1058,17 +1097,8 @@ var MylistService = (function () {
         return this.mylists;
     };
 
-    MylistService.prototype.setSettings = function (mylistSetting) {
-        var _this = this;
-        var newMylists = [];
-        mylistSetting.forEach(function (mylistSetting) {
-            var mylist = _this.mylists.get(mylistSetting.mylistId);
-            if (mylist) {
-                mylist.setOverrideTitle(mylistSetting.title);
-                newMylists.push(mylist);
-            }
-        });
-        this.mylists.setMylists(newMylists);
+    MylistService.prototype.setMylists = function (mylists) {
+        this.mylists.setMylists(mylists);
         this.save();
         this.onUpdate.trigger(null);
     };
@@ -1138,6 +1168,228 @@ var MylistService = (function () {
         });
     };
     return MylistService;
+})();
+var ConfigSerializer = (function () {
+    function ConfigSerializer() {
+    }
+    ConfigSerializer.prototype.unserialize = function (serialized) {
+        var data = serialized.split(':');
+        return new Config(parseInt(data[0], 10), parseInt(data[1], 10), data[2] !== '0', data[3] !== '0');
+    };
+
+    ConfigSerializer.prototype.serialize = function (config) {
+        return [
+            config.getCheckInterval().toString(),
+            config.getMaxNewVideos().toString(),
+            config.isCheckedListHidden() ? '1' : '0',
+            config.isOrderDescendant() ? '1' : '0'
+        ].join(':');
+    };
+    return ConfigSerializer;
+})();
+var util;
+(function (util) {
+    var OPMLOutline = (function () {
+        function OPMLOutline(title, attrs) {
+            this.title = title;
+            this.attrs = attrs;
+        }
+        OPMLOutline.prototype.getOutlines = function () {
+            return this.outlines;
+        };
+
+        OPMLOutline.prototype.addOutline = function (outline) {
+            if (!this.outlines)
+                this.outlines = [];
+            this.outlines.push(outline);
+        };
+
+        OPMLOutline.prototype.toElement = function () {
+            var el = document.createElement('outline');
+            el.setAttribute('title', this.title);
+            el.setAttribute('text', this.title);
+            if (this.attrs) {
+                for (var k in this.attrs) {
+                    if (this.attrs.hasOwnProperty(k)) {
+                        el.setAttribute(k, this.attrs[k]);
+                    }
+                }
+            }
+            if (this.outlines) {
+                for (var i = 0, l = this.outlines.length; i < l; i++) {
+                    el.appendChild(this.outlines[i].toElement());
+                }
+            }
+            return el;
+        };
+        return OPMLOutline;
+    })();
+    util.OPMLOutline = OPMLOutline;
+
+    var OPMLFeed = (function (_super) {
+        __extends(OPMLFeed, _super);
+        function OPMLFeed(title, htmlUrl, xmlUrl) {
+            _super.call(this, title, {
+                type: 'rss',
+                htmlUrl: htmlUrl,
+                xmlUrl: xmlUrl
+            });
+            this.htmlUrl = htmlUrl;
+            this.xmlUrl = xmlUrl;
+        }
+        return OPMLFeed;
+    })(OPMLOutline);
+    util.OPMLFeed = OPMLFeed;
+
+    var OPMLDocument = (function () {
+        function OPMLDocument(title) {
+            this.title = title;
+        }
+        OPMLDocument.prototype.addOutline = function (outline) {
+            if (!this.outlines)
+                this.outlines = [];
+            this.outlines.push(outline);
+        };
+
+        OPMLDocument.prototype.toString = function () {
+            var opml = document.createElement('opml');
+            opml.setAttribute('version', '1.0');
+
+            var head = document.createElement('head');
+            opml.appendChild(head);
+
+            var title = document.createElement('title');
+            title.appendChild(document.createTextNode(this.title));
+            head.appendChild(title);
+
+            var dateCreated = document.createElement('dateCreated');
+            dateCreated.appendChild(document.createTextNode((new Date()).toUTCString()));
+            head.appendChild(dateCreated);
+
+            var body = document.createElement('body');
+            opml.appendChild(body);
+            if (this.outlines) {
+                this.outlines.forEach(function (outline) {
+                    body.appendChild(outline.toElement());
+                });
+            }
+
+            var tmp = document.createElement('div');
+            tmp.appendChild(opml);
+            var xml = tmp.innerHTML;
+
+            xml = xml.replace(/ xmlurl=/g, ' xmlUrl=').replace(/ htmlurl=/g, ' htmlUrl=');
+
+            return '<?xml version="1.0" encoding="utf-8"?>\n' + xml;
+        };
+        return OPMLDocument;
+    })();
+    util.OPMLDocument = OPMLDocument;
+})(util || (util = {}));
+var SettingsService = (function () {
+    function SettingsService(configSerivce, mylistService) {
+        this.configSerivce = configSerivce;
+        this.mylistService = mylistService;
+        this.onUpdate = new util.Event();
+        this.onUpdateMylist = new util.Event();
+        this.onImport = new util.Event();
+        this.setEventHandlersForConfigService();
+        this.setEventHandlersForMylistService();
+
+        this.config = this.configSerivce.getConfig();
+        this.mylists = this.mylistService.getMylistCollection();
+    }
+    SettingsService.prototype.setEventHandlersForConfigService = function () {
+        var _this = this;
+        this.configSerivce.onUpdate.addListener(function () {
+            _this.config = _this.configSerivce.getConfig();
+            _this.onUpdate.trigger(null);
+        });
+    };
+
+    SettingsService.prototype.setEventHandlersForMylistService = function () {
+        var _this = this;
+        this.mylistService.onUpdate.addListener(function () {
+            _this.mylists = _this.mylistService.getMylistCollection();
+            _this.onUpdate.trigger(null);
+        });
+        this.mylistService.onUpdateMylist.addListener(function (args) {
+            _this.mylists = _this.mylistService.getMylistCollection();
+            _this.onUpdateMylist.trigger(args);
+        });
+    };
+
+    SettingsService.prototype.getConfig = function () {
+        return this.config;
+    };
+
+    SettingsService.prototype.getMylistCollection = function () {
+        return this.mylists;
+    };
+
+    SettingsService.prototype.updateSettings = function (settings) {
+        this.setConfigSettings(settings.configSettings);
+        this.setMylistSettings(settings.mylistSettings);
+    };
+
+    SettingsService.prototype.setConfigSettings = function (settings) {
+        var config = new Config(settings.checkInterval, settings.maxNewVideos, settings.hideCheckedList, settings.orderDescendant);
+        this.configSerivce.setConfig(config);
+    };
+
+    SettingsService.prototype.setMylistSettings = function (settings) {
+        var _this = this;
+        var newMylists = [];
+        settings.forEach(function (mylistSetting) {
+            var mylist = _this.mylists.get(mylistSetting.mylistId);
+            if (mylist) {
+                mylist.setOverrideTitle(mylistSetting.title);
+                newMylists.push(mylist);
+            }
+        });
+        this.mylistService.setMylists(newMylists);
+    };
+
+    SettingsService.prototype.exportString = function () {
+        var configSerializer = new ConfigSerializer();
+        var configSerialized = configSerializer.serialize(this.config);
+
+        var mylistSerializer = new MylistCollectionSerializer();
+        var mylistSerialized = mylistSerializer.serialize(this.mylists);
+
+        return configSerialized + '|' + mylistSerialized;
+    };
+
+    SettingsService.prototype.importString = function (settings) {
+        var data = settings && settings.split('|');
+        if (!data || data.length !== 2) {
+            throw new Error('不正な形式です');
+        }
+
+        try  {
+            var configSerializer = new ConfigSerializer();
+            this.config = configSerializer.unserialize(data[0]);
+
+            var mylistSerializer = new MylistCollectionSerializer();
+            this.mylists = mylistSerializer.unserialize(data[1]);
+        } catch (e) {
+            throw new Error('インポートできません: ' + (e.message || e));
+        }
+
+        this.onUpdate.trigger(null);
+        this.onImport.trigger(null);
+    };
+
+    SettingsService.prototype.exportOPML = function () {
+        var opml = new util.OPMLDocument('NicoNicoFavlist Subscriptions');
+        var outline = new util.OPMLOutline('NicoNicoFavlist');
+        this.mylists.getMylists().forEach(function (mylist) {
+            outline.addOutline(new util.OPMLFeed(mylist.getOriginalTitle(), mylist.getURL(), mylist.getFeedURL()));
+        });
+        opml.addOutline(outline);
+        return opml.toString();
+    };
+    return SettingsService;
 })();
 var SubscriptionService = (function () {
     function SubscriptionService(mylist, mylistCollectionStorage, updateInterval) {
@@ -1344,6 +1596,10 @@ var userscript;
             return this.mylistService || (this.mylistService = new MylistService(this.getMylistCollectionStorage(), this.getUpdateInterval(), this.getMylistFeedFactory()));
         };
 
+        DI.prototype.getSettingsService = function () {
+            return this.settingsService || (this.settingsService = new SettingsService(this.getConfigService(), this.getMylistService()));
+        };
+
         DI.prototype.getSubscriptionService = function () {
             return this.subscriptionService || (this.subscriptionService = new userscript.UserScriptSubscriptionService(this.getMylistCollectionStorage(), this.getUpdateInterval()));
         };
@@ -1460,8 +1716,8 @@ var SubscribeView = (function (_super) {
     return SubscribeView;
 })(View);
 var SubscribeController = (function () {
-    function SubscribeController(subscriptionService) {
-        this.subscriptionService = subscriptionService;
+    function SubscribeController() {
+        this.subscriptionService = DI.getSubscriptionService();
     }
     SubscribeController.prototype.start = function () {
         this.getView().show();
@@ -1751,21 +2007,120 @@ var FavlistMylistsView = (function (_super) {
     };
     return FavlistMylistsView;
 })(View);
+var FavlistSettingsMylistSubview = (function (_super) {
+    __extends(FavlistSettingsMylistSubview, _super);
+    function FavlistSettingsMylistSubview() {
+        _super.call(this, Template.load(Templates.favlist_settings_mylist));
+        this.onMove = new util.Event();
+        this.onRemoved = new util.Event();
+        this.setEventHandlersForView();
+    }
+    FavlistSettingsMylistSubview.prototype.setEventHandlersForView = function () {
+        var _this = this;
+        this.$el.find('.favlistMylistMoveUpButton').click(function () {
+            var $prev = _this.$el.prev();
+            if ($prev.length > 0) {
+                _this.$el.insertBefore($prev);
+                _this.onMove.trigger(null);
+            }
+        });
+        this.$el.find('.favlistMylistMoveDownButton').click(function () {
+            var $next = _this.$el.next();
+            if ($next.length > 0) {
+                _this.$el.insertAfter($next);
+                _this.onMove.trigger(null);
+            }
+        });
+        this.$el.find('.favlistMylistMoveTopButton').click(function () {
+            _this.$el.parent().prepend(_this.$el);
+            _this.onMove.trigger(null);
+        });
+        this.$el.find('.favlistMylistRemoveButton').click(function () {
+            _this.$el.remove();
+            _this.onRemoved.trigger(null);
+        });
+    };
+
+    FavlistSettingsMylistSubview.prototype.render = function (mylist) {
+        this.$el.data('mylistId', mylist.getMylistId());
+        this.$el.data('searchString', this.makeSearchString(mylist));
+        this.$el.find('.favlistMylistLink').attr('href', mylist.getURL());
+        this.$el.find('.favlistMylistTitleEdit').val(mylist.getTitle()).attr('placeholder', mylist.getOriginalTitle());
+    };
+
+    FavlistSettingsMylistSubview.prototype.makeSearchString = function (mylist) {
+        return [
+            mylist.getOriginalTitle(),
+            mylist.getOverrideTitle(),
+            mylist.getURL()
+        ].join("\n").replace(/[ \t\u3000]+/g, "").toLowerCase();
+    };
+
+    FavlistSettingsMylistSubview.prototype.getIndex = function () {
+        return this.$el.prevAll().length;
+    };
+
+    FavlistSettingsMylistSubview.prototype.hasMylistId = function (mylistId) {
+        var id = this.$el.data('mylistId');
+        return (id && id.equalTo(mylistId));
+    };
+
+    FavlistSettingsMylistSubview.prototype.toggleByFilter = function (filter) {
+        if (filter === '') {
+            this.$el.removeClass('filtering');
+            this.$el.show();
+            return;
+        }
+
+        this.$el.addClass('filtering');
+        var searchString = this.$el.data('searchString') || '';
+        if (searchString.indexOf(filter) >= 0) {
+            this.$el.show();
+        } else {
+            this.$el.hide();
+        }
+    };
+
+    FavlistSettingsMylistSubview.prototype.updateButtons = function () {
+        var filtering = this.$el.hasClass('filtering');
+        var isFirst = this.$el.is(':first-child');
+        var isLast = this.$el.is(':last-child');
+
+        this.$el.find('.favlistMylistMoveUpButton').attr('disabled', isFirst || filtering);
+        this.$el.find('.favlistMylistMoveDownButton').attr('disabled', isLast || filtering);
+        this.$el.find('.favlistMylistMoveTopButton').attr('disabled', isFirst || filtering);
+    };
+
+    FavlistSettingsMylistSubview.prototype.getMylistSetting = function () {
+        var mylistId = this.$el.data('mylistId');
+        if (!mylistId) {
+            throw new Error('保存中にエラーが発生しました');
+        }
+
+        var title = this.$el.find('.favlistMylistTitleEdit').val();
+        return { mylistId: mylistId, title: title };
+    };
+    return FavlistSettingsMylistSubview;
+})(Subview);
 var FavlistSettingsView = (function (_super) {
     __extends(FavlistSettingsView, _super);
-    function FavlistSettingsView(configService, mylistService) {
+    function FavlistSettingsView(settingsService) {
         _super.call(this, Template.load(Templates.favlist_settings));
-        this.configService = configService;
-        this.mylistService = mylistService;
+        this.settingsService = settingsService;
         this.onSave = new util.Event();
         this.onCancel = new util.Event();
+        this.onImportRequest = new util.Event();
+        this.onImportApply = new util.Event();
+        this.onImportCancel = new util.Event();
+        this.onExportRequest = new util.Event();
+        this.onExportClose = new util.Event();
+        this.onOPMLExportRequest = new util.Event();
         this.$mylists = this.$el.find('.favlistSettingMylists');
         this.setEventHandlers();
     }
     FavlistSettingsView.prototype.setEventHandlers = function () {
         this.setEventHandlersForView();
-        this.setEventHandlersForConfigService();
-        this.setEventHandlersForMylistService();
+        this.setEventHandlersForSettingsService();
     };
 
     FavlistSettingsView.prototype.setEventHandlersForView = function () {
@@ -1779,6 +2134,8 @@ var FavlistSettingsView = (function (_super) {
                 };
                 $(window.document).bind('keyup', escapeHandler);
             }
+            _this.$el.find('.favlistSettingsMainPage').show();
+            _this.$el.find('.favlistSettingsEditorPage').hide();
         });
         this.onHide.addListener(function () {
             if (escapeHandler) {
@@ -1786,100 +2143,128 @@ var FavlistSettingsView = (function (_super) {
                 escapeHandler = null;
             }
         });
+
         this.$el.find('.favlistSettingMylistSearchEdit').keyup(function () {
             _this.filterMylists(_this.$el.find('.favlistSettingMylistSearchEdit').val());
-            _this.updateMylistButtons();
         });
+
         this.$el.find('.favlistSaveSettingsButton').click(function () {
-            try  {
-                var mylistSettings = _this.getMylistSettings();
-                var configSettings = _this.getConfigSettings();
-            } catch (e) {
-                alert(e.message || e);
-                return false;
-            }
-            _this.onSave.trigger({ mylistSettings: mylistSettings, configSettings: configSettings });
+            _this.onSave.trigger({
+                mylistSettings: _this.getMylistSettings(),
+                configSettings: _this.getConfigSettings()
+            });
             return false;
         });
         this.$el.find('.favlistCancelSettingsButton').click(function () {
             _this.onCancel.trigger(null);
             return false;
         });
+
+        this.$el.find('.favlistSettingsImportLink').click(function () {
+            _this.onImportRequest.trigger(null);
+            return false;
+        });
+        this.$el.find('.favlistSettingsExportLink').click(function () {
+            _this.onExportRequest.trigger(null);
+            return false;
+        });
+        this.$el.find('.favlistSettingsOPMLExportLink').click(function () {
+            _this.onOPMLExportRequest.trigger(null);
+            return false;
+        });
+
+        this.$el.find('.favlistSettingsEditorForm textarea').click(function () {
+            this.select();
+        });
+        this.$el.find('.favlistImportApplyButton').click(function () {
+            _this.onImportApply.trigger({ importSetting: _this.$el.find('.favlistSettingsImportEditor').val() });
+            return false;
+        });
+        this.$el.find('.favlistImportCancelButton').click(function () {
+            _this.onImportCancel.trigger(null);
+            return false;
+        });
+        this.$el.find('.favlistExportCloseButton').click(function () {
+            _this.onExportClose.trigger(null);
+            return false;
+        });
     };
 
-    FavlistSettingsView.prototype.setEventHandlersForConfigService = function () {
+    FavlistSettingsView.prototype.setEventHandlersForSettingsService = function () {
         var _this = this;
-        this.configService.onUpdate.addListener(function () {
+        this.settingsService.onUpdate.addListener(function () {
             if (_this.isHidden())
                 return;
-            _this.updateConfigView();
+            _this.update();
+        });
+        this.settingsService.onUpdateMylist.addListener(function (args) {
+            if (_this.isHidden())
+                return;
+            var mylistId = args.mylist.getMylistId();
+            _this.mylistViews.forEach(function (view) {
+                if (view.hasMylistId(mylistId)) {
+                    view.render(args.mylist);
+                }
+            });
+        });
+        this.settingsService.onImport.addListener(function () {
+            alert("設定をインポートして設定画面に反映しました。\n設定内容をご確認の上、問題なければ「設定を保存」してください。");
         });
     };
 
-    FavlistSettingsView.prototype.setEventHandlersForMylistService = function () {
-        var _this = this;
-        this.mylistService.onUpdate.addListener(function () {
-            if (_this.isHidden())
-                return;
-            _this.updateMylistViews();
-        });
-        this.mylistService.onUpdateMylist.addListener(function (args) {
-            if (_this.isHidden())
-                return;
-            _this.updateMylistView(_this.$mylists.children('[data-mylistId="' + args.mylist.getMylistId().toString() + '"]'), args.mylist);
-        });
+    FavlistSettingsView.prototype.showImportPage = function () {
+        this.$el.find('.favlistSettingsImportEditor').val('');
+        this.$el.find('.favlistSettingsMainPage').slideUp();
+        this.$el.find('.favlistSettingsEditorPage').removeClass('exporting').addClass('importing').slideDown();
+    };
+
+    FavlistSettingsView.prototype.showExportPage = function (settings) {
+        this.$el.find('.favlistSettingsExportEditor').val(settings);
+
+        var dataURI = 'data:application/octet-stream,' + encodeURIComponent(settings);
+        this.$el.find('.favlistSettingsDownloadExportLink').attr('href', dataURI);
+
+        this.$el.find('.favlistSettingsMainPage').slideUp();
+        this.$el.find('.favlistSettingsEditorPage').removeClass('importing').addClass('exporting').slideDown();
+    };
+
+    FavlistSettingsView.prototype.exportOPML = function (opml) {
+        var dataURI = 'data:text/xml;charset=utf-8,' + encodeURIComponent(opml);
+        window.open(dataURI, '_blank');
+    };
+
+    FavlistSettingsView.prototype.returnToMainPage = function () {
+        this.$el.find('.favlistSettingsEditorPage').slideUp();
+        this.$el.find('.favlistSettingsMainPage').slideDown();
+    };
+
+    FavlistSettingsView.prototype.showError = function (error) {
+        alert(error.message || error);
     };
 
     FavlistSettingsView.prototype.filterMylists = function (filter) {
         filter = filter.replace(/[ \t\u3000]+/g, "").toLowerCase();
-        this.$mylists.children().each(function (i, el) {
-            var $mylist = $(el);
-            var searchString = $mylist.data('searchString') || '';
-            if (filter === '' || searchString.indexOf(filter) >= 0) {
-                $mylist.show();
-            } else {
-                $mylist.hide();
-            }
+        this.mylistViews.forEach(function (view) {
+            return view.toggleByFilter(filter);
         });
-    };
-
-    FavlistSettingsView.prototype.makeSearchString = function (mylist) {
-        return [
-            mylist.getOriginalTitle(),
-            mylist.getOverrideTitle(),
-            mylist.getURL()
-        ].join("\n").replace(/[ \t\u3000]+/g, "").toLowerCase();
+        this.updateMylistButtons();
     };
 
     FavlistSettingsView.prototype.getMylistSettings = function () {
-        var savedMylists = [];
-        this.$mylists.children().each(function (i, el) {
-            var $mylist = $(el);
-            var mylistId = $mylist.data('mylistId');
-            if (!mylistId) {
-                throw new Error('保存中にエラーが発生しました');
-            }
-            var title = $mylist.find('.favlistMylistTitleEdit').val();
-            savedMylists.push({ mylistId: mylistId, title: title });
+        var settings = new Array(this.mylistViews.length);
+        this.mylistViews.forEach(function (view) {
+            settings[view.getIndex()] = view.getMylistSetting();
         });
-        return savedMylists;
+        return settings;
     };
 
     FavlistSettingsView.prototype.getConfigSettings = function () {
-        var checkInterval = parseInt(this.$el.find('.favlistConfigCheckInterval').val(), 10);
-        if (isNaN(checkInterval) || checkInterval < 0) {
-            throw new Error('更新チェック間隔は正の整数で指定してください');
-        }
-
-        var maxNewVideos = parseInt(this.$el.find('.favlistConfigMaxNewVideos').val(), 10);
-        if (isNaN(maxNewVideos) || checkInterval < 0) {
-            throw new Error('新着動画の表示数は正の整数で指定してください');
-        }
-
-        var hideCheckedList = this.$el.find('.favlistConfigHideCheckedList').is(':checked');
-        var orderDescendant = this.$el.find('.favlistConfigOrderDescendant').is(':checked');
-
-        return new Config(checkInterval, maxNewVideos, hideCheckedList, orderDescendant);
+        return {
+            checkInterval: parseInt(this.$el.find('.favlistConfigCheckInterval').val(), 10),
+            maxNewVideos: parseInt(this.$el.find('.favlistConfigMaxNewVideos').val(), 10),
+            hideCheckedList: this.$el.find('.favlistConfigHideCheckedList').is(':checked'),
+            orderDescendant: this.$el.find('.favlistConfigOrderDescendant').is(':checked')
+        };
     };
 
     FavlistSettingsView.prototype.update = function () {
@@ -1889,69 +2274,44 @@ var FavlistSettingsView = (function (_super) {
 
     FavlistSettingsView.prototype.updateMylistViews = function () {
         var _this = this;
-        var mylists = this.mylistService.getMylistCollection().getMylists();
+        var mylists = this.settingsService.getMylistCollection().getMylists();
 
-        var $template = $(Template.load(Templates.favlist_settings_mylist));
+        this.mylistViews = [];
         this.$mylists.empty();
         mylists.forEach(function (mylist) {
-            var $mylist = $template.clone();
-            $mylist.data('mylistId', mylist.getMylistId());
-            $mylist.attr('data-mylistId', mylist.getMylistId().toString());
-            _this.updateMylistView($mylist, mylist);
-            _this.setEventHandlersForMylistView($mylist);
-            _this.$mylists.append($mylist);
+            var mylistView = new FavlistSettingsMylistSubview();
+            _this.setEventHandlersForMylistView(mylist, mylistView);
+            mylistView.render(mylist);
+            mylistView.appendTo(_this.$mylists);
+            _this.mylistViews.push(mylistView);
         });
 
         this.$el.find('.favlistSettingMylistSearchEdit').val('');
         this.updateMylistButtons();
     };
 
-    FavlistSettingsView.prototype.updateMylistView = function ($mylist, mylist) {
-        $mylist.data('searchString', this.makeSearchString(mylist));
-        $mylist.find('.favlistMylistLink').attr('href', mylist.getURL());
-        $mylist.find('.favlistMylistTitleEdit').val(mylist.getTitle()).attr('placeholder', mylist.getOriginalTitle());
-    };
-
-    FavlistSettingsView.prototype.setEventHandlersForMylistView = function ($mylist) {
+    FavlistSettingsView.prototype.setEventHandlersForMylistView = function (mylist, mylistView) {
         var _this = this;
-        $mylist.find('.favlistMylistMoveUpButton').click(function () {
-            var $prev = $mylist.prev();
-            if ($prev.length > 0) {
-                $mylist.insertBefore($prev);
-                _this.updateMylistButtons();
-            }
-        });
-        $mylist.find('.favlistMylistMoveDownButton').click(function () {
-            var $next = $mylist.next();
-            if ($next.length > 0) {
-                $mylist.insertAfter($next);
-                _this.updateMylistButtons();
-            }
-        });
-        $mylist.find('.favlistMylistMoveTopButton').click(function () {
-            $mylist.parent().prepend($mylist);
+        mylistView.onMove.addListener(function () {
             _this.updateMylistButtons();
         });
-        $mylist.find('.favlistMylistRemoveButton').click(function () {
-            $mylist.remove();
+        mylistView.onRemoved.addListener(function () {
+            var index = _this.mylistViews.indexOf(mylistView);
+            if (index >= 0) {
+                _this.mylistViews.splice(index, 1);
+            }
             _this.updateMylistButtons();
         });
     };
 
     FavlistSettingsView.prototype.updateMylistButtons = function () {
-        var $mylists = this.$mylists.children();
-        var total = $mylists.length;
-        var searching = this.$el.find('.favlistSettingMylistSearchEdit').val() !== '';
-        $mylists.each(function (i, el) {
-            var $mylist = $(el);
-            $mylist.find('.favlistMylistMoveUpButton').attr('disabled', (i === 0) || searching);
-            $mylist.find('.favlistMylistMoveDownButton').attr('disabled', (i === total - 1) || searching);
-            $mylist.find('.favlistMylistMoveTopButton').attr('disabled', (i === 0) || searching);
+        this.mylistViews.forEach(function (view) {
+            return view.updateButtons();
         });
     };
 
     FavlistSettingsView.prototype.updateConfigView = function () {
-        var config = this.configService.getConfig();
+        var config = this.settingsService.getConfig();
         this.$el.find('.favlistConfigCheckInterval').val(config.getCheckInterval().toString());
         this.$el.find('.favlistConfigMaxNewVideos').val(config.getMaxNewVideos().toString());
         this.$el.find('.favlistConfigHideCheckedList').attr('checked', config.isCheckedListHidden());
@@ -2005,9 +2365,9 @@ var FavlistView = (function (_super) {
     return FavlistView;
 })(View);
 var FavlistMylistsController = (function () {
-    function FavlistMylistsController(configService, mylistService) {
-        this.configService = configService;
-        this.mylistService = mylistService;
+    function FavlistMylistsController() {
+        this.configService = DI.getConfigService();
+        this.mylistService = DI.getMylistService();
     }
     FavlistMylistsController.prototype.getView = function () {
         if (!this.mylistsView) {
@@ -2035,14 +2395,13 @@ var FavlistMylistsController = (function () {
     return FavlistMylistsController;
 })();
 var FavlistSettingsController = (function () {
-    function FavlistSettingsController(configService, mylistService) {
-        this.configService = configService;
-        this.mylistService = mylistService;
+    function FavlistSettingsController() {
         this.onFinish = new util.Event();
+        this.settingsService = DI.getSettingsService();
     }
     FavlistSettingsController.prototype.getView = function () {
         if (!this.settingsView) {
-            this.settingsView = new FavlistSettingsView(this.configService, this.mylistService);
+            this.settingsView = new FavlistSettingsView(this.settingsService);
             this.setEventHandlersForView();
         }
         return this.settingsView;
@@ -2051,21 +2410,55 @@ var FavlistSettingsController = (function () {
     FavlistSettingsController.prototype.setEventHandlersForView = function () {
         var _this = this;
         this.settingsView.onSave.addListener(function (args) {
-            _this.mylistService.setSettings(args.mylistSettings);
-            _this.configService.setSettings(args.configSettings);
+            try  {
+                _this.settingsService.updateSettings(args);
+            } catch (e) {
+                _this.settingsView.showError(e);
+                return;
+            }
             _this.onFinish.trigger(null);
         });
 
         this.settingsView.onCancel.addListener(function () {
             _this.onFinish.trigger(null);
         });
+
+        this.settingsView.onImportRequest.addListener(function () {
+            _this.settingsView.showImportPage();
+        });
+
+        this.settingsView.onExportRequest.addListener(function () {
+            _this.settingsView.showExportPage(_this.settingsService.exportString());
+        });
+
+        this.settingsView.onImportApply.addListener(function (args) {
+            try  {
+                _this.settingsService.importString(args.importSetting);
+            } catch (e) {
+                _this.settingsView.showError(e);
+                return;
+            }
+            _this.settingsView.returnToMainPage();
+        });
+
+        this.settingsView.onImportCancel.addListener(function () {
+            _this.settingsView.returnToMainPage();
+        });
+
+        this.settingsView.onExportClose.addListener(function () {
+            _this.settingsView.returnToMainPage();
+        });
+
+        this.settingsView.onOPMLExportRequest.addListener(function () {
+            _this.settingsView.exportOPML(_this.settingsService.exportOPML());
+        });
     };
     return FavlistSettingsController;
 })();
 var FavlistController = (function () {
-    function FavlistController(configService, mylistService) {
-        this.configService = configService;
-        this.mylistService = mylistService;
+    function FavlistController() {
+        this.configService = DI.getConfigService();
+        this.mylistService = DI.getMylistService();
     }
     FavlistController.prototype.start = function () {
         this.getView().show();
@@ -2103,7 +2496,7 @@ var FavlistController = (function () {
 
     FavlistController.prototype.showMylistsPage = function () {
         if (!this.mylistsController) {
-            this.mylistsController = new FavlistMylistsController(this.configService, this.mylistService);
+            this.mylistsController = new FavlistMylistsController();
             this.favlistView.setMylistsView(this.mylistsController.getView());
         }
         this.favlistView.showMylistsPage();
@@ -2112,7 +2505,7 @@ var FavlistController = (function () {
     FavlistController.prototype.showSettingsPage = function () {
         var _this = this;
         if (!this.settingsController) {
-            this.settingsController = new FavlistSettingsController(this.configService, this.mylistService);
+            this.settingsController = new FavlistSettingsController();
             this.settingsController.onFinish.addListener(function () {
                 return _this.showMylistsPage();
             });
@@ -2125,8 +2518,7 @@ var FavlistController = (function () {
 var userscript;
 (function (userscript) {
     var UserScriptApp = (function () {
-        function UserScriptApp(DI) {
-            this.DI = DI;
+        function UserScriptApp() {
         }
         UserScriptApp.prototype.start = function () {
             try  {
@@ -2150,13 +2542,13 @@ var userscript;
         };
 
         UserScriptApp.prototype.subscription = function () {
-            var controller = new SubscribeController(this.DI.getSubscriptionService());
+            var controller = new SubscribeController();
             controller.getView().appendTo(NicovideoGlue.getSubscribeViewParent());
             controller.start();
         };
 
         UserScriptApp.prototype.favlist = function () {
-            var controller = new FavlistController(this.DI.getConfigService(), this.DI.getMylistService());
+            var controller = new FavlistController();
             controller.getView().appendTo(NicovideoGlue.getFavlistViewParent());
             controller.start();
         };
@@ -2164,8 +2556,10 @@ var userscript;
     })();
     userscript.UserScriptApp = UserScriptApp;
 })(userscript || (userscript = {}));
+var DI = new userscript.DI();
+
 $(function () {
-    var app = new userscript.UserScriptApp(new userscript.DI());
+    var app = new userscript.UserScriptApp();
     app.start();
 });
 

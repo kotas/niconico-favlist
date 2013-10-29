@@ -7,8 +7,6 @@ module userscript {
 
     export class UserScriptApp {
 
-        constructor(private DI: IFavlistDI) {}
-
         start() {
             try {
                 this.route();
@@ -31,13 +29,13 @@ module userscript {
         }
 
         private subscription() {
-            var controller = new SubscribeController(this.DI.getSubscriptionService());
+            var controller = new SubscribeController();
             controller.getView().appendTo(NicovideoGlue.getSubscribeViewParent());
             controller.start();
         }
 
         private favlist() {
-            var controller = new FavlistController(this.DI.getConfigService(), this.DI.getMylistService());
+            var controller = new FavlistController();
             controller.getView().appendTo(NicovideoGlue.getFavlistViewParent());
             controller.start();
         }

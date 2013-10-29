@@ -21,7 +21,7 @@ class MylistFeedFactory {
     getFeedFromServer(mylistId: MylistId, callback: (error: MylistFeedFetchError, feed: IMylistFeed) => any): util.IUrlFetchAborter {
         var options: util.IUrlFetchOption = {
             method:  'GET',
-            url:     Nicovideo.getMylistFeedURL(mylistId)
+            url:     Nicovideo.getMylistSimpleFeedURL(mylistId)
         };
         return this.fetcher.fetch(options, (error: Error, response: util.IUrlFetchResponse) => {
             if (error) {

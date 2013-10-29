@@ -1,30 +1,68 @@
 <div class="favlistSettingsView">
     <div class="favlistSettingOverlay"></div>
     <div class="favlistSettingsDialog">
-        <div class="favlistSettingMylistSearch">
-            <label>
-                <span>検索</span>
-                <input class="favlistSettingMylistSearchEdit" type="search" value="" placeholder="マイリスト名 または URL" />
-            </label>
-        </div>
 
-        <div class="favlistSettingMylistsOuter">
-            <div class="favlistSettingMylists">
+        <div class="favlistSettingsMainPage">
+            <div class="favlistSettingMylistSearch">
+                <label>
+                    <span>検索</span>
+                    <input class="favlistSettingMylistSearchEdit" type="search" value="" placeholder="マイリスト名 または URL" />
+                </label>
+            </div>
+
+            <div class="favlistSettingMylistsOuter">
+                <div class="favlistSettingMylists">
+                </div>
+            </div>
+
+            <form class="favlistConfig" action="javascript:void(0);">
+                <ul class="favlistConfigItems">
+                    <li><label>更新チェック間隔 <input type="text" class="favlistConfigText favlistConfigCheckInterval" value="" size="6" /> 秒</label></li>
+                    <li><label>新着動画の表示数 <input type="text" class="favlistConfigText favlistConfigMaxNewVideos" value="" size="6" /> 件まで</label></li>
+                    <li><label><input type="checkbox" class="favlistConfigCheckbox favlistConfigHideCheckedList" value="1" /> 新着がないマイリストを隠す</label></li>
+                    <li><label><input type="checkbox" class="favlistConfigCheckbox favlistConfigOrderDescendant" value="1" /> 動画を新しい順に並べる</label></li>
+                </ul>
+            </form>
+
+            <div class="favlistSettingsFooter">
+                <div class="favlistSettingsLinks">
+                    <a href="#" class="favlistSettingsImportLink" title="エクスポートされたテキスト形式の設定をインポート">インポート</a>
+                    <a href="#" class="favlistSettingsExportLink" title="テキスト形式で設定をエクスポート">エクスポート</a>
+                    <a href="#" class="favlistSettingsOPMLExportLink" title="RSSリーダーなどで利用できる OPML 形式でマイリスト一覧をダウンロード">OPML</a>
+                </div>
+                <div class="favlistSettingsButtons">
+                    <button class="favlistButtonSave favlistSaveSettingsButton">設定を保存</button>
+                    <button class="favlistCancelSettingsButton">キャンセル</button>
+                </div>
             </div>
         </div>
 
-        <form class="favlistConfig" action="javascript:void(0);">
-            <ul class="favlistConfigItems">
-                <li><label>更新チェック間隔 <input type="text" class="favlistConfigText favlistConfigCheckInterval" value="" size="6" /> 秒</label></li>
-                <li><label>新着動画の表示数 <input type="text" class="favlistConfigText favlistConfigMaxNewVideos" value="" size="6" /> 件まで</label></li>
-                <li><label><input type="checkbox" class="favlistConfigCheckbox favlistConfigHideCheckedList" value="1" /> 新着がないマイリストを隠す</label></li>
-                <li><label><input type="checkbox" class="favlistConfigCheckbox favlistConfigOrderDescendant" value="1" /> 動画を新しい順に並べる</label></li>
-            </ul>
-        </form>
+        <div class="favlistSettingsEditorPage">
+            <div class="favlistSettingsEditorHeader">
+                <span class="favlistImportMode">下のテキストボックスに、エクスポートされた設定を貼り付けると設定を反映できます。</span>
+                <span class="favlistExportMode">下のテキストをコピーして、他のブラウザでインポートすると設定をコピーできます。</span>
+            </div>
 
-        <div class="favlistSettingsButtons">
-            <button class="favlistButtonSave favlistSaveSettingsButton">設定を保存</button>
-            <button class="favlistCancelSettingsButton">キャンセル</button>
+            <div class="favlistSettingsEditorForm">
+                <textarea class="favlistImportMode favlistSettingsImportEditor"></textarea>
+                <textarea class="favlistExportMode favlistSettingsExportEditor" readonly></textarea>
+            </div>
+
+            <div class="favlistSettingsEditorFooter">
+                <div class="favlistSettingsButtons favlistImportMode">
+                    <button class="favlistButtonSave favlistImportApplyButton">反映</button>
+                    <button class="favlistImportCancelButton">キャンセル</button>
+                </div>
+
+                <div class="favlistSettingsLinks favlistExportMode">
+                    <a href="#" class="favlistSettingsDownloadExportLink" download="favlist.dat" title="エクスポート内容をダウンロード">ダウンロード</a>
+                </div>
+                <div class="favlistSettingsButtons favlistExportMode">
+                    <button class="favlistExportCloseButton">閉じる</button>
+                </div>
+            </div>
         </div>
+
     </div>
+
 </div>

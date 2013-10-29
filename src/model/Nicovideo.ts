@@ -9,6 +9,10 @@ module Nicovideo {
     }
 
     export function getMylistFeedURL(mylistId: MylistId): string {
+        return getMylistURL(mylistId) + '?rss=2.0';
+    }
+
+    export function getMylistSimpleFeedURL(mylistId: MylistId): string {
         return getMylistURL(mylistId) + '?rss=atom&nodescription=1&noinfo=1';
     }
 

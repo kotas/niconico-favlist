@@ -1,13 +1,11 @@
+/// <reference path="../IFavlistDI.ts" />
 /// <reference path="../view/SubscribeView.ts" />
 /// <reference path="../service/SubscriptionService.ts" />
 
 class SubscribeController {
 
     private subscribeView: SubscribeView;
-
-    constructor(
-        private subscriptionService: ISubscriptionService
-    ) {}
+    private subscriptionService: ISubscriptionService = DI.getSubscriptionService();
 
     start() {
         this.getView().show();
