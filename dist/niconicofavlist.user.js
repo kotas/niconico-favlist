@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name           NicoNicoFavlist
-// @version        1.3.1
+// @version        1.3.2
 // @author         Kota Saito <kotas.nico@gmail.com>
-// @copyright      2007-2013 Kota Saito
+// @copyright      2007-2014 Kota Saito
 // @description    Get your favorite mylists checked twenty-four-seven!
 // @namespace      http://www.nicovideo.jp/
 // @include        http://www.nicovideo.jp/
@@ -459,13 +459,21 @@ var Video = (function () {
     };
     return Video;
 })();
+var util;
+(function (util) {
+    function unescapeHTML(s) {
+        return (s || '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&amp;/g, '&');
+    }
+    util.unescapeHTML = unescapeHTML;
+})(util || (util = {}));
 var MylistFeed = (function () {
     function MylistFeed(xml) {
         this.xml = xml;
     }
     MylistFeed.prototype.getTitle = function () {
         var matched = this.xml.match(/<title>(?:マイリスト )?(.+?)‐ニコニコ動画.*?<\/title>/);
-        return matched ? matched[1] : '';
+
+        return matched ? util.unescapeHTML(util.unescapeHTML(matched[1])) : '';
     };
 
     MylistFeed.prototype.getVideos = function () {
@@ -516,7 +524,7 @@ var MylistFeedEntry = (function () {
 
     MylistFeedEntry.prototype.scrape = function (pattern) {
         var matches = this.xml.match(pattern);
-        return matches ? matches[1] : null;
+        return matches ? util.unescapeHTML(matches[1]) : null;
     };
     return MylistFeedEntry;
 })();
@@ -592,7 +600,7 @@ var Mylist = (function () {
     };
 
     Mylist.prototype.setOverrideTitle = function (title) {
-        if (title === this.overrideTitle) {
+        if (title === this.originalTitle) {
             title = '';
         }
         this.overrideTitle = title;

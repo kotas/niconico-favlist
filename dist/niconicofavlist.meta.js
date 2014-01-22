@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name           NicoNicoFavlist
-// @version        1.3.1
+// @version        1.3.2
 // @author         Kota Saito <kotas.nico@gmail.com>
-// @copyright      2007-2013 Kota Saito
+// @copyright      2007-2014 Kota Saito
 // @description    Get your favorite mylists checked twenty-four-seven!
 // @namespace      http://www.nicovideo.jp/
 // @include        http://www.nicovideo.jp/
