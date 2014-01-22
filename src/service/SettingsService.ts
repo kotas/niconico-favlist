@@ -86,7 +86,7 @@ class SettingsService implements ISettingsService {
     }
 
     private setConfigSettings(settings: IConfigSetting): void {
-        var config = new Config(
+        var config: Config = new Config(
             settings.checkInterval,
             settings.maxNewVideos,
             settings.hideCheckedList,
