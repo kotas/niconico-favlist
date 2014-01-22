@@ -1,3 +1,5 @@
+/// <reference path="./Video.ts" />
+/// <reference path="../util/StringUtil.ts" />
 
 interface IMylistFeed {
     getTitle(): string;
@@ -10,7 +12,8 @@ class MylistFeed implements IMylistFeed {
 
     getTitle(): string {
         var matched = this.xml.match(/<title>(?:マイリスト )?(.+?)‐ニコニコ動画.*?<\/title>/);
-        return matched ? matched[1] : '';
+        // It seems to be double-escaped by Niconico...
+        return matched ? util.unescapeHTML(util.unescapeHTML(matched[1])) : '';
     }
 
     getVideos(): Video[] {
@@ -68,7 +71,7 @@ class MylistFeedEntry {
 
     private scrape(pattern: RegExp): string {
         var matches = this.xml.match(pattern);
-        return matches ? matches[1] : null;
+        return matches ? util.unescapeHTML(matches[1]) : null;
     }
 
 }
