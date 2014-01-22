@@ -25,7 +25,7 @@ class MylistFeedFactory {
         };
         return this.fetcher.fetch(options, (error: Error, response: util.IUrlFetchResponse) => {
             if (error) {
-                callback(new MylistFeedFetchError(error.message || error), null);
+                callback(new MylistFeedFetchError(error.message || <any>error), null);
                 return;
             }
 
