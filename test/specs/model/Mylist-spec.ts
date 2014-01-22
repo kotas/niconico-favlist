@@ -24,6 +24,7 @@ describe('Mylist', () => {
         it('returns overrideTitle if set', () => {
             expect(mylist.getTitle()).to.equal(overrideTitle);
         });
+
         it('returns originalTitle if overrideTitle is not set', () => {
             mylist.setOverrideTitle('');
             expect(mylist.getTitle()).to.equal(originalTitle);
@@ -33,6 +34,13 @@ describe('Mylist', () => {
     describe('#getNewVideos', () => {
         it('returns the number of new videos', () => {
             expect(mylist.getNewCount()).to.equal(2);
+        });
+    });
+
+    describe('#setOverrideTitle', () => {
+        it('turns empty if set one same as originalTitle', () => {
+            mylist.setOverrideTitle(originalTitle);
+            expect(mylist.getOverrideTitle()).to.be.empty;
         });
     });
 

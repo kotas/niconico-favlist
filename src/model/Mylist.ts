@@ -55,7 +55,7 @@ class Mylist {
     }
 
     setOverrideTitle(title: string): void {
-        if (title === this.overrideTitle) {
+        if (title === this.originalTitle) {
             title = '';
         }
         this.overrideTitle = title;
